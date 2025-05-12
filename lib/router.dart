@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tripfin/Screens/Views/DashboardScreen.dart';
+import 'package:tripfin/Screens/Views/HomeScreen.dart';
 import 'package:tripfin/Screens/Views/Splash.dart';
 import 'package:tripfin/Screens/Views/profile_screen.dart';
 
@@ -16,7 +16,7 @@ final GoRouter goRouter = GoRouter(
     GoRoute(
       path: '/',
       pageBuilder:
-          (context, state) => buildSlideTransitionPage(ProfileScreen(), state),
+          (context, state) => buildSlideTransitionPage(Splash(), state),
     ),
     GoRoute(
       path: '/on_board',

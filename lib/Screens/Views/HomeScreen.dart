@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,16 +15,22 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
-              horizontal: width * 0.05, vertical: height * 0.02),
+            horizontal: width * 0.05,
+            vertical: height * 0.02,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Profile Row
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: width * 0.07,
-                    backgroundImage: AssetImage("assets/profile.png"),
+                  InkResponse(
+                    onTap: () {
+                      context.push('/profile_screen');
+                    },
+                    child: CircleAvatar(
+                      radius: width * 0.07,
+                      backgroundImage: AssetImage("assets/profile.png"),
+                    ),
                   ),
                   SizedBox(width: width * 0.03),
                   Text(
@@ -141,10 +148,11 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _customTextField(
-      {required String hint,
-        required IconData icon,
-        required BuildContext context}) {
+  Widget _customTextField({
+    required String hint,
+    required IconData icon,
+    required BuildContext context,
+  }) {
     final width = MediaQuery.of(context).size.width;
     return Container(
       decoration: BoxDecoration(
@@ -158,8 +166,10 @@ class HomeScreen extends StatelessWidget {
           hintText: hint,
           hintStyle: TextStyle(color: Color(0xFF7C9D9D)),
           border: InputBorder.none,
-          contentPadding:
-          EdgeInsets.symmetric(horizontal: width * 0.05, vertical: 18),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: width * 0.05,
+            vertical: 18,
+          ),
           suffixIcon: Icon(icon, color: Color(0xFF7C9D9D)),
         ),
       ),
@@ -176,7 +186,9 @@ class HomeScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(padding:EdgeInsets.all(4), color: Color(0xff53676833),
+          Container(
+            padding: EdgeInsets.all(4),
+            color: Color(0xff53676833),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(14),
               child: Image.asset(
@@ -190,20 +202,23 @@ class HomeScreen extends StatelessWidget {
           SizedBox(width: width * 0.035),
           Expanded(
             child: Column(
-
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "Red Fort",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: width * 0.05,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: width * 0.05,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 SizedBox(height: 6),
                 Text(
                   "06 Apr 2025",
-                  style: TextStyle(color: Colors.white70, fontSize: width * 0.035),
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: width * 0.035,
+                  ),
                 ),
                 SizedBox(height: 6),
                 RichText(
@@ -211,15 +226,18 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: "Budget : ",
-                        style:
-                        TextStyle(color: Colors.white60, fontSize: width * 0.04),
+                        style: TextStyle(
+                          color: Colors.white60,
+                          fontSize: width * 0.04,
+                        ),
                       ),
                       TextSpan(
                         text: "50,000",
                         style: TextStyle(
-                            color: Colors.greenAccent,
-                            fontSize: width * 0.04,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.greenAccent,
+                          fontSize: width * 0.04,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -230,15 +248,20 @@ class HomeScreen extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () {},
             icon: Icon(Icons.add, color: Colors.black87, size: width * 0.045),
-            label: Text("Add Spends",
-                style:
-                TextStyle(color: Colors.black87, fontSize: width * 0.04)),
-            style: ElevatedButton.styleFrom(visualDensity: VisualDensity.compact,
+            label: Text(
+              "Add Spends",
+              style: TextStyle(color: Colors.black87, fontSize: width * 0.04),
+            ),
+            style: ElevatedButton.styleFrom(
+              visualDensity: VisualDensity.compact,
               backgroundColor: Color(0xFFF4A261),
               padding: EdgeInsets.symmetric(
-                  horizontal: width * 0.025, vertical: width * 0.035),
+                horizontal: width * 0.025,
+                vertical: width * 0.035,
+              ),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
         ],
@@ -274,14 +297,18 @@ class HomeScreen extends StatelessWidget {
                 Text(
                   "Red Fort",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: width * 0.05,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: width * 0.05,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 SizedBox(height: 6),
                 Text(
                   "06 Apr 2025",
-                  style: TextStyle(color: Colors.white70, fontSize: width * 0.035),
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: width * 0.035,
+                  ),
                 ),
                 SizedBox(height: 6),
                 RichText(
@@ -289,15 +316,18 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: "Budget : ",
-                        style:
-                        TextStyle(color: Colors.white60, fontSize: width * 0.04),
+                        style: TextStyle(
+                          color: Colors.white60,
+                          fontSize: width * 0.04,
+                        ),
                       ),
                       TextSpan(
                         text: "50,000",
                         style: TextStyle(
-                            color: Colors.greenAccent,
-                            fontSize: width * 0.04,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.greenAccent,
+                          fontSize: width * 0.04,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -318,8 +348,11 @@ class HomeScreen extends StatelessWidget {
               ),
               Text(
                 "Spends",
-                style: TextStyle(color: Colors.white70, fontSize: width * 0.035),
-              )
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: width * 0.035,
+                ),
+              ),
             ],
           ),
         ],
