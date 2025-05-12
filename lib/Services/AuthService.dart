@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../api_endpoint_urls.dart';
+import 'api_endpoint_urls.dart';
 import '../main.dart';
 import 'ApiClient.dart';
 

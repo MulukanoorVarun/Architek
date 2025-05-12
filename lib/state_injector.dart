@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_cubit.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
-import 'package:tripfin/remote_data_source.dart';
+import 'package:tripfin/Services/remote_data_source.dart';
 import 'Block/Logic/RegisterBloc/Register_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_repository.dart';
 

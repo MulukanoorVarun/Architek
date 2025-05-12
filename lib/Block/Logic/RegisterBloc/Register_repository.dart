@@ -1,5 +1,5 @@
 import '../../../Model/RegisterModel.dart';
-import '../../../remote_data_source.dart';
+import '../../../Services/remote_data_source.dart';
 
 // Abstract repository interface for registration
 abstract class RegisterRepository {

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../api_endpoint_urls.dart';
+import 'api_endpoint_urls.dart';
 import 'AuthService.dart';
 
 class ApiClient {

@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
-import 'Model/LoginResponseModel.dart';
-import 'Model/RegisterModel.dart';
-import 'Model/SuccessModel.dart';
-import 'Services/ApiClient.dart';
+import '../Model/LoginResponseModel.dart';
+import '../Model/RegisterModel.dart';
+import '../Model/SuccessModel.dart';
+import 'ApiClient.dart';
 import 'api_endpoint_urls.dart';
 
 abstract class RemoteDataSource {

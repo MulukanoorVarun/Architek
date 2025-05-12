@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tripfin/Screens/Home/DashboardScreen.dart';
-
+import 'package:go_router/go_router.dart';
 import '../../Block/Logic/LogInBloc/login_cubit.dart';
 import '../../Block/Logic/LogInBloc/login_state.dart';
 import '../../Services/AuthService.dart';
@@ -26,17 +25,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccessState &&
-            state.loginModel.settings?.success == 1) {
+            state.loginModel.settings.success == 1) {
           AuthService.saveTokens(
-            state.loginModel.data?.access ?? "",
-            state.loginModel.data?.refresh ?? "",
-            state.loginModel.data?.expiryTime ?? 0,
+            state.loginModel.data.access ?? "",
+            state.loginModel.data.refresh ?? "",
+            state.loginModel.data.expiryTime ?? 0,
           );
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-        }else if (state is LoginError) {
+          context.pushReplacement('/home');
+        } else if (state is LoginError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message ?? "An error occurred"),

@@ -1,6 +1,6 @@
 import 'package:tripfin/Model/LoginResponseModel.dart';
 
-import '../../../remote_data_source.dart';
+import '../../../Services/remote_data_source.dart';
 
 abstract class LoginRepository {
   Future<Login_ResponseModel?> postLogin(Map<String, dynamic> data);
