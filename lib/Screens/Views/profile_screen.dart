@@ -25,7 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 CircleAvatar(
-                  radius: 32,
+                  radius: 24,
                   backgroundColor: primary,
                   backgroundImage: AssetImage('assets/profile.png'),
                 ),

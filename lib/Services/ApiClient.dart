@@ -32,7 +32,6 @@ class ApiClient {
       onRequest: (options, handler) async {
         debugPrint('Interceptor triggered for: ${options.uri}');
 
-        // Check if the request is for an unauthenticated endpoint
         final isUnauthenticated = _unauthenticatedEndpoints.any(
               (endpoint) => options.uri.path.startsWith(endpoint), // Use startsWith instead of endsWith
         );

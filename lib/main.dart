@@ -4,8 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tripfin/router.dart';
 import 'package:tripfin/state_injector.dart';
 
+import 'Services/ApiClient.dart';
 
-void main() {
+Future<void> main() async {
+  ApiClient.setupInterceptors();
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const MyApp());
 }
 
