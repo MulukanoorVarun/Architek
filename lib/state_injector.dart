@@ -6,6 +6,7 @@ import 'package:tripfin/Block/Logic/GetTrip/GetTripRepository.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_cubit.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
 import 'package:tripfin/Services/remote_data_source.dart';
+import 'Block/Logic/Home/HomeCubit.dart';
 import 'Block/Logic/RegisterBloc/Register_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_repository.dart';
 
@@ -36,6 +37,12 @@ class StateInjector {
             remoteDataSource: context.read<RemoteDataSource>(),
           ),
     ),
+    RepositoryProvider<GetPreviousTripRepo>(
+      create:
+          (context) => GetPreviousTripImpl(
+            remoteDataSource: context.read<RemoteDataSource>(),
+          ),
+    ),
   ];
 
   static final blocProviders = <BlocProvider>[
@@ -49,7 +56,16 @@ class StateInjector {
       create: (context) => GetTripCubit(context.read<GetTripRep>()),
     ),
     BlocProvider<GetPreviousTripHistoryCubit>(
-      create: (context) => GetPreviousTripHistoryCubit(context.read<GetPreviousTripRepo>()),
+      create:
+          (context) =>
+              GetPreviousTripHistoryCubit(context.read<GetPreviousTripRepo>()),
+    ),
+    BlocProvider<HomeCubit>(
+      create:
+          (context) => HomeCubit(
+            context.read()<GetTripRep>(),
+            context.read<GetPreviousTripRepo>(),
+          ),
     ),
   ];
 }

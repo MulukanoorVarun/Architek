@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripState.dart';
+import 'package:tripfin/Block/Logic/Home/HomeState.dart';
+
+import '../../Block/Logic/Home/HomeCubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<GetTripCubit>().GetTrip();
+    context.read<HomeCubit>().fetchHomeData();
   }
 
   @override
@@ -24,11 +27,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final width = size.width;
     final height = size.height;
 
-    return BlocBuilder<GetTripCubit, GetTripState>(
+    return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        if (state is GetTripLoading) {
+        if (state is HomeLoading) {
           return Center(child: CircularProgressIndicator());
-        } else if (state is GetTripLoaded) {
+        } else if (state is HomeLoaded) {
+          final getTrip = state.getTripModel.getTripData;
+          final getPreviousTripHistory = state.getPrevousTripModel.data;
           return Scaffold(
             backgroundColor: const Color(0xFF0F292F),
             body: SafeArea(
@@ -524,7 +529,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           );
-        } else if (state is GetTripError) {
+        } else if (state is HomeError) {
           return Center(child: Text(state.message));
         }
         return Center(child: Text("No Data"));
