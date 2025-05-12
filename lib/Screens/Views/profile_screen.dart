@@ -22,6 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 CircleAvatar(
                   radius: 32,
@@ -30,7 +31,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 SizedBox(width: 10),
                 Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,mainAxisAlignment: MainAxisAlignment.start,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Row(
                         children: [
@@ -45,11 +48,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                           ),
-                          IconButton(visualDensity: VisualDensity.compact,
-                            onPressed: () {
-
-                            },
-                            icon: Icon(Icons.edit, color: Colors.white, size: 20),
+                          IconButton(
+                            visualDensity: VisualDensity.compact,
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                           ),
                           Text(
                             'Edit',
@@ -98,7 +104,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontSize: 14,
                     ),
                   ),
-                  Spacer(),  Text(
+                  Spacer(),
+                  Text(
                     '12',
                     style: TextStyle(
                       color: Color(0xffFEFEFE),
@@ -107,8 +114,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontSize: 14,
                     ),
                   ),
-
-
                 ],
               ),
             ),
@@ -133,7 +138,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontSize: 14,
                     ),
                   ),
-                  Spacer(),  Text(
+                  Spacer(),
+                  Text(
                     '1,50,000',
                     style: TextStyle(
                       color: Color(0xffFEFEFE),
@@ -142,8 +148,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontSize: 14,
                     ),
                   ),
-
-
                 ],
               ),
             ),
@@ -153,6 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       bottomNavigationBar: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 80),
         child: CustomAppButton1(
+          height: 56,
           text: 'Log Out',
           onPlusTap: () {
             _showLogoutConfirmationDialog(context);
