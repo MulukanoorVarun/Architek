@@ -1,3 +1,5 @@
+import 'LoginResponseModel.dart';
+
 class Tripresponsemodel {
   final Data data;
   final Settings settings;
@@ -34,26 +36,6 @@ class Data {
       startDate: json['start_date'],
       endDate: json['end_date'],
       budget: json['budget'],
-    );
-  }
-}
-
-class Settings {
-  final int success;
-  final String message;
-  final int status;
-
-  Settings({
-    required this.success,
-    required this.message,
-    required this.status,
-  });
-
-  factory Settings.fromJson(Map<String, dynamic> json) {
-    return Settings(
-      success: json['success'],
-      message: json['message'],
-      status: json['status'],
     );
   }
 }
