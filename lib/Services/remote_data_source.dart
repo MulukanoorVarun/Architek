@@ -66,7 +66,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         return null;
       }
     } catch (e) {
-      debugPrint('Error loginApi::$e');
+      debugPrint('Error getTrip::$e');
       return null;
     }
   }
@@ -82,7 +82,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         return null;
       }
     } catch (e) {
-      debugPrint('Error loginApi::$e');
+      debugPrint('Error getPrevousTrip::$e');
       return null;
     }
   }

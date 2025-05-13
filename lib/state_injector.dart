@@ -63,7 +63,7 @@ class StateInjector {
     BlocProvider<HomeCubit>(
       create:
           (context) => HomeCubit(
-            context.read()<GetTripRep>(),
+  context.read<GetTripRep>(),
             context.read<GetPreviousTripRepo>(),
           ),
     ),

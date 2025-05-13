@@ -17,7 +17,10 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> fetchHomeData() async {
     emit(HomeLoading());
     try {
-      final futures = <Future<dynamic>>[];
+      final futures = [
+        getTripRep.getTrip(),
+        getPreviousTripRepo.getPreviousTripHistory(),
+      ];
 
       final results = await Future.wait(futures);
 
