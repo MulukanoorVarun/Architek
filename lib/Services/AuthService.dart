@@ -61,7 +61,7 @@ class AuthService {
     }
     try {
       final response = await ApiClient.post(
-        APIEndpointUrls.refreshtoken,
+        APIEndpointUrls.refreshToken,
         data: {"refresh": refreshToken},
       );
       if (response.statusCode == 200) {
