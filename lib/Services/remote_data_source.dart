@@ -2,20 +2,19 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
 import 'package:tripfin/Model/GetPrevousTripModel.dart';
-import 'package:tripfin/Model/GetProfileModel.dart';
-import 'package:tripfin/Model/TripsSummaryResponse.dart';
 import '../Model/CategoryResponseModel.dart';
+import '../Model/GetCurrencyModel.dart';
+import '../Model/GetProfileModel.dart';
 import '../Model/GetTripModel.dart';
 import '../Model/RegisterModel.dart';
 import '../Model/SuccessModel.dart';
-import '../Model/UpdateProfileModel.dart';
+import '../Model/TripsSummaryResponse.dart';
 import 'ApiClient.dart';
 import 'api_endpoint_urls.dart';
 
 abstract class RemoteDataSource {
   Future<RegisterModel?> registerApi(Map<String, dynamic> data);
   Future<SuccessModel?> loginApi(Map<String, dynamic> data);
-
 
   Future<GetTripModel?> getTrip();
 
@@ -26,6 +25,7 @@ abstract class RemoteDataSource {
   Future<TripsSummaryResponse?> getTripcount();
 
   Future<Categoryresponsemodel?> getcategory();
+  Future<GetCurrencyModel?> getCurrency();
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -132,7 +132,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<Categoryresponsemodel?> getcategory() async{
+  Future<Categoryresponsemodel?> getcategory() async {
     try {
       Response res = await ApiClient.get("${APIEndpointUrls.getCategory}");
       if (res.statusCode == 200) {
@@ -143,6 +143,22 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       }
     } catch (e) {
       debugPrint('Error getcategory::$e');
+      return null;
+    }
+  }
+
+  @override
+  Future<GetCurrencyModel?> getCurrency() async {
+    try {
+      Response res = await ApiClient.get("${APIEndpointUrls.getCurrency}");
+      if (res.statusCode == 200) {
+        debugPrint('getCurrency:${res.data}');
+        return GetCurrencyModel.fromJson(res.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error getCurrency::$e');
       return null;
     }
   }

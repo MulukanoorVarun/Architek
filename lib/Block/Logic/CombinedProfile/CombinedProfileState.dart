@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:tripfin/Model/GetProfileModel.dart';
-import 'package:tripfin/Model/TripsSummaryResponse.dart';
+
+import '../../../Model/GetProfileModel.dart';
+import '../../../Model/TripsSummaryResponse.dart';
+
 
 abstract class CombinedProfileState extends Equatable {
   @override

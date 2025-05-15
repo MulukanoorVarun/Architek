@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyCubit.dart';
 import 'package:tripfin/Block/Logic/RegisterBloc/Register_cubit.dart';
 import 'package:tripfin/Block/Logic/RegisterBloc/Register_state.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
@@ -21,10 +22,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _emailController = TextEditingController();
 
-  // State variables
+
   bool _obscurePassword = true;
   String? _selectedCurrency;
   final List<String> _currencies = ['USD', 'EUR', 'INR', 'JPY'];
+
+  @override
+  void initState() {
+    context.read<GetCurrencyCubit>().GetCurrency();
+
+    super.initState();
+  }
 
   @override
   void dispose() {

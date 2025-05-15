@@ -3,15 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileCubit.dart';
 import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileState.dart';
-import 'package:tripfin/Block/Logic/EditProfileScreen/TripcountState.dart';
-import 'package:tripfin/Block/Logic/Profiledetails/Profile_cubit.dart';
-import 'package:tripfin/Block/Logic/Profiledetails/Profile_state.dart';
 import 'package:tripfin/Screens/Components/CustomAppButton.dart';
 import 'package:tripfin/Screens/Components/CutomAppBar.dart';
 import 'package:tripfin/utils/color_constants.dart';
-import '../../Block/Logic/EditProfileScreen/TripcountCubit.dart';
+
 import '../../utils/Preferances.dart';
-import 'EditProfileScreen.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -82,14 +79,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      Navigator.push(
-                                        context,
-
-                                        MaterialPageRoute(
-                                          builder:
-                                              (context) => Editprofilescreen(),
-                                        ),
-                                      );
                                     },
                                     child: Text(
                                       'Edit',

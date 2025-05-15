@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileState.dart';
-import 'package:tripfin/Model/GetProfileModel.dart';
-import 'package:tripfin/Model/TripsSummaryResponse.dart';
+
 import '../EditProfileScreen/TripcountRepository.dart';
 import '../Profiledetails/Profile_repository.dart';
 

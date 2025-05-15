@@ -14,5 +14,6 @@ class APIEndpointUrls {
   static const String tripcount = '${apiUrl}trip-summary';
   static const String getPreviousTrip = '${apiUrl}previous-trips';
   static const String getCategory = '${apiUrl}category';
+  static const String getCurrency = '${apiUrl}currency';
 
 }
