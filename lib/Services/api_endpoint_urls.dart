@@ -6,7 +6,7 @@ class APIEndpointUrls {
 
   static const String register = '${authUrl}register';
   static const String login = '${authUrl}login';
-  static const String refreshtoken = '${authUrl}register';
+  static const String refreshtoken = '${authUrl}refresh-token';
   static const String getTrip = '${apiUrl}trip';
   static const String getPrevousTrip = '${apiUrl}previous-trips';
 }

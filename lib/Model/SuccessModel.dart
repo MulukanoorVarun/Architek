@@ -1,67 +1,68 @@
 class SuccessModel {
-  final dynamic data;  // Changed to dynamic
-  final Settings? settings;
+  Data? data;
+  Settings? settings;
 
   SuccessModel({this.data, this.settings});
 
-  factory SuccessModel.fromJson(Map<String, dynamic> json) {
-    return SuccessModel(
-      // If data is a map, parse it into Data object. If it's an empty list or any other type, just store it as is.
-      data: json['data'] != null
-          ? (json['data'] is List ? json['data'] : Data.fromJson(json['data']))
-          : null,
-      settings: json['settings'] != null
-          ? Settings.fromJson(json['settings'])
-          : null,
-    );
+  SuccessModel.fromJson(Map<String, dynamic> json) {
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    settings = json['settings'] != null
+        ? new Settings.fromJson(json['settings'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      if (data != null) 'data': data is List ? data : (data as Data).toJson(),
-      if (settings != null) 'settings': settings!.toJson(),
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
+    }
+    if (this.settings != null) {
+      data['settings'] = this.settings!.toJson();
+    }
+    return data;
   }
 }
 
 class Data {
-  final String? id;
+  String? refresh;
+  String? access;
+  int? expiryTime;
 
-  Data({this.id});
+  Data({this.refresh, this.access, this.expiryTime});
 
-  factory Data.fromJson(Map<String, dynamic> json) {
-    return Data(
-      id: json['id'],
-    );
+  Data.fromJson(Map<String, dynamic> json) {
+    refresh = json['refresh'];
+    access = json['access'];
+    expiryTime = json['expiry_time'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['refresh'] = this.refresh;
+    data['access'] = this.access;
+    data['expiry_time'] = this.expiryTime;
+    return data;
   }
 }
 
 class Settings {
-  final int? success;
-  final String? message;
-  final int? status;
+  int? success;
+  String? message;
+  int? status;
 
   Settings({this.success, this.message, this.status});
 
-  factory Settings.fromJson(Map<String, dynamic> json) {
-    return Settings(
-      success: json['success'] as int?,
-      message: json['message'] as String?,
-      status: json['status'] as int?,
-    );
+  Settings.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'message': message,
-      'status': status,
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
+    data['message'] = this.message;
+    data['status'] = this.status;
+    return data;
   }
 }

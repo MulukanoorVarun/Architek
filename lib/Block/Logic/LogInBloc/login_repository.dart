@@ -1,9 +1,8 @@
-import 'package:tripfin/Model/LoginResponseModel.dart';
-
+import '../../../Model/SuccessModel.dart';
 import '../../../Services/remote_data_source.dart';
 
 abstract class LoginRepository {
-  Future<Login_ResponseModel?> postLogin(Map<String, dynamic> data);
+  Future<SuccessModel?> postLogin(Map<String, dynamic> data);
 }
 
 class LoginImpl implements LoginRepository {
@@ -12,7 +11,7 @@ class LoginImpl implements LoginRepository {
   LoginImpl({required this.remoteDataSource});
 
   @override
-  Future<Login_ResponseModel?> postLogin(Map<String, dynamic> data) async {
+  Future<SuccessModel?> postLogin(Map<String, dynamic> data) async {
     return await remoteDataSource.loginApi(data);
   }
 }

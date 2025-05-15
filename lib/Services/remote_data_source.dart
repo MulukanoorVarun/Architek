@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
 import 'package:tripfin/Model/GetPrevousTripModel.dart';
 import '../Model/GetTripModel.dart';
-import '../Model/LoginResponseModel.dart';
 import '../Model/RegisterModel.dart';
 import '../Model/SuccessModel.dart';
 import 'ApiClient.dart';
@@ -11,7 +10,7 @@ import 'api_endpoint_urls.dart';
 
 abstract class RemoteDataSource {
   Future<RegisterModel?> registerApi(Map<String, dynamic> data);
-  Future<Login_ResponseModel?> loginApi(Map<String, dynamic> data);
+  Future<SuccessModel?> loginApi(Map<String, dynamic> data);
   Future<GetTripModel?> getTrip();
   Future<GetPrevousTripModel?> getPrevousTrip();
 }
@@ -37,7 +36,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<Login_ResponseModel?> loginApi(Map<String, dynamic> data) async {
+  Future<SuccessModel?> loginApi(Map<String, dynamic> data) async {
     try {
       Response response = await ApiClient.post(
         "${APIEndpointUrls.login}",
@@ -45,7 +44,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
       if (response.statusCode == 200) {
         debugPrint('loginApi:${response.data}');
-        return Login_ResponseModel.fromJson(response.data);
+        return SuccessModel.fromJson(response.data);
       } else {
         return null;
       }

@@ -1,16 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'api_endpoint_urls.dart';
 import '../main.dart';
 import 'ApiClient.dart';
+import 'api_endpoint_urls.dart';
 
 class AuthService {
   static const String _accessTokenKey = "access_token";
   static const String _refreshTokenKey = "refresh_token";
   static const String _tokenExpiryKey = "token_expiry";
 
-
+  /// Check if the user is a guest (no token or empty token)
   static Future<bool> get isGuest async {
     final token = await getAccessToken();
     return token == null || token.isEmpty;
@@ -91,6 +91,7 @@ class AuthService {
     }
   }
 
+  /// Logout and clear tokens, redirect to sign-in screen
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_accessTokenKey);

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:tripfin/Model/LoginResponseModel.dart';
+import '../../../Model/SuccessModel.dart';
 
 abstract class LoginState extends Equatable {
   const LoginState();
@@ -20,7 +20,7 @@ class LoginLoading extends LoginState {
 
 // Success state when registration is successful
 class LoginSuccessState extends LoginState {
-  final Login_ResponseModel loginModel;
+  final SuccessModel loginModel;
   final String message;
 
   const LoginSuccessState({
@@ -29,7 +29,7 @@ class LoginSuccessState extends LoginState {
   });
 
   @override
-  List<Object?> get props => [Login_ResponseModel, message];
+  List<Object?> get props => [SuccessModel, message];
 }
 
 // Error state when registration fails

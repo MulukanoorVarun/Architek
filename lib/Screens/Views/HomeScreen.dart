@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, state) {
         if (state is GetTripLoading) {
           return Center(child: CircularProgressIndicator());
-        } else if (state is GetTripLoaded) {
+        } else if (state is GetTripLoaded ) {
           return Scaffold(
             backgroundColor: const Color(0xFF0F292F),
             body: SafeArea(

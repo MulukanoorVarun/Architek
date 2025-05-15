@@ -6,6 +6,7 @@ import 'package:tripfin/Screens/Views/Splash.dart';
 import 'package:tripfin/Screens/Views/profile_screen.dart';
 
 import 'Screens/Authentication/Login_Screen.dart';
+import 'Screens/Authentication/RegisterScreen.dart';
 import 'Screens/Views/Onboardscreen.dart';
 import 'main.dart';
 
@@ -27,6 +28,11 @@ final GoRouter goRouter = GoRouter(
       path: '/login_mobile',
       pageBuilder:
           (context, state) => buildSlideTransitionPage(LoginScreen(), state),
+    ),
+    GoRoute(
+      path: '/signup',
+      pageBuilder:
+          (context, state) => buildSlideTransitionPage(RegisterScreen(), state),
     ),
     GoRoute(
       path: '/home',

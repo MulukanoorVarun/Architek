@@ -1,10 +1,8 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-
-import 'api_endpoint_urls.dart';
 import 'AuthService.dart';
+import 'api_endpoint_urls.dart';
 
 class ApiClient {
   static final Dio _dio = Dio(
@@ -17,21 +15,17 @@ class ApiClient {
   );
 
   static const List<String> _unauthenticatedEndpoints = [
-    '/auth/generate-otp',
-    '/auth/verify-otp',
+    '/auth/login',
+    '/auth/register',
     '/auth/refresh-token',
-    '/auth/test-login',
-    '/api/ev-master-list',
-    '/api/pickup-locations/',
-    '/api/ev-master-detail/',
-    '/api/booking-details/',
+
   ];
 
   static void setupInterceptors() {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         debugPrint('Interceptor triggered for: ${options.uri}');
-
+        // Check if the request is for an unauthenticated endpoint
         final isUnauthenticated = _unauthenticatedEndpoints.any(
               (endpoint) => options.uri.path.startsWith(endpoint), // Use startsWith instead of endsWith
         );
@@ -130,6 +124,7 @@ class ApiClient {
       return _handleError(e);
     }
   }
+
   static Future<Response> post(String path, {dynamic data}) async {
     try {
       return await _dio.post(path, data: data);
@@ -163,5 +158,4 @@ class ApiClient {
       throw Exception("Unexpected error occurred");
     }
   }
-
 }
