@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileCubit.dart';
+import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileState.dart';
+import 'package:tripfin/Block/Logic/EditProfileScreen/TripcountState.dart';
+import 'package:tripfin/Block/Logic/Profiledetails/Profile_cubit.dart';
+import 'package:tripfin/Block/Logic/Profiledetails/Profile_state.dart';
 import 'package:tripfin/Screens/Components/CustomAppButton.dart';
 import 'package:tripfin/Screens/Components/CutomAppBar.dart';
 import 'package:tripfin/utils/color_constants.dart';
+import '../../Block/Logic/EditProfileScreen/TripcountCubit.dart';
 import '../../utils/Preferances.dart';
+import 'EditProfileScreen.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -12,147 +20,187 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
+  void initState() {
+    super.initState();
+    context.read<CombinedProfileCubit>().fetchCombinedProfile();
+
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: primary,
       appBar: CustomAppBar(title: 'Profile', actions: []),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: primary,
-                  backgroundImage: AssetImage('assets/profile.png'),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Vikram',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontFamily: "Mullish",
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
+      body: BlocBuilder<CombinedProfileCubit, CombinedProfileState>(
+        builder: (context, state) {
+          {
+            if (state is CombinedProfileLoading) {
+              return Center(child: CircularProgressIndicator());
+            } else if (state is CombinedProfileLoaded) {
+              return SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundColor: primary,
+                          backgroundImage: AssetImage('assets/profile.png'),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      state.profileModel.data?.fullName ??
+                                          "",
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        fontFamily: "Mullish",
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    visualDensity: VisualDensity.compact,
+                                    onPressed: () {
+                                      context.push('/edit_profile_screen');
+                                    },
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => Editprofilescreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      'Edit',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: "Mullish",
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    '',
+                                    style: TextStyle(
+                                      fontFamily: "Mullish",
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
+                            ],
                           ),
-                          IconButton(
-                            visualDensity: VisualDensity.compact,
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 40),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 20,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Color(0xff304546),
+                        border: Border.all(color: Color(0xff898989), width: 1),
+                      ),
+                      child: Row(
+                        children: [
+                          Image.asset('assets/tripTree.png', scale: 3),
+                          SizedBox(width: 10),
                           Text(
-                            'Edit',
+                            'Your Trips',
                             style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: "Mullish",
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
+                              color: Color(0xffB9B9B9),
+                              fontFamily: 'Mullish',
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Spacer(),
+                          Text(
+                            state.tripSummaryModel.data.totalPreviousTrips.toString()??"",
+                            style: TextStyle(
+                              color: Color(0xffFEFEFE),
+                              fontFamily: 'Mullish',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
                             ),
                           ),
                         ],
                       ),
-                      Text(
-                        '7674952516',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontFamily: "Mullish",
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
+                    ),
+                    SizedBox(height: 24),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 20,
                       ),
-                    ],
-                  ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Color(0xff304546),
+                        border: Border.all(color: Color(0xff898989), width: 1),
+                      ),
+                      child: Row(
+                        children: [
+                          Image.asset('assets/Money.png', scale: 3),
+                          SizedBox(width: 10),
+                          Text(
+                            'Total Spends',
+                            style: TextStyle(
+                              color: Color(0xffB9B9B9),
+                              fontFamily: 'Mullish',
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Spacer(),
+                          Text(
+                            state.tripSummaryModel.data.totalExpenses.toString()??"",
+                            style: TextStyle(
+                              color: Color(0xffFEFEFE),
+                              fontFamily: 'Mullish',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-
-            SizedBox(height: 40),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Color(0xff304546),
-                border: Border.all(color: Color(0xff898989), width: 1),
-              ),
-              child: Row(
-                children: [
-                  Image.asset('assets/tripTree.png', scale: 3),
-                  SizedBox(width: 10),
-                  Text(
-                    'Your Trips',
-                    style: TextStyle(
-                      color: Color(0xffB9B9B9),
-                      fontFamily: 'Mullish',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    '12',
-                    style: TextStyle(
-                      color: Color(0xffFEFEFE),
-                      fontFamily: 'Mullish',
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 24),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Color(0xff304546),
-                border: Border.all(color: Color(0xff898989), width: 1),
-              ),
-              child: Row(
-                children: [
-                  Image.asset('assets/Money.png', scale: 3),
-                  SizedBox(width: 10),
-                  Text(
-                    'Total Spends',
-                    style: TextStyle(
-                      color: Color(0xffB9B9B9),
-                      fontFamily: 'Mullish',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    '1,50,000',
-                    style: TextStyle(
-                      color: Color(0xffFEFEFE),
-                      fontFamily: 'Mullish',
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+              );
+            } else if (state is CombinedProfileError) {
+              return Center(child: Text(state.message));
+            }
+            return Center(child: Text("No Data"));
+          }
+        },
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 80),

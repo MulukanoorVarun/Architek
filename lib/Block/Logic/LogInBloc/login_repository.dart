@@ -14,4 +14,6 @@ class LoginImpl implements LoginRepository {
   Future<SuccessModel?> postLogin(Map<String, dynamic> data) async {
     return await remoteDataSource.loginApi(data);
   }
+
+
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tripfin/Screens/Views/EditProfileScreen.dart';
 import 'package:tripfin/Screens/Views/HomeScreen.dart';
 import 'package:tripfin/Screens/Views/Splash.dart';
 import 'package:tripfin/Screens/Views/profile_screen.dart';
@@ -8,6 +9,7 @@ import 'package:tripfin/Screens/Views/profile_screen.dart';
 import 'Screens/Authentication/Login_Screen.dart';
 import 'Screens/Authentication/RegisterScreen.dart';
 import 'Screens/Views/Onboardscreen.dart';
+import 'Screens/Views/UpdateExpenceScreen.dart';
 import 'main.dart';
 
 final GoRouter goRouter = GoRouter(
@@ -43,6 +45,16 @@ final GoRouter goRouter = GoRouter(
       path: '/profile_screen',
       pageBuilder:
           (context, state) => buildSlideTransitionPage(ProfileScreen(), state),
+    ),
+    GoRoute(
+      path: '/edit_profile_screen',
+      pageBuilder:
+          (context, state) => buildSlideTransitionPage(Editprofilescreen(), state),
+    ),
+    GoRoute(
+      path: '/edit_expense',
+      pageBuilder:
+          (context, state) => buildSlideTransitionPage(Updateexpencescreen(), state),
     ),
   ],
 );
