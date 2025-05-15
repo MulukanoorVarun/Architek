@@ -10,6 +10,8 @@ import 'package:tripfin/Block/Logic/GetTrip/GetTripRepository.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_cubit.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
 import 'package:tripfin/Block/Logic/Profiledetails/Profile_repository.dart';
+import 'package:tripfin/Block/Logic/UpdateExpence/UpdateExpenceCubit.dart';
+import 'package:tripfin/Block/Logic/UpdateExpence/UpdateExpenceRepository.dart';
 import 'package:tripfin/Services/remote_data_source.dart';
 import 'Block/Logic/Home/HomeCubit.dart';
 import 'Block/Logic/EditProfileScreen/TripcountCubit.dart';
@@ -68,6 +70,11 @@ class StateInjector {
           (context) => GetPreviousTripImpl(
             remoteDataSource: context.read<RemoteDataSource>(),
           ),
+    ),    RepositoryProvider<UpdateExpenseRepository>(
+      create:
+          (context) => UpdateExpenseImpl(
+            remoteDataSource: context.read<RemoteDataSource>(),
+          ),
     ),
     RepositoryProvider<Categoryrepository>(
       create:
@@ -112,6 +119,9 @@ class StateInjector {
     ),
     BlocProvider<Tripcountcubit>(
       create: (context) => Tripcountcubit(context.read<Tripcountrepository>()),
+    ),
+    BlocProvider<UpdateExpenseCubit>(
+      create: (context) => UpdateExpenseCubit(context.read<UpdateExpenseRepository>()),
     ),
     BlocProvider<CombinedProfileCubit>(
       create:

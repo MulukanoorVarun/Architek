@@ -17,6 +17,7 @@ class ApiClient {
   static const List<String> _unauthenticatedEndpoints = [
     '/auth/login',
     '/auth/register',
+    '/auth/',
     '/auth/refresh-token',
 
   ];

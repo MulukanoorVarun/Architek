@@ -16,7 +16,7 @@ class AuthService {
     return token == null || token.isEmpty;
   }
 
-  /// Get stored access token
+
   static Future<String?> getAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_accessTokenKey);
