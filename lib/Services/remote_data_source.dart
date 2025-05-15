@@ -89,7 +89,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<GetPrevousTripModel?> getPrevousTrip() async {
     try {
-      Response res = await ApiClient.get("${APIEndpointUrls.getPrevousTrip}");
+      Response res = await ApiClient.get("${APIEndpointUrls.getPreviousTrip}");
       if (res.statusCode == 200) {
         debugPrint('getPrevousTrip:${res.data}');
         return GetPrevousTripModel.fromJson(res.data);

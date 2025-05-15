@@ -11,7 +11,7 @@ class APIEndpointUrls {
   static const String refreshtoken = '${authUrl}register';
   static const String getTrip = '${apiUrl}trip';
   static const String tripcount = '${apiUrl}trip-summary';
-  static const String getPrevousTrip = '${apiUrl}previous-trips';
+  static const String getPreviousTrip = '${apiUrl}previous-trips';
   static const String getCategory = '${apiUrl}category';
 
 }
