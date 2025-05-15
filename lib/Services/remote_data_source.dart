@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
 import 'package:tripfin/Model/GetPrevousTripModel.dart';
+import 'package:tripfin/Model/UpdateExpenceModel.dart';
 import '../Model/CategoryResponseModel.dart';
 import '../Model/GetCurrencyModel.dart';
 import '../Model/GetProfileModel.dart';
@@ -26,6 +27,7 @@ abstract class RemoteDataSource {
 
   Future<Categoryresponsemodel?> getcategory();
   Future<GetCurrencyModel?> getCurrency();
+  Future<SuccessModel?> updateExpense(Map<String, dynamic> data);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -162,4 +164,23 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       return null;
     }
   }
+  @override
+  Future<SuccessModel?> updateExpense(Map<String, dynamic> data) async {
+    try {
+      final response = await ApiClient.post(
+        APIEndpointUrls.editExpence,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        debugPrint('updateExpense: ${response.data}');
+        return SuccessModel.fromJson(response.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error updateExpense: $e');
+      return null;
+    }
+  }
+
 }

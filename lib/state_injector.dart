@@ -110,6 +110,9 @@ class StateInjector {
     BlocProvider<Categorycubit>(
       create: (context) => Categorycubit(context.read<Categoryrepository>()),
     ),
+    BlocProvider<Tripcountcubit>(
+      create: (context) => Tripcountcubit(context.read<Tripcountrepository>()),
+    ),
     BlocProvider<CombinedProfileCubit>(
       create:
           (context) => CombinedProfileCubit(

@@ -15,5 +15,5 @@ class APIEndpointUrls {
   static const String getPreviousTrip = '${apiUrl}previous-trips';
   static const String getCategory = '${apiUrl}category';
   static const String getCurrency = '${apiUrl}currency';
-
+  static const String editExpence = '${authUrl}expense';
 }

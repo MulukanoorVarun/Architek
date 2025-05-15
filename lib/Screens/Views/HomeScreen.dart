@@ -231,7 +231,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             ElevatedButton.icon(
-                              onPressed: () {},
+                              onPressed: () {
+                                context.push('/update_expensive');
+                              },
                               icon: Icon(
                                 Icons.add,
                                 color: Colors.black87,

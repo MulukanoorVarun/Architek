@@ -4,14 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryCubit.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryState.dart';
 
-class Updateexpencescreen extends StatefulWidget {
-  const Updateexpencescreen({Key? key}) : super(key: key);
+class UpdateExpense extends StatefulWidget {
+  const UpdateExpense({Key? key}) : super(key: key);
 
   @override
-  State<Updateexpencescreen> createState() => _VacationScreenState();
+  State<UpdateExpense> createState() => _UpdateExpenseState();
 }
 
-class _VacationScreenState extends State<Updateexpencescreen> {
+class _UpdateExpenseState extends State<UpdateExpense> {
   String? selectedCategory;
   String paymentMode = "Online";
   String? selectedCategoryId;
@@ -20,8 +20,9 @@ class _VacationScreenState extends State<Updateexpencescreen> {
   TextEditingController remarksController = TextEditingController();
   @override
   void initState() {
-    context.read<Categorycubit>().GetCategory();
     super.initState();
+    context.read<Categorycubit>().GetCategory();
+
   }
 
   @override
@@ -241,15 +242,16 @@ class _VacationScreenState extends State<Updateexpencescreen> {
                   style: TextStyle(color: Colors.white70),
                 ),
                 icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                items: state.categoryresponsemodel.data?.map((category) {
-                  return DropdownMenuItem<String>(
-                    value: category.id, // id is used as value here
-                    child: Text(
-                      category.categoryName ?? "",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  );
-                }).toList(),
+                items:
+                    state.categoryresponsemodel.data?.map((category) {
+                      return DropdownMenuItem<String>(
+                        value: category.id, // id is used as value here
+                        child: Text(
+                          category.categoryName ?? "",
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }).toList(),
                 onChanged: (val) {
                   setState(() {
                     selectedCategoryId = val;
@@ -270,7 +272,6 @@ class _VacationScreenState extends State<Updateexpencescreen> {
   }
 
   Widget _buildTextField({
-
     required TextEditingController controller,
     required String hint,
     IconData? icon,

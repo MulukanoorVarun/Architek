@@ -51,9 +51,9 @@ final GoRouter goRouter = GoRouter(
           (context, state) => buildSlideTransitionPage(Editprofilescreen(), state),
     ),
     GoRoute(
-      path: '/edit_expense',
+      path: '/update_expensive',
       pageBuilder:
-          (context, state) => buildSlideTransitionPage(Updateexpencescreen(), state),
+          (context, state) => buildSlideTransitionPage(UpdateExpense(), state),
     ),
   ],
 );

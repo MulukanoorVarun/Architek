@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-class DataModel {
+class Updateexpencemodel {
   final String id;
   final double expense;
   final String trip;
   final String category;
   final DateTime createdAt;
 
-  DataModel({
+  Updateexpencemodel({
     required this.id,
     required this.expense,
     required this.trip,
@@ -15,8 +15,8 @@ class DataModel {
     required this.createdAt,
   });
 
-  factory DataModel.fromJson(Map<String, dynamic> json) {
-    return DataModel(
+  factory Updateexpencemodel.fromJson(Map<String, dynamic> json) {
+    return Updateexpencemodel(
       id: json['id'],
       expense: json['expense'].toDouble(),
       trip: json['trip'],
@@ -64,18 +64,18 @@ class SettingsModel {
   }
 }
 
-class ResponseModel {
-  final DataModel data;
+class UpdateExpenceImpl {
+  final Updateexpencemodel data;
   final SettingsModel settings;
 
-  ResponseModel({
+  UpdateExpenceImpl({
     required this.data,
     required this.settings,
   });
 
-  factory ResponseModel.fromJson(Map<String, dynamic> json) {
-    return ResponseModel(
-      data: DataModel.fromJson(json['data']),
+  factory UpdateExpenceImpl.fromJson(Map<String, dynamic> json) {
+    return UpdateExpenceImpl(
+      data: Updateexpencemodel.fromJson(json['data']),
       settings: SettingsModel.fromJson(json['settings']),
     );
   }
