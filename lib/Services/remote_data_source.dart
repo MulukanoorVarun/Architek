@@ -170,7 +170,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<Categoryresponsemodel?> getcategory() async{
     try {
-      Response res = await ApiClient.get("${APIEndpointUrls.getcategory}");
+      Response res = await ApiClient.get("${APIEndpointUrls.getCategory}");
       if (res.statusCode == 200) {
         debugPrint('getcategory:${res.data}');
         return Categoryresponsemodel.fromJson(res.data);
