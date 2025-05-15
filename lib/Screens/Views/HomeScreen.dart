@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripState.dart';
 import 'package:tripfin/Block/Logic/Home/HomeState.dart';
@@ -19,6 +20,38 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     context.read<HomeCubit>().fetchHomeData();
+  }
+  final _dateController = TextEditingController();
+  DateTime? _selectedDate;
+
+  // Function to show date picker
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFF3E5C5C),
+              onPrimary: Colors.white,
+              surface: Color(0xFF0F292F),
+              onSurface: Colors.white,
+            ),
+            dialogBackgroundColor: const Color(0xFF0F292F),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
   }
 
   @override
@@ -56,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         SizedBox(width: width * 0.03),
                         Text(
-                          "Hey Vikram",
+                          state.profileModel.data?.fullName ?? "Unknown",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: width * 0.06,
@@ -66,8 +99,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     SizedBox(height: height * 0.03),
-
-                    // Map Illustration
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: Image.asset(
@@ -78,8 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(height: height * 0.03),
-
-                    // Travel Details Heading
                     Text(
                       "Travel Details",
                       style: TextStyle(
@@ -89,8 +118,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(height: height * 0.02),
-
-                    // Text Fields
                     _customTextField(
                       hint: "Enter Your Destination",
                       icon: Icons.location_city,
@@ -146,7 +173,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(height: height * 0.02),
-                    if (state.getTripModel.getTripData == null || state.getTripModel.settings?.message=="No trips found")
+                    if (state.getTripModel.getTripData == null ||
+                        state.getTripModel.settings?.message ==
+                            "No trips found")
                       Container(
                         width: double.infinity,
                         padding: EdgeInsets.all(width * 0.04),
@@ -190,7 +219,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    state.getTripModel.getTripData?.destination ?? "Unknown",
+                                    state
+                                            .getTripModel
+                                            .getTripData
+                                            ?.destination ??
+                                        "Unknown",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: width * 0.05,
@@ -199,7 +232,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   SizedBox(height: 6),
                                   Text(
-                                    state.getTripModel.getTripData?.startDate ?? "N/A",
+                                    state.getTripModel.getTripData?.startDate ??
+                                        "N/A",
                                     style: TextStyle(
                                       color: Colors.white70,
                                       fontSize: width * 0.035,
@@ -217,7 +251,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: state.getTripModel.getTripData?.budget?.toString() ?? "0.00",
+                                          text:
+                                              state
+                                                  .getTripModel
+                                                  .getTripData
+                                                  ?.budget
+                                                  ?.toString() ??
+                                              "0.00",
                                           style: TextStyle(
                                             color: Colors.greenAccent,
                                             fontSize: width * 0.04,
@@ -277,7 +317,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     SingleChildScrollView(
                       child: Column(
                         children: [
-                          if (state.getPrevousTripModel.previousTrips?.length == 0)
+                          if (state.getPrevousTripModel.previousTrips?.length ==
+                              0)
                             Container(
                               width: double.infinity,
                               padding: EdgeInsets.all(width * 0.04),
@@ -298,9 +339,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: MediaQuery.of(context).size.height * 0.5,
                               child: ListView.builder(
                                 itemCount:
-                                    state.getPrevousTripModel.previousTrips?.length ?? 0,
+                                    state
+                                        .getPrevousTripModel
+                                        .previousTrips
+                                        ?.length ??
+                                    0,
                                 itemBuilder: (context, index) {
-                                  final trip = state.getPrevousTripModel.previousTrips![index];
+                                  final trip =
+                                      state
+                                          .getPrevousTripModel
+                                          .previousTrips![index];
                                   return Container(
                                     margin: EdgeInsets.only(
                                       bottom: width * 0.035,

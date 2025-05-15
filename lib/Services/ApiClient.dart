@@ -18,7 +18,7 @@ class ApiClient {
     '/auth/login',
     '/auth/register',
     '/auth/refresh-token',
-
+    '/auth/currency',
   ];
 
   static void setupInterceptors() {

@@ -15,7 +15,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   bool _obscurePassword = true;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
@@ -32,7 +33,6 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     return null;
   }
 
-
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
@@ -42,6 +42,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     }
     return null;
   }
+
   @override
   void initState() {
     super.initState();
@@ -50,18 +51,19 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(
-        listener: (context, state) {
-          if (state is LoginSuccessState && state.loginModel.settings?.success == 1) {
-            AuthService.saveTokens(
-              state.loginModel.data?.access??'',
-              state.loginModel.data?.refresh ?? "",
-              state.loginModel.data?.expiryTime ?? 0,
-            );
-            context.pushReplacement('/home');
-          } else if (state is LoginError) {
-            CustomSnackBar.show(context, state.message ?? "");
-          }
-        },
+      listener: (context, state) {
+        if (state is LoginSuccessState &&
+            state.loginModel.settings?.success == 1) {
+          AuthService.saveTokens(
+            state.loginModel.data?.access ?? '',
+            state.loginModel.data?.refresh ?? "",
+            state.loginModel.data?.expiryTime ?? 0,
+          );
+          context.pushReplacement('/home');
+        } else if (state is LoginError) {
+          CustomSnackBar.show(context, state.message ?? "");
+        }
+      },
 
       builder: (context, state) {
         final isLoading = state is LoginLoading;
@@ -71,7 +73,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Center(
-                child: Container(margin: EdgeInsets.only(top: 150),
+                child: Container(
+                  margin: EdgeInsets.only(top: 150),
                   constraints: const BoxConstraints(maxWidth: 400),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.08),
@@ -129,14 +132,21 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
-                          style: const TextStyle(color: Colors.white, fontFamily: 'Mullish'),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Mullish',
+                          ),
                           validator: _validatePassword,
                           decoration: InputDecoration(
                             hintText: 'Enter Your Password',
-                            hintStyle: const TextStyle(color: Color(0xFFB0B0B0)),
+                            hintStyle: const TextStyle(
+                              color: Color(0xFFB0B0B0),
+                            ),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -150,19 +160,31 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             contentPadding: const EdgeInsets.all(16),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(50),
-                              borderSide: const BorderSide(color: Colors.white54, width: 1),
+                              borderSide: const BorderSide(
+                                color: Colors.white54,
+                                width: 1,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(50),
-                              borderSide: const BorderSide(color: Colors.white, width: 2),
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 2,
+                              ),
                             ),
                             errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(50),
-                              borderSide: const BorderSide(color: Colors.red, width: 1),
+                              borderSide: const BorderSide(
+                                color: Colors.red,
+                                width: 1,
+                              ),
                             ),
                             focusedErrorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(50),
-                              borderSide: const BorderSide(color: Colors.red, width: 2),
+                              borderSide: const BorderSide(
+                                color: Colors.red,
+                                width: 2,
+                              ),
                             ),
                           ),
                         ),
@@ -190,17 +212,20 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           child: CustomAppButton1(
                             text: 'Login',
                             isLoading: isLoading,
-                            onPlusTap: isLoading
-                                ? null
-                                : () {
-                              if (_formKey.currentState!.validate()) {
-                                final Map<String, dynamic> loginData = {
-                                  'email': _emailController.text,
-                                  'password': _passwordController.text,
-                                };
-                                context.read<LoginCubit>().postLogIn(loginData);
-                              }
-                            },
+                            onPlusTap:
+                                isLoading
+                                    ? null
+                                    : () {
+                                      if (_formKey.currentState!.validate()) {
+                                        final Map<String, dynamic> loginData = {
+                                          'email': _emailController.text,
+                                          'password': _passwordController.text,
+                                        };
+                                        context.read<LoginCubit>().postLogIn(
+                                          loginData,
+                                        );
+                                      }
+                                    },
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -250,6 +275,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     _passwordController.dispose();
     super.dispose();
   }
+
   Widget _buildTextField({
     required String hint,
     required TextEditingController controller,

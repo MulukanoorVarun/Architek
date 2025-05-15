@@ -9,7 +9,6 @@ import 'package:tripfin/utils/color_constants.dart';
 
 import '../../utils/Preferances.dart';
 
-
 class ProfileScreen extends StatefulWidget {
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -20,7 +19,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     context.read<CombinedProfileCubit>().fetchCombinedProfile();
-
   }
 
   Widget build(BuildContext context) {
@@ -56,8 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      state.profileModel.data?.fullName ??
-                                          "",
+                                      state.profileModel.data?.fullName ?? "",
                                       style: TextStyle(
                                         fontSize: 17,
                                         fontFamily: "Mullish",
@@ -78,8 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: () {
-                                    },
+                                    onTap: () {},
                                     child: Text(
                                       'Edit',
                                       style: TextStyle(
@@ -133,7 +129,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           Spacer(),
                           Text(
-                            state.tripSummaryModel.data.totalPreviousTrips.toString()??"",
+                            state.tripSummaryModel.data.totalPreviousTrips
+                                    .toString() ??
+                                "",
                             style: TextStyle(
                               color: Color(0xffFEFEFE),
                               fontFamily: 'Mullish',
@@ -170,7 +168,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           Spacer(),
                           Text(
-                            state.tripSummaryModel.data.totalExpenses.toString()??"",
+                            state.tripSummaryModel.data.totalExpenses
+                                    .toString() ??
+                                "",
                             style: TextStyle(
                               color: Color(0xffFEFEFE),
                               fontFamily: 'Mullish',

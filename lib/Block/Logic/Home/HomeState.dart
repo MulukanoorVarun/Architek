@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../Model/GetPrevousTripModel.dart';
+import '../../../Model/GetProfileModel.dart';
 import '../../../Model/GetTripModel.dart';
 
 abstract class HomeState extends Equatable {
@@ -17,8 +18,9 @@ class HomeLoading extends HomeState {}
 class HomeLoaded extends HomeState {
   final GetPrevousTripModel getPrevousTripModel;
   final GetTripModel getTripModel;
+  final GetprofileModel profileModel;
 
-  HomeLoaded({required this.getPrevousTripModel, required this.getTripModel});
+  HomeLoaded({required this.getPrevousTripModel, required this.getTripModel,required this.profileModel});
 }
 
 class HomeError extends HomeState {

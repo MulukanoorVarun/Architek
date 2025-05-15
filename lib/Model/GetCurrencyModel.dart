@@ -1,14 +1,14 @@
 class GetCurrencyModel {
-  List<Data>? data;
+  List<Currency>? data;
   Settings? settings;
 
   GetCurrencyModel({this.data, this.settings});
 
   GetCurrencyModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <Currency>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new Currency.fromJson(v));
       });
     }
     settings = json['settings'] != null
@@ -28,13 +28,13 @@ class GetCurrencyModel {
   }
 }
 
-class Data {
+class Currency {
   String? key;
   String? value;
 
-  Data({this.key, this.value});
+  Currency({this.key, this.value});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  Currency.fromJson(Map<String, dynamic> json) {
     key = json['key'];
     value = json['value'];
   }

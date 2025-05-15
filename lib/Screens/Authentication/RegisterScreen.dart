@@ -1,10 +1,15 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyCubit.dart';
+import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyState.dart';
 import 'package:tripfin/Block/Logic/RegisterBloc/Register_cubit.dart';
 import 'package:tripfin/Block/Logic/RegisterBloc/Register_state.dart';
+import 'package:tripfin/Model/GetCurrencyModel.dart';
+import 'package:tripfin/Screens/Components/CustomAppButton.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -20,17 +25,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _mobileController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _conformPasswordController = TextEditingController();
   final _emailController = TextEditingController();
 
+  final TextEditingController _selectCurrency = TextEditingController();
+  final FocusNode _currencyFocusNode = FocusNode();
+  String? _selectedCurrency;
 
   bool _obscurePassword = true;
-  String? _selectedCurrency;
-  final List<String> _currencies = ['USD', 'EUR', 'INR', 'JPY'];
 
   @override
   void initState() {
     context.read<GetCurrencyCubit>().GetCurrency();
-
     super.initState();
   }
 
@@ -62,8 +68,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (value.length < 8) {
       return 'Password must be at least 8 characters';
     }
-    if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$')
-        .hasMatch(value)) {
+    if (!RegExp(
+      r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$',
+    ).hasMatch(value)) {
       return 'Password must contain letters and numbers';
     }
     return null;
@@ -106,9 +113,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'full_name': _nameController.text.trim(),
         'mobile': _mobileController.text.trim(),
         'password': _passwordController.text,
-        'confirm_password': _passwordController.text,
+        'confirm_password': _conformPasswordController.text,
         'email': _emailController.text.trim(),
-        'currency': _selectedCurrency,
+        'currency': _selectCurrency.text,
       };
 
       context.read<RegisterCubit>().postRegister(registerData);
@@ -123,170 +130,344 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: BlocConsumer<RegisterCubit, RegisterState>(
           listener: (context, state) {
             if (state is RegisterSuccessState) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Registration successful!'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-              // Navigate to next screen
+              context.pushReplacement('/login_mobile');
             } else if (state is RegisterError) {
-         CustomSnackBar.show(context, state.message);
+              CustomSnackBar.show(context, state.message);
             }
           },
           builder: (context, state) {
-            return Stack(
-              children: [
-                Form(
-                  key: _formKey,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Center(
-                          child: Text(
-                            'Create Account',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              fontFamily: 'Mullish',
-                            ),
+            final isLoading = state is RegisterLoading;
+            return BlocBuilder<GetCurrencyCubit, GetCurrenecyState>(
+              builder: (context, state) {
+                if (state is GetCurrencyLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is GetCurrencyLoaded) {
+                  return Stack(
+                    children: [
+                      Form(
+                        key: _formKey,
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 32,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Center(
+                                child: Text(
+                                  'Create Account',
+                                  style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                    fontFamily: 'Mullish',
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+
+                              // Name Field
+                              _buildLabel('Full Name'),
+                              const SizedBox(height: 8),
+                              _buildTextField(
+                                hint: 'Enter your full name',
+                                controller: _nameController,
+                                validator: _validateName,
+                                icon: Icons.person_outline,
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              // Mobile Field
+                              _buildLabel('Mobile Number'),
+                              const SizedBox(height: 8),
+                              _buildTextField(
+                                hint: 'Enter your mobile number',
+                                controller: _mobileController,
+                                inputType: TextInputType.phone,
+                                validator: _validateMobile,
+                                icon: Icons.phone_outlined,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(10),
+                                ],
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              // Email Field
+                              _buildLabel('Email Address'),
+                              const SizedBox(height: 8),
+                              _buildTextField(
+                                hint: 'Enter your email',
+                                controller: _emailController,
+                                inputType: TextInputType.emailAddress,
+                                validator: _validateEmail,
+                                icon: Icons.email_outlined,
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              // Password Field
+                              _buildLabel('Password'),
+                              const SizedBox(height: 8),
+                              _buildTextField(
+                                hint: 'Enter your password',
+                                controller: _conformPasswordController,
+                                validator: _validatePassword,
+                                obscureText: _obscurePassword,
+                                icon: Icons.lock_outline,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: Colors.white70,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              _buildLabel('Confirm Password'),
+                              const SizedBox(height: 8),
+                              _buildTextField(
+                                hint: 'Enter your confirm password',
+                                controller: _passwordController,
+                                validator: _validatePassword,
+                                obscureText: _obscurePassword,
+                                icon: Icons.lock_outline,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: Colors.white70,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              _buildLabel('Preferred Currency'),
+                              const SizedBox(height: 8),
+
+                              DropdownButtonHideUnderline(
+                                child: DropdownButton2<String>(
+                                  isExpanded: true,
+                                  hint: Text(
+                                    "Select Currency",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: "Poppins",
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  items:
+                                      (state.currencyModel.data?.isNotEmpty ??
+                                              false)
+                                          ? state.currencyModel.data!.map((
+                                            Currency item,
+                                          ) {
+                                            return DropdownMenuItem<String>(
+                                              value: item.key,
+                                              child: Text(
+                                                item.value ?? 'Unknown',
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 14,
+                                                  fontFamily: "Poppins",
+                                                ),
+                                              ),
+                                            );
+                                          }).toList()
+                                          : [
+                                            DropdownMenuItem<String>(
+                                              enabled: false,
+                                              child: Text(
+                                                'No data found',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.grey,
+                                                  fontFamily: "Poppins",
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                  value: _selectedCurrency,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _selectedCurrency = value;
+                                      print(
+                                        'selectCurrency:${_selectedCurrency}',
+                                      );
+                                    });
+                                  },
+                                  buttonStyleData: ButtonStyleData(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    height: 50,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Color(0x1AFFFFFF),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(28),
+                                      ),
+                                      border: Border.all(
+                                        width: 1,
+                                        color: Colors.white54,
+                                      ),
+                                    ),
+                                  ),
+                                  dropdownStyleData: DropdownStyleData(
+                                    maxHeight: 250,
+                                    padding: EdgeInsets.zero,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    scrollbarTheme: ScrollbarThemeData(
+                                      thumbVisibility: MaterialStatePropertyAll(
+                                        false,
+                                      ),
+                                    ),
+                                  ),
+                                  menuItemStyleData: MenuItemStyleData(
+                                    height: 45,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                  ),
+                                  dropdownSearchData: DropdownSearchData(
+                                    searchController: _selectCurrency,
+                                    searchInnerWidgetHeight: 50,
+                                    searchInnerWidget: Container(
+                                      height: 50,
+                                      padding: EdgeInsets.all(5),
+                                      child: TextFormField(
+                                        controller: _selectCurrency,
+                                        focusNode: _currencyFocusNode,
+                                        expands: true,
+                                        maxLines: null,
+                                        decoration: InputDecoration(
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 8,
+                                          ),
+                                          hintText:
+                                              "Search and select Currency",
+                                          hintStyle: TextStyle(
+                                            color: Color(0xFFB0B0B0),
+                                            fontSize: 12,
+                                            fontFamily: "Poppins",
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            borderSide: BorderSide(
+                                              width: 1,
+                                              color: Color(0xffCDE2FB),
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              7,
+                                            ),
+                                            borderSide: BorderSide(
+                                              width: 1,
+                                              color: Color(0xffCDE2FB),
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              7,
+                                            ),
+                                            borderSide: BorderSide(
+                                              width: 1,
+                                              color: Color(0xffCDE2FB),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    searchMatchFn: (item, searchValue) {
+                                      final currency = state.currencyModel.data!
+                                          .firstWhere(
+                                            (cur) => cur.key == item.value,
+                                          );
+
+                                      return currency.value != null &&
+                                          currency.value!
+                                              .toLowerCase()
+                                              .contains(
+                                                searchValue.toLowerCase(),
+                                              );
+                                    },
+                                  ),
+                                  onMenuStateChange: (isOpen) {
+                                    if (!isOpen) {
+                                      _selectCurrency.clear();
+                                    }
+                                  },
+                                ),
+                              ),
+
+                              const SizedBox(height: 32),
+
+                              CustomAppButton1(
+                                isLoading: isLoading,
+                                text: 'Register',
+                                onPlusTap:
+                                    isLoading
+                                        ? null
+                                        : () {
+                                          _handleRegistration(context);
+                                        },
+                              ),
+
+                              SizedBox(height: 24),
+
+                              // Login Link
+                              Center(
+                                child: TextButton(
+                                  onPressed: () {
+                                    context.push('/login_mobile');
+                                  },
+                                  child: const Text(
+                                    'Already have an account? Login',
+                                    style: TextStyle(
+                                      color: Color(0xFFF4A261),
+                                      fontFamily: 'Mullish',
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 32),
-
-                        // Name Field
-                        _buildLabel('Full Name'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          hint: 'Enter your full name',
-                          controller: _nameController,
-                          validator: _validateName,
-                          icon: Icons.person_outline,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Mobile Field
-                        _buildLabel('Mobile Number'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          hint: 'Enter your mobile number',
-                          controller: _mobileController,
-                          inputType: TextInputType.phone,
-                          validator: _validateMobile,
-                          icon: Icons.phone_outlined,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Email Field
-                        _buildLabel('Email Address'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          hint: 'Enter your email',
-                          controller: _emailController,
-                          inputType: TextInputType.emailAddress,
-                          validator: _validateEmail,
-                          icon: Icons.email_outlined,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Password Field
-                        _buildLabel('Password'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          hint: 'Enter your password',
-                          controller: _passwordController,
-                          validator: _validatePassword,
-                          obscureText: _obscurePassword,
-                          icon: Icons.lock_outline,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: Colors.white70,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Currency Selection
-                        _buildLabel('Preferred Currency'),
-                        const SizedBox(height: 8),
-                        _buildCurrencyDropdown(),
-
-                        const SizedBox(height: 32),
-
-                        // Register Button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFF4A261),
-                              foregroundColor: const Color(0xFF1C3132),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(28),
-                              ),
-                              elevation: 2,
-                            ),
-                            onPressed:
-                            state is RegisterLoading ? null : () => _handleRegistration(context),
-                            child: state is RegisterLoading
-                                ? const SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: CircularProgressIndicator(
-                                color: Color(0xFF1C3132),
-                                strokeWidth: 2,
-                              ),
-                            )
-                                : const Text(
-                              'Register',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'Mullish',
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Login Link
-                        Center(
-                          child: TextButton(
-                            onPressed: () {
-                              context.push('/login_mobile');
-                            },
-                            child: const Text(
-                              'Already have an account? Login',
-                              style: TextStyle(
-                                color: Color(0xFFF4A261),
-                                fontFamily: 'Mullish',
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                      ),
+                    ],
+                  );
+                } else if (state is GetCurrencyError) {
+                  return Center(child: Text(state.message));
+                }
+                return Center(child: Text("No Data"));
+              },
             );
           },
         ),
@@ -312,6 +493,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     TextInputType inputType = TextInputType.text,
     String? Function(String?)? validator,
     bool obscureText = false,
+    List<TextInputFormatter>? inputFormatters,
     IconData? icon,
     Widget? suffixIcon,
   }) {
@@ -325,24 +507,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
         fontSize: 14,
       ),
       validator: validator,
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(
           color: Color(0xFFB0B0B0),
           fontFamily: 'Mullish',
         ),
-        prefixIcon: icon != null
-            ? Icon(
-          icon,
-          color: Colors.white70,
-          size: 20,
-        )
-            : null,
+        prefixIcon:
+            icon != null ? Icon(icon, color: Colors.white70, size: 20) : null,
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: const Color(0x1AFFFFFF),
-        contentPadding:
-        const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(28),
           borderSide: const BorderSide(color: Colors.white54, width: 1),
@@ -359,51 +539,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           borderRadius: BorderRadius.circular(28),
           borderSide: const BorderSide(color: Colors.red, width: 2),
         ),
-      ),
-    );
-  }
-
-  Widget _buildCurrencyDropdown() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.white54),
-        color: const Color(0x1AFFFFFF),
-      ),
-      child: DropdownButton<String>(
-        value: _selectedCurrency,
-        hint: const Text(
-          'Select Currency',
-          style: TextStyle(
-            color: Color(0xFFB0B0B0),
-            fontFamily: 'Mullish',
-            fontSize: 14,
-          ),
-        ),
-        dropdownColor: const Color(0xFF2A3E3F),
-        isExpanded: true,
-        underline: const SizedBox(),
-        icon: const Icon(
-          Icons.arrow_drop_down,
-          color: Colors.white70,
-        ),
-        style: const TextStyle(
-          color: Colors.white,
-          fontFamily: 'Mullish',
-          fontSize: 14,
-        ),
-        items: _currencies.map((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
-        onChanged: (value) {
-          setState(() {
-            _selectedCurrency = value;
-          });
-        },
       ),
     );
   }

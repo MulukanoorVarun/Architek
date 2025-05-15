@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryCubit.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryRepository.dart';
 import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileCubit.dart';
+import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyCubit.dart';
 import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyRepository.dart';
 import 'package:tripfin/Block/Logic/GetPreviousTripHistory/GetPreviousTripHistoryCubit.dart';
 import 'package:tripfin/Block/Logic/GetPreviousTripHistory/GetPreviousTripHistoryRepository.dart';
@@ -10,8 +11,6 @@ import 'package:tripfin/Block/Logic/GetTrip/GetTripRepository.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_cubit.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
 import 'package:tripfin/Block/Logic/Profiledetails/Profile_repository.dart';
-import 'package:tripfin/Block/Logic/UpdateExpence/UpdateExpenceCubit.dart';
-import 'package:tripfin/Block/Logic/UpdateExpence/UpdateExpenceRepository.dart';
 import 'package:tripfin/Services/remote_data_source.dart';
 import 'Block/Logic/Home/HomeCubit.dart';
 import 'Block/Logic/EditProfileScreen/TripcountCubit.dart';
@@ -19,7 +18,8 @@ import 'Block/Logic/EditProfileScreen/TripcountRepository.dart';
 import 'Block/Logic/Profiledetails/Profile_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_repository.dart';
-
+import 'Block/Logic/UpdateExpence/UpdateExpenceCubit.dart';
+import 'Block/Logic/UpdateExpence/UpdateExpenceRepository.dart';
 
 class StateInjector {
   static final repositoryProviders = <RepositoryProvider>[
@@ -42,11 +42,9 @@ class StateInjector {
           (context) =>
               GetTripImpl(remoteDataSource: context.read<RemoteDataSource>()),
     ),
-    // RepositoryProvider<CurrencyRepo>(
-    //   create:
-    //       (context) =>
-    //           CurrencyImpl(remoteDataSource:context.read<RemoteDataSource>())
-    // ),
+    RepositoryProvider<CurrencyRepo>(
+      create: (context) => CurrencyImpl(context.read<RemoteDataSource>()),
+    ),
     RepositoryProvider<GetProfileRepo>(
       create:
           (context) => GetProfileImpl(
@@ -70,7 +68,8 @@ class StateInjector {
           (context) => GetPreviousTripImpl(
             remoteDataSource: context.read<RemoteDataSource>(),
           ),
-    ),    RepositoryProvider<UpdateExpenseRepository>(
+    ),
+    RepositoryProvider<UpdateExpenseRepository>(
       create:
           (context) => UpdateExpenseImpl(
             remoteDataSource: context.read<RemoteDataSource>(),
@@ -79,14 +78,13 @@ class StateInjector {
     RepositoryProvider<Categoryrepository>(
       create:
           (context) => GetcategoryImpl(
-        remoteDataSource: context.read<RemoteDataSource>(),
-      ),
+            remoteDataSource: context.read<RemoteDataSource>(),
+          ),
     ),
   ];
 
   static final blocProviders = <BlocProvider>[
     BlocProvider<RegisterCubit>(
-
       create: (context) => RegisterCubit(context.read<RegisterRepository>()),
     ),
     BlocProvider<LoginCubit>(
@@ -100,11 +98,15 @@ class StateInjector {
           (context) =>
               GetPreviousTripHistoryCubit(context.read<GetPreviousTripRepo>()),
     ),
+    BlocProvider<GetCurrencyCubit>(
+      create: (context) => GetCurrencyCubit(context.read<CurrencyRepo>()),
+    ),
     BlocProvider<HomeCubit>(
       create:
           (context) => HomeCubit(
             context.read<GetTripRep>(),
             context.read<GetPreviousTripRepo>(),
+            context.read<GetProfileRepo>(),
           ),
     ),
     BlocProvider<ProfileCubit>(
@@ -121,13 +123,15 @@ class StateInjector {
       create: (context) => Tripcountcubit(context.read<Tripcountrepository>()),
     ),
     BlocProvider<UpdateExpenseCubit>(
-      create: (context) => UpdateExpenseCubit(context.read<UpdateExpenseRepository>()),
+      create:
+          (context) =>
+              UpdateExpenseCubit(context.read<UpdateExpenseRepository>()),
     ),
     BlocProvider<CombinedProfileCubit>(
       create:
           (context) => CombinedProfileCubit(
             getProfileRepo: context.read<GetProfileRepo>(),
-            tripcountrepository:context.read<Tripcountrepository>(),
+            tripcountrepository: context.read<Tripcountrepository>(),
           ),
     ),
   ];
