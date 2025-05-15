@@ -9,6 +9,7 @@ class HomeScreen extends StatefulWidget {
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
+
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -218,7 +219,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           ElevatedButton.icon(
-                            onPressed: () {},
+                            onPressed: () {
+                              context.push('/edit_expense');
+                            },
                             icon: Icon(
                               Icons.add,
                               color: Colors.black87,

@@ -138,13 +138,6 @@ class ApiClient {
     }
   }
 
-  static Future<Response> put(String path, {dynamic data}) async {
-    try {
-      return await _dio.put(path, data: data);
-    } catch (e) {
-      return _handleError(e);
-    }
-  }
 
   static Future<Response> delete(String path) async {
     try {
@@ -161,6 +154,25 @@ class ApiClient {
     } else {
       print("Unexpected error: $error");
       throw Exception("Unexpected error occurred");
+    }
+  }
+  static Future<Response> put(
+      String path, {
+        dynamic data, // Use dynamic to allow FormData or Map<String, dynamic>
+        Options? options,
+      }) async {
+    try {
+      print('ApiClient: Sending PUT request to $path with data: $data');
+      final response = await _dio.put(
+        path,
+        data: data, // Pass FormData directly
+        options: options,
+      );
+      print('ApiClient: Response status: ${response.statusCode}, data: ${response.data}');
+      return response;
+    } catch (e) {
+      print('ApiClient: Error - $e');
+      rethrow;
     }
   }
 
