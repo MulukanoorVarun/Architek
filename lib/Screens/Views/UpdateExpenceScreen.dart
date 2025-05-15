@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryCubit.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryState.dart';
-
+import 'package:tripfin/Block/Logic/UpdateExpence/UpdateExpenceCubit.dart';
+import 'package:tripfin/Block/Logic/UpdateExpence/UpdateExpenceState.dart';
+import '../Components/CustomAppButton.dart';
 class UpdateExpense extends StatefulWidget {
   const UpdateExpense({Key? key}) : super(key: key);
 
   @override
   State<UpdateExpense> createState() => _UpdateExpenseState();
 }
-
 class _UpdateExpenseState extends State<UpdateExpense> {
   String? selectedCategory;
   String paymentMode = "Online";
@@ -22,7 +23,6 @@ class _UpdateExpenseState extends State<UpdateExpense> {
   void initState() {
     super.initState();
     context.read<Categorycubit>().GetCategory();
-
   }
 
   @override
@@ -193,26 +193,33 @@ class _UpdateExpenseState extends State<UpdateExpense> {
               ),
             ),
             const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xffF3A94F),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+
+            BlocBuilder<UpdateExpenseCubit, UpdateExpenseState>(
+              builder: (context, state) {
+                return SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: CustomAppButton1(
+                    text: 'Done',
+                    // isLoading: state is UpdateExpenseLoading,
+                    onPlusTap:
+                      () {
+                              final Map<String, dynamic> data = {
+                                'expense': amountController.text,
+                                'category': selectedCategoryId,
+                                'date': "2025-04-02",
+                                'remarks': remarksController.text,
+                                'payment_mode': paymentMode,
+                                'trip': "d6294bde-67e7-4eba-8506-1f79cc005dba",
+                              };
+                              print("Data:${data}");
+                              context.read<UpdateExpenseCubit>().addExpense(
+                                data,
+                              );
+                            },
                   ),
-                ),
-                onPressed: () {},
-                child: const Text(
-                  'Done',
-                  style: TextStyle(
-                    color: Color(0xff102A2C),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+                );
+              },
             ),
           ],
         ),

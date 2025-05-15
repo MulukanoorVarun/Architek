@@ -3,11 +3,9 @@ class APIEndpointUrls {
   // static const String baseUrl = 'http://192.168.80.75:8090/';
   static const String apiUrl = 'api/';
   static const String authUrl = 'auth/';
-
   static const String register = '${authUrl}register';
   static const String login = '${authUrl}login';
   static const String userdetail = '${authUrl}user-detail';
-
   static const String refreshToken = '${authUrl}register';
   static const String refreshtoken = '${authUrl}refresh-token';
   static const String getTrip = '${apiUrl}trip';
@@ -15,5 +13,6 @@ class APIEndpointUrls {
   static const String getPreviousTrip = '${apiUrl}previous-trips';
   static const String getCategory = '${apiUrl}category';
   static const String getCurrency = '${authUrl}currency';
-  static const String editExpence = '${authUrl}expense';
+  static const String editExpence = '${apiUrl}expense';
+
 }
