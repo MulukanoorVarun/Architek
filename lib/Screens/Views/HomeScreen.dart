@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripState.dart';
+import 'package:tripfin/Block/Logic/Home/HomeState.dart';
+
+import '../../Block/Logic/Home/HomeCubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<GetTripCubit>().GetTrip();
+    context.read<HomeCubit>().fetchHomeData();
   }
 
   @override
@@ -24,11 +27,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final width = size.width;
     final height = size.height;
 
-    return BlocBuilder<GetTripCubit, GetTripState>(
+    return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        if (state is GetTripLoading) {
+        if (state is HomeLoading) {
           return Center(child: CircularProgressIndicator());
-        } else if (state is GetTripLoaded ) {
+        } else if (state is HomeLoaded) {
           return Scaffold(
             backgroundColor: const Color(0xFF0F292F),
             body: SafeArea(
@@ -203,7 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             state
                                                 .getTripModel
                                                 .getTripData
-                                                ?.budget ??
+                                                ?.budget
+                                                .toString() ??
                                             "",
                                         style: TextStyle(
                                           color: Colors.greenAccent,
@@ -258,264 +262,123 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(height: height * 0.02),
-                    Container(
-                      margin: EdgeInsets.only(bottom: width * 0.035),
-                      padding: EdgeInsets.all(width * 0.035),
-                      decoration: BoxDecoration(
-                        color: Color(0xFF2C4748),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
+
+                    SingleChildScrollView(
+                      child: Column(
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(14),
-                            child: Image.asset(
-                              "assets/figmaimages.png",
-                              width: width * 0.18,
-                              height: width * 0.18,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          SizedBox(width: width * 0.035),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Red Fort",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: width * 0.05,
-                                    fontWeight: FontWeight.bold,
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            child: ListView.builder(
+                              itemCount:
+                                  state
+                                      .getPrevousTripModel
+                                      .previousTrips
+                                      ?.length ??
+                                  0,
+                              itemBuilder: (context, index) {
+                                final trip =
+                                    state
+                                        .getPrevousTripModel
+                                        .previousTrips![index];
+                                return Container(
+                                  margin: EdgeInsets.only(
+                                    bottom: width * 0.035,
                                   ),
-                                ),
-                                SizedBox(height: 6),
-                                Text(
-                                  "06 Apr 2025",
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: width * 0.035,
+                                  padding: EdgeInsets.all(width * 0.035),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFF2C4748),
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
-                                ),
-                                SizedBox(height: 6),
-                                RichText(
-                                  text: TextSpan(
+                                  child: Row(
                                     children: [
-                                      TextSpan(
-                                        text: "Budget : ",
-                                        style: TextStyle(
-                                          color: Colors.white60,
-                                          fontSize: width * 0.04,
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(14),
+                                        child: Image.asset(
+                                          "assets/figmaimages.png",
+                                          width: width * 0.18,
+                                          height: width * 0.18,
+                                          fit: BoxFit.cover,
                                         ),
                                       ),
-                                      TextSpan(
-                                        text: "50,000",
-                                        style: TextStyle(
-                                          color: Colors.greenAccent,
-                                          fontSize: width * 0.04,
-                                          fontWeight: FontWeight.bold,
+                                      SizedBox(width: width * 0.035),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              trip.destination ?? "",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: width * 0.05,
+                                                 fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(height: 6),
+                                            Text(
+                                              trip.startDate ?? "",
+                                              style: TextStyle(
+                                                color: Colors.white70,
+                                                fontSize: width * 0.035,
+                                              ),
+                                            ),
+                                            SizedBox(height: 6),
+                                            RichText(
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text: "Budget : ",
+                                                    style: TextStyle(
+                                                      color: Colors.white60,
+                                                      fontSize: width * 0.04,
+                                                    ),
+                                                  ),
+                                                  TextSpan(
+                                                    text:
+                                                        trip.budget
+                                                            .toString() ??
+                                                        "",
+                                                    style: TextStyle(
+                                                      color: Colors.greenAccent,
+                                                      fontSize: width * 0.04,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
                                         ),
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            trip.totalExpense.toString() ?? "",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: width * 0.045,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Spends",
+                                            style: TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: width * 0.035,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
+                                );
+                              },
                             ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                "30,000",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: width * 0.045,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                "Spends",
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: width * 0.035,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(bottom: width * 0.035),
-                      padding: EdgeInsets.all(width * 0.035),
-                      decoration: BoxDecoration(
-                        color: Color(0xFF2C4748),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(14),
-                            child: Image.asset(
-                              "assets/figmaimages.png",
-                              width: width * 0.18,
-                              height: width * 0.18,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          SizedBox(width: width * 0.035),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Red Fort",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: width * 0.05,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 6),
-                                Text(
-                                  "06 Apr 2025",
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: width * 0.035,
-                                  ),
-                                ),
-                                SizedBox(height: 6),
-                                RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: "Budget : ",
-                                        style: TextStyle(
-                                          color: Colors.white60,
-                                          fontSize: width * 0.04,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: "50,000",
-                                        style: TextStyle(
-                                          color: Colors.greenAccent,
-                                          fontSize: width * 0.04,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                "30,000",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: width * 0.045,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                "Spends",
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: width * 0.035,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(bottom: width * 0.035),
-                      padding: EdgeInsets.all(width * 0.035),
-                      decoration: BoxDecoration(
-                        color: Color(0xFF2C4748),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(14),
-                            child: Image.asset(
-                              "assets/figmaimages.png",
-                              width: width * 0.18,
-                              height: width * 0.18,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          SizedBox(width: width * 0.035),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Red Fort",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: width * 0.05,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 6),
-                                Text(
-                                  "06 Apr 2025",
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: width * 0.035,
-                                  ),
-                                ),
-                                SizedBox(height: 6),
-                                RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: "Budget : ",
-                                        style: TextStyle(
-                                          color: Colors.white60,
-                                          fontSize: width * 0.04,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: "50,000",
-                                        style: TextStyle(
-                                          color: Colors.greenAccent,
-                                          fontSize: width * 0.04,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                "30,000",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: width * 0.045,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                "Spends",
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: width * 0.035,
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Other widgets below the ListView
                         ],
                       ),
                     ),
@@ -524,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           );
-        } else if (state is GetTripError) {
+        } else if (state is HomeError) {
           return Center(child: Text(state.message));
         }
         return Center(child: Text("No Data"));

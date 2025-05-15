@@ -1,7 +1,6 @@
 import 'package:tripfin/Model/GetPrevousTripModel.dart';
 import 'package:tripfin/Services/remote_data_source.dart';
 
-import '../../../Model/GetTripModel.dart';
 
 abstract class GetPreviousTripRepo {
   Future<GetPrevousTripModel?> getPreviousTripHistory();

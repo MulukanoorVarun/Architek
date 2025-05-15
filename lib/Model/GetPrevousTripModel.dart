@@ -1,71 +1,82 @@
 class GetPrevousTripModel {
-  List<Data>? data;
+  List<PreviousTrip>? previousTrips;
   Settings? settings;
 
-  GetPrevousTripModel({this.data, this.settings});
+  GetPrevousTripModel({this.previousTrips, this.settings});
 
-  GetPrevousTripModel.fromJson(Map<String, dynamic> json) {
-    if (json['data'] != null) {
-      data = <Data>[];
-      json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
-      });
-    }
-    settings = json['settings'] != null
-        ? new Settings.fromJson(json['settings'])
-        : null;
+  factory GetPrevousTripModel.fromJson(Map<String, dynamic> json) {
+    return GetPrevousTripModel(
+      previousTrips: json['data'] != null
+          ? (json['data'] as List<dynamic>)
+          .map((v) => PreviousTrip.fromJson(v))
+          .toList()
+          : [],
+      settings: json['settings'] != null
+          ? Settings.fromJson(json['settings'])
+          : null,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (previousTrips != null) {
+      data['data'] = previousTrips!.map((v) => v.toJson()).toList();
     }
-    if (this.settings != null) {
-      data['settings'] = this.settings!.toJson();
+    if (settings != null) {
+      data['settings'] = settings!.toJson();
     }
     return data;
   }
 }
 
-class Data {
+class PreviousTrip {
   String? tripId;
   String? destination;
   String? startDate;
   String? endDate;
-  int? budget;
-  int? totalExpense;
+  double? budget;
+  double? totalExpense; // Changed to double? to match JSON
   String? status;
 
-  Data(
-      {this.tripId,
-        this.destination,
-        this.startDate,
-        this.endDate,
-        this.budget,
-        this.totalExpense,
-        this.status});
+  PreviousTrip({
+    this.tripId,
+    this.destination,
+    this.startDate,
+    this.endDate,
+    this.budget,
+    this.totalExpense,
+    this.status,
+  });
 
-  Data.fromJson(Map<String, dynamic> json) {
-    tripId = json['trip_id'];
-    destination = json['destination'];
-    startDate = json['start_date'];
-    endDate = json['end_date'];
-    budget = json['budget'];
-    totalExpense = json['total_expense'];
-    status = json['status'];
+  factory PreviousTrip.fromJson(Map<String, dynamic> json) {
+    return PreviousTrip(
+      tripId: json['trip_id'] as String? ?? '',
+      destination: json['destination'] as String? ?? '',
+      startDate: json['start_date'] as String? ?? '',
+      endDate: json['end_date'] as String? ?? '',
+      budget: _parseDouble(json['budget']),
+      totalExpense: _parseDouble(json['total_expense']),
+      status: json['status'] as String? ?? '',
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['trip_id'] = this.tripId;
-    data['destination'] = this.destination;
-    data['start_date'] = this.startDate;
-    data['end_date'] = this.endDate;
-    data['budget'] = this.budget;
-    data['total_expense'] = this.totalExpense;
-    data['status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['trip_id'] = tripId;
+    data['destination'] = destination;
+    data['start_date'] = startDate;
+    data['end_date'] = endDate;
+    data['budget'] = budget;
+    data['total_expense'] = totalExpense;
+    data['status'] = status;
     return data;
+  }
+
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
   }
 }
 
@@ -76,17 +87,27 @@ class Settings {
 
   Settings({this.success, this.message, this.status});
 
-  Settings.fromJson(Map<String, dynamic> json) {
-    success = json['success'];
-    message = json['message'];
-    status = json['status'];
+  factory Settings.fromJson(Map<String, dynamic> json) {
+    return Settings(
+      success: _parseInt(json['success']),
+      message: json['message'] as String? ?? '',
+      status: _parseInt(json['status']),
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
-    data['status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
+    data['message'] = message;
+    data['status'] = status;
     return data;
+  }
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
   }
 }
