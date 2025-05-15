@@ -22,7 +22,6 @@ class AuthService {
     return prefs.getString(_accessTokenKey);
   }
 
-  /// Get stored refresh token
   static Future<String?> getRefreshToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_refreshTokenKey);
