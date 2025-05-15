@@ -8,12 +8,10 @@ abstract class UpdateprofileRepository {
 class UpdateProfileImpl implements UpdateprofileRepository {
   final RemoteDataSource remoteDataSource;
 
-  const UpdateProfileImpl({
-    required this.remoteDataSource,
-  });
+  const UpdateProfileImpl({required this.remoteDataSource});
 
   @override
   Future<Updateprofilemodel?> Updateprofile(dynamic data) async {
-    return await remoteDataSource.UpdateProfile(data);
+    // return await remoteDataSource.UpdateProfile(data);
   }
 }

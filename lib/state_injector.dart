@@ -94,16 +94,16 @@ class StateInjector {
           (context) =>
               GetPreviousTripHistoryCubit(context.read<GetPreviousTripRepo>()),
     ),
-    BlocProvider<HomeCubit>(
-      create:
-          (context) => HomeCubit(
-            context.read<GetTripRep>(),
-            context.read<GetPreviousTripRepo>(),
-          ),
-      create:
-          (context) =>
-              GetPreviousTripHistoryCubit(context.read<GetPreviousTripRepo>()),
-    ),
+    // BlocProvider<HomeCubit>(
+    //   create:
+    //       (context) => HomeCubit(
+    //         context.read<GetTripRep>(),
+    //         context.read<GetPreviousTripRepo>(),
+    //       ),
+    //   create:
+    //       (context) =>
+    //           GetPreviousTripHistoryCubit(context.read<GetPreviousTripRepo>()),
+    // ),
     BlocProvider<ProfileCubit>(
       create: (context) => ProfileCubit(context.read<GetProfileRepo>()),
     ),
