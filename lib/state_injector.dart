@@ -80,6 +80,7 @@ class StateInjector {
 
   static final blocProviders = <BlocProvider>[
     BlocProvider<RegisterCubit>(
+
       create: (context) => RegisterCubit(context.read<RegisterRepository>()),
     ),
     BlocProvider<LoginCubit>(
@@ -96,7 +97,7 @@ class StateInjector {
     BlocProvider<HomeCubit>(
       create:
           (context) => HomeCubit(
-  context.read<GetTripRep>(),
+            context.read<GetTripRep>(),
             context.read<GetPreviousTripRepo>(),
           ),
       create:

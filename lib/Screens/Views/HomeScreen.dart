@@ -12,7 +12,6 @@ class HomeScreen extends StatefulWidget {
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
-
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -147,112 +146,119 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(height: height * 0.02),
-                    Container(
-                      padding: EdgeInsets.all(width * 0.035),
-                      decoration: BoxDecoration(
-                        color: Color(0xFF2C4748),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(4),
-                            color: Color(0xff53676833),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(14),
-                              child: Image.asset(
-                                "assets/figmaimages.png",
-                                width: width * 0.15,
-                                height: width * 0.15,
-                                fit: BoxFit.cover,
+                    if (state.getTripModel.getTripData == null || state.getTripModel.settings?.message=="No trips found")
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(width * 0.04),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF2C4748),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          "No current tour found.",
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: width * 0.04,
+                          ),
+                        ),
+                      )
+                    else
+                      Container(
+                        padding: EdgeInsets.all(width * 0.035),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF2C4748),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(4),
+                              color: Color(0xff53676833),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(14),
+                                child: Image.asset(
+                                  "assets/figmaimages.png",
+                                  width: width * 0.15,
+                                  height: width * 0.15,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: width * 0.035),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  state.getTripModel.getTripData?.destination ??
-                                      "",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: width * 0.05,
-                                    fontWeight: FontWeight.bold,
+                            SizedBox(width: width * 0.035),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    state.getTripModel.getTripData?.destination ?? "Unknown",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: width * 0.05,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 6),
-                                Text(
-                                  state.getTripModel.getTripData?.startDate ??
-                                      "",
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: width * 0.035,
+                                  SizedBox(height: 6),
+                                  Text(
+                                    state.getTripModel.getTripData?.startDate ?? "N/A",
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: width * 0.035,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 6),
-                                RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: "Budget : ",
-                                        style: TextStyle(
-                                          color: Colors.white60,
-                                          fontSize: width * 0.04,
+                                  SizedBox(height: 6),
+                                  RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: "Budget : ",
+                                          style: TextStyle(
+                                            color: Colors.white60,
+                                            fontSize: width * 0.04,
+                                          ),
                                         ),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            state
-                                                .getTripModel
-                                                .getTripData
-                                                ?.budget
-                                                .toString() ??
-                                            "",
-                                        style: TextStyle(
-                                          color: Colors.greenAccent,
-                                          fontSize: width * 0.04,
-                                          fontWeight: FontWeight.bold,
+                                        TextSpan(
+                                          text: state.getTripModel.getTripData?.budget?.toString() ?? "0.00",
+                                          style: TextStyle(
+                                            color: Colors.greenAccent,
+                                            fontSize: width * 0.04,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              context.push('/edit_expense');
-                            },
-                            icon: Icon(
-                              Icons.add,
-                              color: Colors.black87,
-                              size: width * 0.045,
-                            ),
-                            label: Text(
-                              "Add Spends",
-                              style: TextStyle(
+                            ElevatedButton.icon(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.add,
                                 color: Colors.black87,
-                                fontSize: width * 0.04,
+                                size: width * 0.045,
+                              ),
+                              label: Text(
+                                "Add Spends",
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: width * 0.04,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                visualDensity: VisualDensity.compact,
+                                backgroundColor: Color(0xFFF4A261),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: width * 0.025,
+                                  vertical: width * 0.035,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
                             ),
-                            style: ElevatedButton.styleFrom(
-                              visualDensity: VisualDensity.compact,
-                              backgroundColor: Color(0xFFF4A261),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: width * 0.025,
-                                vertical: width * 0.035,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
 
                     SizedBox(height: height * 0.03),
 
@@ -269,118 +275,132 @@ class _HomeScreenState extends State<HomeScreen> {
                     SingleChildScrollView(
                       child: Column(
                         children: [
-                          Container(
-                            height: MediaQuery.of(context).size.height * 0.5,
-                            child: ListView.builder(
-                              itemCount:
-                                  state
-                                      .getPrevousTripModel
-                                      .previousTrips
-                                      ?.length ??
-                                  0,
-                              itemBuilder: (context, index) {
-                                final trip =
-                                    state
-                                        .getPrevousTripModel
-                                        .previousTrips![index];
-                                return Container(
-                                  margin: EdgeInsets.only(
-                                    bottom: width * 0.035,
-                                  ),
-                                  padding: EdgeInsets.all(width * 0.035),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFF2C4748),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(14),
-                                        child: Image.asset(
-                                          "assets/figmaimages.png",
-                                          width: width * 0.18,
-                                          height: width * 0.18,
-                                          fit: BoxFit.cover,
+                          if (state.getPrevousTripModel.previousTrips?.length == 0)
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(width * 0.04),
+                              decoration: BoxDecoration(
+                                color: Color(0xFF2C4748),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                "No Previous tour found.",
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: width * 0.04,
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.5,
+                              child: ListView.builder(
+                                itemCount:
+                                    state.getPrevousTripModel.previousTrips?.length ?? 0,
+                                itemBuilder: (context, index) {
+                                  final trip = state.getPrevousTripModel.previousTrips![index];
+                                  return Container(
+                                    margin: EdgeInsets.only(
+                                      bottom: width * 0.035,
+                                    ),
+                                    padding: EdgeInsets.all(width * 0.035),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF2C4748),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                          child: Image.asset(
+                                            "assets/figmaimages.png",
+                                            width: width * 0.18,
+                                            height: width * 0.18,
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(width: width * 0.035),
-                                      Expanded(
-                                        child: Column(
+                                        SizedBox(width: width * 0.035),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                trip.destination ?? "",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: width * 0.05,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(height: 6),
+                                              Text(
+                                                trip.startDate ?? "",
+                                                style: TextStyle(
+                                                  color: Colors.white70,
+                                                  fontSize: width * 0.035,
+                                                ),
+                                              ),
+                                              SizedBox(height: 6),
+                                              RichText(
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text: "Budget : ",
+                                                      style: TextStyle(
+                                                        color: Colors.white60,
+                                                        fontSize: width * 0.04,
+                                                      ),
+                                                    ),
+                                                    TextSpan(
+                                                      text:
+                                                          trip.budget
+                                                              .toString() ??
+                                                          "",
+                                                      style: TextStyle(
+                                                        color:
+                                                            Colors.greenAccent,
+                                                        fontSize: width * 0.04,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Column(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                              CrossAxisAlignment.end,
                                           children: [
                                             Text(
-                                              trip.destination ?? "",
+                                              trip.totalExpense.toString() ??
+                                                  "",
                                               style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: width * 0.05,
-                                                 fontWeight: FontWeight.bold,
+                                                fontSize: width * 0.045,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            SizedBox(height: 6),
                                             Text(
-                                              trip.startDate ?? "",
+                                              "Spends",
                                               style: TextStyle(
                                                 color: Colors.white70,
                                                 fontSize: width * 0.035,
                                               ),
                                             ),
-                                            SizedBox(height: 6),
-                                            RichText(
-                                              text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text: "Budget : ",
-                                                    style: TextStyle(
-                                                      color: Colors.white60,
-                                                      fontSize: width * 0.04,
-                                                    ),
-                                                  ),
-                                                  TextSpan(
-                                                    text:
-                                                        trip.budget
-                                                            .toString() ??
-                                                        "",
-                                                    style: TextStyle(
-                                                      color: Colors.greenAccent,
-                                                      fontSize: width * 0.04,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
                                           ],
                                         ),
-                                      ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            trip.totalExpense.toString() ?? "",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: width * 0.045,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          Text(
-                                            "Spends",
-                                            style: TextStyle(
-                                              color: Colors.white70,
-                                              fontSize: width * 0.035,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
                           // Other widgets below the ListView
                         ],
                       ),
