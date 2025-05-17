@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
+import 'package:tripfin/Model/EditExpenceModel.dart';
 import 'package:tripfin/Model/GetPrevousTripModel.dart';
+import 'package:tripfin/Model/PiechartExpenceModel.dart';
 import 'package:tripfin/Model/UpdateExpenceModel.dart';
 import '../Model/CategoryResponseModel.dart';
 import '../Model/GetCurrencyModel.dart';
@@ -28,6 +30,8 @@ abstract class RemoteDataSource {
   Future<Categoryresponsemodel?> getcategory();
   Future<GetCurrencyModel?> getCurrency();
   Future<SuccessModel?> updateExpense(Map<String, dynamic> data);
+  Future<Piechartexpencemodel?> Piechartdata();
+  Future<Editexpencemodel?> EditExpensedata(Map<String, dynamic> data);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -164,6 +168,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       return null;
     }
   }
+
   @override
   Future<SuccessModel?> updateExpense(Map<String, dynamic> data) async {
     try {
@@ -174,6 +179,42 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       if (response.statusCode == 200) {
         debugPrint('updateExpense: ${response.data}');
         return SuccessModel.fromJson(response.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error updateExpense: $e');
+      return null;
+    }
+  }
+
+  @override
+  Future<Piechartexpencemodel?> Piechartdata() async {
+    try {
+      final response = await ApiClient.get(APIEndpointUrls.piechartdata);
+      if (response.statusCode == 200) {
+        debugPrint('chartExpense: ${response.data}');
+        return Piechartexpencemodel.fromJson(response.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error chartExpense: $e');
+      return null;
+    }
+  }
+
+
+  @override
+  Future<Editexpencemodel?> EditExpensedata(Map<String, dynamic> data) async {
+    try {
+      final response = await ApiClient.put(
+        APIEndpointUrls.editexpense,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        debugPrint('updateExpense: ${response.data}');
+        return Editexpencemodel.fromJson(response.data);
       } else {
         return null;
       }

@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tripfin/Screens/Views/ChartScreen.dart';
+import 'package:tripfin/Screens/Views/EditExpenseScreen.dart';
 import 'package:tripfin/Screens/Views/HomeScreen.dart';
 import 'package:tripfin/Screens/Views/Splash.dart';
 import 'package:tripfin/Screens/Views/profile_screen.dart';
@@ -48,12 +50,36 @@ final GoRouter goRouter = GoRouter(
     GoRoute(
       path: '/edit_profile_screen',
       pageBuilder:
-          (context, state) => buildSlideTransitionPage(Editprofilescreen(), state),
+          (context, state) =>
+              buildSlideTransitionPage(Editprofilescreen(), state),
     ),
     GoRoute(
       path: '/update_expensive',
+      pageBuilder: (context, state) {
+        final id = state.uri.queryParameters['id'];
+        final budget = state.uri.queryParameters['budget'];
+        final place = state.uri.queryParameters['place'];
+        return buildSlideTransitionPage(UpdateExpense(id: id ?? "",budget: budget ?? "",place: place??"",), state);
+      },
+    ),
+    GoRoute(
+      path: '/piechart',
       pageBuilder:
-          (context, state) => buildSlideTransitionPage(UpdateExpense(), state),
+          (context, state){
+            final budget = state.uri.queryParameters['budget'];
+            final place = state.uri.queryParameters['place'];
+            return buildSlideTransitionPage(Chartscreen(budget: budget ?? "",place: place??"",), state);
+          }
+    ),
+    GoRoute(
+        path: '/edit-expense',
+        pageBuilder:
+            (context, state){
+              final id = state.uri.queryParameters['id'];
+          final budget = state.uri.queryParameters['budget'];
+          final place = state.uri.queryParameters['place'];
+          return buildSlideTransitionPage(EditExpenseScreen(id: id ?? "",budget: budget ?? "",place: place??"",), state);
+        }
     ),
   ],
 );

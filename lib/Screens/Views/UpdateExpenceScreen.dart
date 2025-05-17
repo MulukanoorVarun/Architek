@@ -1,17 +1,32 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryCubit.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryState.dart';
+import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
 import 'package:tripfin/Block/Logic/UpdateExpence/UpdateExpenceCubit.dart';
 import 'package:tripfin/Block/Logic/UpdateExpence/UpdateExpenceState.dart';
 import '../Components/CustomAppButton.dart';
+import '../Components/CutomAppBar.dart';
+
 class UpdateExpense extends StatefulWidget {
-  const UpdateExpense({Key? key}) : super(key: key);
+  final String id;
+  final String place;
+  final String budget;
+
+  const UpdateExpense({
+    Key? key,
+    required this.id,
+    required this.place,
+    required this.budget,
+  }) : super(key: key);
 
   @override
   State<UpdateExpense> createState() => _UpdateExpenseState();
 }
+
 class _UpdateExpenseState extends State<UpdateExpense> {
   String? selectedCategory;
   String paymentMode = "Online";
@@ -19,33 +34,32 @@ class _UpdateExpenseState extends State<UpdateExpense> {
   TextEditingController amountController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   TextEditingController remarksController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     context.read<Categorycubit>().GetCategory();
   }
 
+  // Function to show date picker and format selected date
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
+      dateController.text = formattedDate;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xff102A2C),
-      appBar: AppBar(
-        backgroundColor: const Color(0xff102A2C),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Vacation',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-      ),
+      appBar: CustomAppBar(title: 'Vacation', actions: []),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -76,10 +90,12 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                         'Place : ',
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
-                      const Text(
-                        'Bangalore',
-                        style: TextStyle(
+                      Text(
+                        widget.place,
+                        style: const TextStyle(
                           color: Colors.white,
+                          fontFamily: "Mullish",
+                          fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -87,6 +103,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                   ),
                   const Divider(color: Colors.grey, height: 24),
                   Row(
+
                     children: [
                       const Icon(Icons.currency_rupee, color: Colors.white),
                       const SizedBox(width: 8),
@@ -94,19 +111,16 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                         'Budget : ',
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
-                      const Text(
-                        '50,000',
-                        style: TextStyle(
+                      Text(
+                        widget.budget,
+                        style: const TextStyle(
                           color: Colors.greenAccent,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const Spacer(),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.edit, color: Colors.white),
-                      ),
+
+
                     ],
                   ),
                 ],
@@ -136,7 +150,6 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                     controller: amountController,
                     hint: 'Amount',
                     icon: Icons.attach_money,
-
                     inputType: TextInputType.number,
                   ),
                   const SizedBox(height: 16),
@@ -144,7 +157,8 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                     controller: dateController,
                     hint: 'When you Spent',
                     icon: Icons.calendar_today,
-                    inputType: TextInputType.datetime,
+                    readOnly: true, // Prevent manual input
+                    onTap: () => _selectDate(context), // Open date picker on tap
                   ),
                   const SizedBox(height: 16),
                   _buildTextField(
@@ -193,8 +207,13 @@ class _UpdateExpenseState extends State<UpdateExpense> {
               ),
             ),
             const SizedBox(height: 32),
-
-            BlocBuilder<UpdateExpenseCubit, UpdateExpenseState>(
+            BlocConsumer<UpdateExpenseCubit, UpdateExpenseState>(
+              listener: (context, state) {
+                if (state is UpdateExpenseSuccessState) {
+                  context.push('/piechart');
+                  context.read<GetTripCubit>().GetTrip();
+                }
+              },
               builder: (context, state) {
                 return SizedBox(
                   width: double.infinity,
@@ -202,21 +221,17 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                   child: CustomAppButton1(
                     text: 'Done',
                     // isLoading: state is UpdateExpenseLoading,
-                    onPlusTap:
-                      () {
-                              final Map<String, dynamic> data = {
-                                'expense': amountController.text,
-                                'category': selectedCategoryId,
-                                'date': "2025-04-02",
-                                'remarks': remarksController.text,
-                                'payment_mode': paymentMode,
-                                'trip': "d6294bde-67e7-4eba-8506-1f79cc005dba",
-                              };
-                              print("Data:${data}");
-                              context.read<UpdateExpenseCubit>().addExpense(
-                                data,
-                              );
-                            },
+                    onPlusTap: () {
+                      final Map<String, dynamic> data = {
+                        'expense': amountController.text,
+                        'category': selectedCategoryId,
+                        'date': dateController.text, // Use formatted date
+                        'remarks': remarksController.text,
+                        'payment_mode': paymentMode,
+                        'trip': widget.id,
+                      };
+                      context.read<UpdateExpenseCubit>().addExpense(data);
+                    },
                   ),
                 );
               },
@@ -242,23 +257,22 @@ class _UpdateExpenseState extends State<UpdateExpense> {
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 dropdownColor: const Color(0xff1D3A3C),
-                value: selectedCategoryId, // this needs to be id, not name
+                value: selectedCategoryId,
                 isExpanded: true,
                 hint: const Text(
                   'Select Category',
                   style: TextStyle(color: Colors.white70),
                 ),
                 icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                items:
-                    state.categoryresponsemodel.data?.map((category) {
-                      return DropdownMenuItem<String>(
-                        value: category.id, // id is used as value here
-                        child: Text(
-                          category.categoryName ?? "",
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      );
-                    }).toList(),
+                items: state.categoryresponsemodel.data?.map((category) {
+                  return DropdownMenuItem<String>(
+                    value: category.id,
+                    child: Text(
+                      category.categoryName ?? "",
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  );
+                }).toList(),
                 onChanged: (val) {
                   setState(() {
                     selectedCategoryId = val;
@@ -284,11 +298,15 @@ class _UpdateExpenseState extends State<UpdateExpense> {
     IconData? icon,
     TextInputType inputType = TextInputType.text,
     int maxLines = 1,
+    bool readOnly = false,
+    VoidCallback? onTap,
   }) {
     return TextField(
       controller: controller,
       keyboardType: inputType,
       maxLines: maxLines,
+      readOnly: readOnly,
+      onTap: onTap,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: hint,

@@ -14,5 +14,9 @@ class APIEndpointUrls {
   static const String getCategory = '${apiUrl}category';
   static const String getCurrency = '${authUrl}currency';
   static const String editExpence = '${apiUrl}expense';
+  static const String piechartdata = '${apiUrl}expense-pie-chart';
+  static const String editexpense = '${apiUrl}expense-detail';
+
+
 
 }

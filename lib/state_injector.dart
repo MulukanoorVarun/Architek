@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryCubit.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryRepository.dart';
 import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileCubit.dart';
+import 'package:tripfin/Block/Logic/EditExpense/EditExpenseCubit.dart';
+import 'package:tripfin/Block/Logic/EditExpense/EditExpenseRepository.dart';
 import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyCubit.dart';
 import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyRepository.dart';
 import 'package:tripfin/Block/Logic/GetPreviousTripHistory/GetPreviousTripHistoryCubit.dart';
@@ -10,16 +12,19 @@ import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripRepository.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_cubit.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
+import 'package:tripfin/Block/Logic/PiechartdataScreen/PiechartRepository.dart';
 import 'package:tripfin/Block/Logic/Profiledetails/Profile_repository.dart';
 import 'package:tripfin/Services/remote_data_source.dart';
 import 'Block/Logic/Home/HomeCubit.dart';
 import 'Block/Logic/EditProfileScreen/TripcountCubit.dart';
 import 'Block/Logic/EditProfileScreen/TripcountRepository.dart';
+import 'Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import 'Block/Logic/Profiledetails/Profile_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_repository.dart';
 import 'Block/Logic/UpdateExpence/UpdateExpenceCubit.dart';
 import 'Block/Logic/UpdateExpence/UpdateExpenceRepository.dart';
+
 
 class StateInjector {
   static final repositoryProviders = <RepositoryProvider>[
@@ -36,6 +41,11 @@ class StateInjector {
       create:
           (context) =>
               LoginImpl(remoteDataSource: context.read<RemoteDataSource>()),
+    ),
+    RepositoryProvider<Piechartrepository>(
+      create:
+          (context) =>
+              PiedataImpl(remoteDataSource: context.read<RemoteDataSource>()),
     ),
     RepositoryProvider<GetTripRep>(
       create:
@@ -81,6 +91,13 @@ class StateInjector {
             remoteDataSource: context.read<RemoteDataSource>(),
           ),
     ),
+    RepositoryProvider<Editexpenserepository>(
+      create:
+          (context) =>
+          EditexpenceImpl(remoteDataSource: context.read<RemoteDataSource>()),
+    ),
+
+
   ];
 
   static final blocProviders = <BlocProvider>[
@@ -133,6 +150,17 @@ class StateInjector {
             getProfileRepo: context.read<GetProfileRepo>(),
             tripcountrepository: context.read<Tripcountrepository>(),
           ),
+    ),
+
+    BlocProvider<PiechartCubit>(
+      create: (context) => PiechartCubit(context.read<Piechartrepository>()),
+
+    ),
+
+    BlocProvider<Editexpensecubit>(
+      create:
+          (context) =>
+              Editexpensecubit(context.read<Editexpenserepository>()),
     ),
   ];
 }
