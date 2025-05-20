@@ -83,9 +83,9 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
             backgroundColor: Color(0xff304546),
             appBar: AppBar(
               backgroundColor: Color(0xff304546),
-              title: Text('Edit Profile'),
+              title: Text('Edit Profile',style: TextStyle( color: Colors.white,)),
               leading: IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: Icon(Icons.arrow_back,color: Colors.white),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -98,7 +98,7 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                     Center(
                       child: Stack(
                         children: [
-                          CircleAvatar(
+                          CircleAvatar(backgroundColor: Colors.white,
                             radius: 60,
                             backgroundImage:
                                 _image != null
@@ -145,7 +145,7 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                               },
                               child: CircleAvatar(
                                 radius: 20,
-                                backgroundColor: Colors.amber,
+                                backgroundColor: Color(0xFFF4A261),
                                 child: Icon(Icons.edit, color: Colors.black),
                               ),
                             ),

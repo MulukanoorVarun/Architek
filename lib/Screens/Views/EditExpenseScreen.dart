@@ -221,7 +221,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                     decoration: InputDecoration(
                       hintText: 'Amount',
                       hintStyle: const TextStyle(color: Colors.white70),
-                      prefixIcon: const Icon(Icons.attach_money, color: Colors.white70),
+                      prefixIcon: const Icon( Icons.currency_rupee, color: Colors.white70),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey.shade600),
                         borderRadius: BorderRadius.circular(30),

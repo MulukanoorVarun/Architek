@@ -198,14 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Color(0xFF2C4748),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Text(
-                            "No current tour found.",
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: width * 0.04,
-                              fontFamily: 'Mulish',
-                            ),
-                          ),
+                          child:     noDataWidget(context, "No current tour found."),
                         )
                       else
                         InkResponse(
@@ -369,14 +362,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Color(0xFF2C4748),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
-                                child: Text(
-                                  "No Previous tour found.",
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: width * 0.04,
-                                    fontFamily: 'Mulish',
-                                  ),
-                                ),
+
+                                child:     noDataWidget(context, "No previous tours found."),
+                                // Text(
+                                //   "No Previous tour found.",
+                                //   style: TextStyle(
+                                //     color: Colors.white70,
+                                //     fontSize: width * 0.04,
+                                //     fontFamily: 'Mulish',
+                                //   ),
+                                // ),
                               )
                             else
                               Container(
@@ -559,6 +554,27 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
+    );
+  }
+  Widget noDataWidget(BuildContext context, String message) {
+    final width = MediaQuery.of(context).size.width;
+    return Column(
+      children: [
+        Image.asset(
+          "assets/nodata_image.png",
+          width: width * 0.5,
+        ),
+        SizedBox(height: 12),
+        Text(
+          message,
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: width * 0.045,
+            fontFamily: 'Mulish',
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 

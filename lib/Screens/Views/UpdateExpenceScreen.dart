@@ -26,7 +26,6 @@ class UpdateExpense extends StatefulWidget {
   @override
   State<UpdateExpense> createState() => _UpdateExpenseState();
 }
-
 class _UpdateExpenseState extends State<UpdateExpense> {
   String? selectedCategory;
   String paymentMode = "Online";
@@ -41,13 +40,12 @@ class _UpdateExpenseState extends State<UpdateExpense> {
     context.read<Categorycubit>().GetCategory();
   }
 
-  // Function to show date picker and format selected date
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      lastDate: DateTime.now(),  // Restrict to today and earlier
     );
     if (picked != null) {
       final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
@@ -188,7 +186,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                         _buildTextField(
                           controller: amountController,
                           hint: 'Amount',
-                          icon: Icons.attach_money,
+                          icon: Icons.currency_rupee,
                           inputType: TextInputType.number,
                         ),
                         const SizedBox(height: 16),

@@ -91,7 +91,9 @@ class OutOfBudgetScreen extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 80),
               ),
-              onPressed: () {},
+              onPressed: () {
+
+              },
               child: const Text(
                 'Add Budget',
                 style: TextStyle(fontSize: 18, color: Color(0xFFF6A85A)),
