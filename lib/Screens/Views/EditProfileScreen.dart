@@ -18,12 +18,10 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
     super.initState();
     context.read<ProfileCubit>().GetProfile();
   }
-
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   File? _image;
-
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImageFromGallery() async {

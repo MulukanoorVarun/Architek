@@ -14,16 +14,17 @@ import '../../Block/Logic/UpdateExpence/UpdateExpenceState.dart';
 
 class EditExpenseScreen extends StatefulWidget {
   final String id;
-  final String place;
   final String budget;
+  final String place;
+  final dynamic expense;
 
   const EditExpenseScreen({
-    Key? key,
+    super.key,
     required this.id,
-    required this.place,
     required this.budget,
-  }) : super(key: key);
-
+    required this.place,
+    required this.expense,
+  });
   @override
   _EditExpenseScreenState createState() => _EditExpenseScreenState();
 }
@@ -31,15 +32,21 @@ class EditExpenseScreen extends StatefulWidget {
 class _EditExpenseScreenState extends State<EditExpenseScreen> {
   String? selectedCategory;
   String? selectedCategoryId;
-  String paymentMode = 'Online';
-  final TextEditingController amountController = TextEditingController(text: '300.00');
-  final TextEditingController dateController = TextEditingController(text: '2025-04-18');
-  final TextEditingController remarksController = TextEditingController(text: 'shopping dress');
+  String? paymentMode;
+
+  final TextEditingController amountController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+  final TextEditingController remarksController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+
+
     context.read<Categorycubit>().GetCategory();
+
+
+
   }
 
   // Function to show date picker and format selected date
@@ -50,12 +57,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
-    if (picked != null) {
-      final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
-      setState(() {
-        dateController.text = formattedDate;
-      });
-    }
+
   }
 
   @override
@@ -91,6 +93,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
               ),
             ),
             const SizedBox(height: 12),
+
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(

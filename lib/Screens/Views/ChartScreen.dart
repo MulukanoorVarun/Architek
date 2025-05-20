@@ -7,8 +7,6 @@ import 'package:go_router/go_router.dart';
 // Assuming these are the correct paths in your project
 import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import '../../Block/Logic/PiechartdataScreen/PiechartState.dart';
-// Import the EditExpenseScreen
-
 
 class Chartscreen extends StatefulWidget {
   final String place;
@@ -66,14 +64,7 @@ class _ChartscreenState extends State<Chartscreen> {
     context.read<PiechartCubit>().fetchPieChartData();
   }
 
-  void _deleteExpense(dynamic expense) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Deleted expense: ${expense.categoryName}')),
-    );
-  }
-
   void _editExpense(dynamic expense) {
-    // Navigate to EditExpenseScreen with trip ID and expense details
     context.push(
       '/edit-expense',
       extra: {
@@ -469,38 +460,12 @@ class _ChartscreenState extends State<Chartscreen> {
         final amount = expense.expense?.toDouble() ?? 0.0;
 
         expenseWidgets.add(
-          Dismissible(
-            key: Key(category + amount.toString() + date),
-            background: Container(
-              color: Colors.redAccent,
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.only(left: 20),
-              child: const Icon(Icons.delete, color: Colors.white),
-            ),
-            secondaryBackground: Container(
-              color: Colors.greenAccent,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 20),
-              child: const Icon(Icons.edit, color: Colors.white),
-            ),
-            onDismissed: (direction) {
-              if (direction == DismissDirection.startToEnd) {
-                _deleteExpense(expense);
-              }
-            },
-            confirmDismiss: (direction) async {
-              if (direction == DismissDirection.endToStart) {
-                _editExpense(expense);
-                return false; // Prevent dismissing the item after navigating
-              }
-              return true;
-            },
-            child: expensesItem(
-              category,
-              "-${amount.toStringAsFixed(0)}",
-              Chartscreen.categoryIcons[category] ?? Icons.category,
-              Chartscreen.categoryColors[category] ?? Colors.grey,
-            ),
+          expensesItem(
+            category,
+            "-${amount.toStringAsFixed(0)}",
+            Chartscreen.categoryIcons[category] ?? Icons.category,
+            Chartscreen.categoryColors[category] ?? Colors.grey,
+            expense, // Pass the expense object to expensesItem
           ),
         );
       }
@@ -509,7 +474,7 @@ class _ChartscreenState extends State<Chartscreen> {
     return expenseWidgets;
   }
 
-  Widget expensesItem(String title, String amount, IconData icon, Color color) {
+  Widget expensesItem(String title, String amount, IconData icon, Color color, dynamic expense) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
@@ -542,10 +507,15 @@ class _ChartscreenState extends State<Chartscreen> {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(
-            Icons.edit,
-            color: Colors.white30,
-            size: 20,
+          IconButton(
+            icon: const Icon(
+              Icons.edit,
+              color: Colors.white70,
+              size: 20,
+            ),
+            onPressed: () {
+              _editExpense(expense); // Navigate to EditExpenseScreen on tap
+            },
           ),
         ],
       ),

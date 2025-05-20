@@ -19,7 +19,9 @@ class Editexpensecubit extends Cubit<Editexpensestate> {
         }
       }
     } catch (e) {
+
       emit(EditExpenseError(message: e.toString()));
+
     }
   }
 }

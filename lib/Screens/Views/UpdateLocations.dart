@@ -9,7 +9,9 @@ class UpdateLocationsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Update Locations'),
         backgroundColor: Colors.lightGreenAccent,
+
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

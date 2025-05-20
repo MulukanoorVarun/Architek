@@ -72,14 +72,24 @@ final GoRouter goRouter = GoRouter(
           }
     ),
     GoRoute(
-        path: '/edit-expense',
-        pageBuilder:
-            (context, state){
-              final id = state.uri.queryParameters['id'];
-          final budget = state.uri.queryParameters['budget'];
-          final place = state.uri.queryParameters['place'];
-          return buildSlideTransitionPage(EditExpenseScreen(id: id ?? "",budget: budget ?? "",place: place??"",), state);
-        }
+      path: '/edit-expense',
+      pageBuilder: (context, state) {
+        final id = state.uri.queryParameters['id'] ?? '';
+        final budget = state.uri.queryParameters['budget'] ?? '';
+        final place = state.uri.queryParameters['place'] ?? '';
+        final extra = state.extra as Map<String, dynamic>?;
+        final expense = extra?['expense'];
+
+        return buildSlideTransitionPage(
+          EditExpenseScreen(
+            id: id,
+            budget: budget,
+            place: place,
+            expense: expense,
+          ),
+          state,
+        );
+      },
     ),
   ],
 );

@@ -16,6 +16,7 @@ class Categoryresponsemodel {
     );
   }
 
+
   Map<String, dynamic> toJson() {
     return {
       'data': data?.map((x) => x.toJson()).toList(),
@@ -23,6 +24,7 @@ class Categoryresponsemodel {
     };
   }
 }
+
 
 class CategoryModel {
   String? id;
