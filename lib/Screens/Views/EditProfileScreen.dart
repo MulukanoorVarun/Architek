@@ -18,6 +18,7 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
     super.initState();
     context.read<ProfileCubit>().GetProfile();
   }
+
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -83,9 +84,12 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
             backgroundColor: Color(0xff304546),
             appBar: AppBar(
               backgroundColor: Color(0xff304546),
-              title: Text('Edit Profile',style: TextStyle( color: Colors.white,)),
+              title: Text(
+                'Edit Profile',
+                style: TextStyle(color: Colors.white),
+              ),
               leading: IconButton(
-                icon: Icon(Icons.arrow_back,color: Colors.white),
+                icon: Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -98,7 +102,8 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                     Center(
                       child: Stack(
                         children: [
-                          CircleAvatar(backgroundColor: Colors.white,
+                          CircleAvatar(
+                            backgroundColor: Colors.white,
                             radius: 60,
                             backgroundImage:
                                 _image != null

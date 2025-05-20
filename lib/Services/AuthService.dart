@@ -26,8 +26,6 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_refreshTokenKey);
   }
-
-
   /// Check if token is expired
   static Future<bool> isTokenExpired() async {
     final prefs = await SharedPreferences.getInstance();
