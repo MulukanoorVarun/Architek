@@ -15,6 +15,8 @@ import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
 import 'package:tripfin/Block/Logic/PiechartdataScreen/PiechartRepository.dart';
 import 'package:tripfin/Block/Logic/Profiledetails/Profile_repository.dart';
 import 'package:tripfin/Services/remote_data_source.dart';
+import 'Block/Logic/GetExpenceDetails/GetExpenseDetailsCubit.dart';
+import 'Block/Logic/GetExpenceDetails/GetExpenseDetailsRepository.dart';
 import 'Block/Logic/Home/HomeCubit.dart';
 import 'Block/Logic/EditProfileScreen/TripcountCubit.dart';
 import 'Block/Logic/EditProfileScreen/TripcountRepository.dart';
@@ -96,6 +98,11 @@ class StateInjector {
           (context) =>
           EditexpenceImpl(remoteDataSource: context.read<RemoteDataSource>()),
     ),
+    RepositoryProvider<GetExpenseDetailRepo>(
+      create:
+          (context) =>
+              GetExpenseDetailImpl(remoteDataSource: context.read<RemoteDataSource>()),
+    ),
 
 
   ];
@@ -161,6 +168,11 @@ class StateInjector {
       create:
           (context) =>
               Editexpensecubit(context.read<Editexpenserepository>()),
+    ),
+    BlocProvider<GetExpenseDetailCubit>(
+      create:
+          (context) =>
+              GetExpenseDetailCubit(context.read<GetExpenseDetailRepo>()),
     ),
   ];
 }

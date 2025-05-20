@@ -17,7 +17,7 @@ class ApiClient {
   static const List<String> _unauthenticatedEndpoints = [
     '/auth/login',
     '/auth/register',
-    '/auth/refresh-token',
+    '/auth/refreshtoken',
     '/auth/currency',
 
   ];
@@ -28,7 +28,7 @@ class ApiClient {
         debugPrint('Interceptor triggered for: ${options.uri}');
         // Check if the request is for an unauthenticated endpoint
         final isUnauthenticated = _unauthenticatedEndpoints.any(
-              (endpoint) => options.uri.path.startsWith(endpoint), // Use startsWith instead of endsWith
+              (endpoint) => options.uri.path.startsWith(endpoint),
         );
 
         if (isUnauthenticated) {

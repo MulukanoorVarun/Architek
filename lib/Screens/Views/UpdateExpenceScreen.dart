@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:tripfin/Block/Logic/CategoryList/CategoryCubit.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryState.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
-import 'package:tripfin/Block/Logic/UpdateExpence/UpdateExpenceCubit.dart';
-import 'package:tripfin/Block/Logic/UpdateExpence/UpdateExpenceState.dart';
+import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
+import '../../Block/Logic/CategoryList/CategoryCubit.dart';
+import '../../Block/Logic/GetExpenceDetails/GetExpenseDetailsCubit.dart';
+import '../../Block/Logic/GetExpenceDetails/GetExpenseDetailsState.dart';
+import '../../Block/Logic/UpdateExpence/UpdateExpenceCubit.dart';
+import '../../Block/Logic/UpdateExpence/UpdateExpenceState.dart';
 import '../Components/CustomAppButton.dart';
 import '../Components/CutomAppBar.dart';
 
@@ -15,17 +18,20 @@ class UpdateExpense extends StatefulWidget {
   final String id;
   final String place;
   final String budget;
+  final String expenseId;
 
   const UpdateExpense({
     Key? key,
     required this.id,
     required this.place,
     required this.budget,
+    required this.expenseId,
   }) : super(key: key);
 
   @override
   State<UpdateExpense> createState() => _UpdateExpenseState();
 }
+
 class _UpdateExpenseState extends State<UpdateExpense> {
   String? selectedCategory;
   String paymentMode = "Online";
@@ -37,7 +43,25 @@ class _UpdateExpenseState extends State<UpdateExpense> {
   @override
   void initState() {
     super.initState();
-    context.read<Categorycubit>().GetCategory();
+    if (widget.expenseId == "") {
+      context.read<Categorycubit>().GetCategory();
+    } else {
+      context.read<Categorycubit>().GetCategory();
+      context.read<GetExpenseDetailCubit>().GetExpenseDetails(widget.expenseId);
+    }
+    context.read<GetExpenseDetailCubit>().stream.listen((state) {
+      if (state is GetExpenseDetailLoaded) {
+        final expenseData = state.expenseDetailModel.data;
+        setState(() {
+          // selectedCategory = expenseData['category_name'];
+          // selectedCategoryId = expenseData['category'];
+          paymentMode = expenseData?.paymentMode ?? "";
+          amountController.text = expenseData?.expense.toString() ?? "";
+          dateController.text = expenseData?.date ?? "";
+          remarksController.text = expenseData?.remarks ?? "";
+        });
+      }
+    });
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -45,7 +69,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime.now(),  // Restrict to today and earlier
+      lastDate: DateTime.now(),
     );
     if (picked != null) {
       final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
@@ -58,11 +82,11 @@ class _UpdateExpenseState extends State<UpdateExpense> {
     return Scaffold(
       backgroundColor: const Color(0xff102A2C),
       appBar: CustomAppBar(title: 'Vacation', actions: []),
-      body: BlocBuilder<Categorycubit, Categorystate>(
+      body: BlocBuilder<GetExpenseDetailCubit, GetExpenseDetailsState>(
         builder: (context, state) {
-          if (state is CategoryLoading) {
+          if (state is GetExpenseDetailLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is CategoryLoaded) {
+          } else if (state is GetExpenseDetailLoaded) {
             return SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -91,7 +115,10 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                             const SizedBox(width: 8),
                             const Text(
                               'Place : ',
-                              style: TextStyle(color: Colors.white, fontSize: 16),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
                             ),
                             Text(
                               widget.place,
@@ -107,11 +134,17 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                         const Divider(color: Colors.grey, height: 24),
                         Row(
                           children: [
-                            const Icon(Icons.currency_rupee, color: Colors.white),
+                            const Icon(
+                              Icons.currency_rupee,
+                              color: Colors.white,
+                            ),
                             const SizedBox(width: 8),
                             const Text(
                               'Budget : ',
-                              style: TextStyle(color: Colors.white, fontSize: 16),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
                             ),
                             Text(
                               widget.budget,
@@ -144,43 +177,69 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                     ),
                     child: Column(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade600),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              dropdownColor: const Color(0xff1D3A3C),
-                              value: selectedCategoryId,
-                              isExpanded: true,
-                              hint: const Text(
-                                'Select Category',
-                                style: TextStyle(color: Colors.white70),
-                              ),
-                              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                              items: state.categoryresponsemodel.data?.map((category) {
-                                return DropdownMenuItem<String>(
-                                  value: category.id,
-                                  child: Text(
-                                    category.categoryName ?? "",
-                                    style: const TextStyle(color: Colors.white),
+                        BlocBuilder<Categorycubit, Categorystate>(
+                          builder: (context, state) {
+                            if (state is CategoryLoaded) {
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.grey.shade600,
                                   ),
-                                );
-                              }).toList(),
-                              onChanged: (val) {
-                                if (val != null) {
-                                  setState(() {
-                                    selectedCategoryId = val;
-                                    final catName = state.categoryresponsemodel.data
-                                        ?.firstWhere((element) => element.id == val);
-                                    selectedCategory = catName?.categoryName ?? "";
-                                  });
-                                }
-                              },
-                            ),
-                          ),
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    dropdownColor: const Color(0xff1D3A3C),
+                                    value: selectedCategoryId,
+                                    isExpanded: true,
+                                    hint: const Text(
+                                      'Select Category',
+                                      style: TextStyle(color: Colors.white70),
+                                    ),
+                                    icon: const Icon(
+                                      Icons.arrow_drop_down,
+                                      color: Colors.white,
+                                    ),
+                                    items:
+                                        state.categoryresponsemodel.data?.map((
+                                          category,
+                                        ) {
+                                          return DropdownMenuItem<String>(
+                                            value: category.id,
+                                            child: Text(
+                                              category.categoryName ?? "",
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                    onChanged: (val) {
+                                      if (val != null) {
+                                        setState(() {
+                                          selectedCategoryId = val;
+                                          final catName = state
+                                              .categoryresponsemodel
+                                              .data
+                                              ?.firstWhere(
+                                                (element) => element.id == val,
+                                              );
+                                          selectedCategory =
+                                              catName?.categoryName ?? "";
+                                        });
+                                      }
+                                    },
+                                  ),
+                                ),
+                              );
+                            } else if (state is CategoryError) {
+                              return Center(child: Text(state.message));
+                            }
+                            return const Center(child: Text("No Data"));
+                          },
                         ),
                         const SizedBox(height: 16),
                         _buildTextField(
@@ -241,7 +300,10 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                                 }
                               },
                             ),
-                            const Text('Cash', style: TextStyle(color: Colors.white)),
+                            const Text(
+                              'Cash',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ],
                         ),
                       ],
@@ -251,12 +313,12 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                   BlocConsumer<UpdateExpenseCubit, UpdateExpenseState>(
                     listener: (context, state) {
                       if (state is UpdateExpenseSuccessState) {
-                        context.push('/vacation?budget=${widget.budget}&place=${widget.place}');
+                        context.push(
+                          '/vacation?budget=${widget.budget}&place=${widget.place}',
+                        );
                         context.read<GetTripCubit>().GetTrip();
                       } else if (state is UpdateExpenseError) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(state.message)),
-                        );
+                        CustomSnackBar.show(context, state.message);
                       }
                     },
                     builder: (context, state) {
@@ -289,7 +351,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                 ],
               ),
             );
-          } else if (state is CategoryError) {
+          } else if (state is GetExpenseDetailError) {
             return Center(child: Text(state.message));
           }
           return const Center(child: Text("No Data"));

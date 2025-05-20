@@ -24,7 +24,7 @@ abstract class RemoteDataSource {
   Future<GetprofileModel?> getProfiledetails();
   Future<TripsSummaryResponse?> getTripcount();
   Future<Categoryresponsemodel?> getcategory();
-  Future<ExpenseDetailModel?> getExpenseDetails();
+  Future<ExpenseDetailModel?> getExpenseDetails(String id);
   Future<GetCurrencyModel?> getCurrency();
   Future<SuccessModel?> postExpense(Map<String, dynamic> data);
   Future<Piechartexpencemodel?> Piechartdata();
@@ -151,9 +151,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<ExpenseDetailModel?> getExpenseDetails() async {
+  Future<ExpenseDetailModel?> getExpenseDetails(String id) async {
     try {
-      Response res = await ApiClient.get("${APIEndpointUrls.getCategory}");
+      Response res = await ApiClient.get("${APIEndpointUrls.getExpenseDetails}/${id}");
       if (res.statusCode == 200) {
         debugPrint('getExpenseDetails:${res.data}');
         return ExpenseDetailModel.fromJson(res.data);
@@ -186,7 +186,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future<SuccessModel?> postExpense(Map<String, dynamic> data) async {
     try {
       final response = await ApiClient.post(
-        APIEndpointUrls.editExpence,
+        APIEndpointUrls.postExpence,
         data: data,
       );
       if (response.statusCode == 200) {

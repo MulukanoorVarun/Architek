@@ -302,7 +302,7 @@ void _showLogoutConfirmationDialog(BuildContext context) {
                                 await PreferenceService().remove(
                                   "access_token",
                                 );
-                                context.push("/login_mobile");
+                                context.go("/login_mobile");
                               },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: primary,

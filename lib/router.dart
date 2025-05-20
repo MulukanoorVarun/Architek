@@ -58,17 +58,28 @@ final GoRouter goRouter = GoRouter(
         final id = state.uri.queryParameters['id'];
         final budget = state.uri.queryParameters['budget'];
         final place = state.uri.queryParameters['place'];
-        return buildSlideTransitionPage(UpdateExpense(id: id ?? "",budget: budget ?? "",place: place??"",), state);
+        final expenceId = state.uri.queryParameters['expenseId'];
+        return buildSlideTransitionPage(
+          UpdateExpense(
+            id: id ?? "",
+            budget: budget ?? "",
+            place: place ?? "",
+            expenseId: expenceId ?? "",
+          ),
+          state,
+        );
       },
     ),
     GoRoute(
       path: '/vacation',
-      pageBuilder:
-          (context, state){
-            final budget = state.uri.queryParameters['budget'];
-            final place = state.uri.queryParameters['place'];
-            return buildSlideTransitionPage(VacationHistory(budget: budget ?? "",place: place??"",), state);
-          }
+      pageBuilder: (context, state) {
+        final budget = state.uri.queryParameters['budget'];
+        final place = state.uri.queryParameters['place'];
+        return buildSlideTransitionPage(
+          VacationHistory(budget: budget ?? "", place: place ?? ""),
+          state,
+        );
+      },
     ),
   ],
 );

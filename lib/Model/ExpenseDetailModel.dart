@@ -28,33 +28,33 @@ class Data {
   String? expense;
   String? category;
   String? date;
-  String? note;
-  Null? billReceipt;
-  String? paymentMethod;
+  String? remarks;
+  String? paymentMode;
   String? categoryName;
   String? trip;
+  Null? billReceipt;
 
   Data(
       {this.id,
         this.expense,
         this.category,
         this.date,
-        this.note,
-        this.billReceipt,
-        this.paymentMethod,
+        this.remarks,
+        this.paymentMode,
         this.categoryName,
-        this.trip});
+        this.trip,
+        this.billReceipt});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     expense = json['expense'];
     category = json['category'];
     date = json['date'];
-    note = json['note'];
-    billReceipt = json['bill_receipt'];
-    paymentMethod = json['payment_method'];
+    remarks = json['remarks'];
+    paymentMode = json['payment_mode'];
     categoryName = json['category_name'];
     trip = json['trip'];
+    billReceipt = json['bill_receipt'];
   }
 
   Map<String, dynamic> toJson() {
@@ -63,11 +63,11 @@ class Data {
     data['expense'] = this.expense;
     data['category'] = this.category;
     data['date'] = this.date;
-    data['note'] = this.note;
-    data['bill_receipt'] = this.billReceipt;
-    data['payment_method'] = this.paymentMethod;
+    data['remarks'] = this.remarks;
+    data['payment_mode'] = this.paymentMode;
     data['category_name'] = this.categoryName;
     data['trip'] = this.trip;
+    data['bill_receipt'] = this.billReceipt;
     return data;
   }
 }

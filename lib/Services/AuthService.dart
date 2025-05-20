@@ -10,7 +10,7 @@ class AuthService {
   static const String _refreshTokenKey = "refresh_token";
   static const String _tokenExpiryKey = "token_expiry";
 
-  /// Check if the user is a guest (no token or empty token)
+
   static Future<bool> get isGuest async {
     final token = await getAccessToken();
     return token == null || token.isEmpty;
@@ -58,7 +58,7 @@ class AuthService {
     }
     try {
       final response = await ApiClient.post(
-        APIEndpointUrls.refreshToken,
+        APIEndpointUrls.refreshtoken,
         data: {"refresh": refreshToken},
       );
       if (response.statusCode == 200) {

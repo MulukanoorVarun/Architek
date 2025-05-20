@@ -6,13 +6,9 @@ abstract class Categorystate extends Equatable {
   List<Object?> get props => [];
 }
 
-class CategoryIntailly extends Categorystate {
+class CategoryIntailly extends Categorystate {}
 
-}
-
-class CategoryLoading extends Categorystate {
-
-}
+class CategoryLoading extends Categorystate {}
 
 class CategoryLoaded extends Categorystate {
   final Categoryresponsemodel categoryresponsemodel;
@@ -22,5 +18,4 @@ class CategoryLoaded extends Categorystate {
 class CategoryError extends Categorystate {
   final String message;
   CategoryError({required this.message});
-
 }

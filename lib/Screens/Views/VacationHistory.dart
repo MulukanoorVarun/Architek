@@ -464,8 +464,8 @@ class _VacationHistoryState extends State<VacationHistory> {
         final w = MediaQuery.of(context).size.width;
         final category = expense.categoryName ?? 'Miscellaneous';
         final remarks = expense.remarks ?? '';
+        final expenceId = expense.expenseId?? '';
         final amount = expense.expense?.toDouble() ?? 0.0;
-
 
         expenseWidgets.add(
           Dismissible(
@@ -506,7 +506,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                 );
               } else if (direction == DismissDirection.startToEnd) {
                 context.push(
-                  '/update_expensive?place=${widget.place}&budget=${widget.budget}',
+                  '/update_expensive?place=${widget.place}&budget=${widget.budget}&expenseId=${expenceId}',
                 );
                 return false;
               }
@@ -523,7 +523,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width:w * 0.65,
+                    width: w * 0.65,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

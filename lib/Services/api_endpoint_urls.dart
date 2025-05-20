@@ -6,7 +6,6 @@ class APIEndpointUrls {
   static const String register = '${authUrl}register';
   static const String login = '${authUrl}login';
   static const String userdetail = '${authUrl}user-detail';
-  static const String refreshToken = '${authUrl}register';
   static const String refreshtoken = '${authUrl}refresh-token';
   static const String getTrip = '${apiUrl}trip';
   static const String tripcount = '${apiUrl}trip-summary';
@@ -14,7 +13,7 @@ class APIEndpointUrls {
   static const String getCategory = '${apiUrl}category';
   static const String getExpenseDetails = '${apiUrl}expense-detail';
   static const String getCurrency = '${authUrl}currency';
-  static const String editExpence = '${apiUrl}expense';
+  static const String postExpence = '${apiUrl}expense';
   static const String piechartdata = '${apiUrl}expense-pie-chart';
   static const String editexpense = '${apiUrl}expense-detail';
 
