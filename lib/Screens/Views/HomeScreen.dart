@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,10 +9,13 @@ import 'package:intl/intl.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripState.dart';
 import 'package:tripfin/Block/Logic/Home/HomeState.dart';
+import 'package:tripfin/Block/Logic/PostTrip/potTrip_state.dart';
 
 import '../../Block/Logic/Home/HomeCubit.dart';
 import '../../Block/Logic/PostTrip/postTrip_cubit.dart';
+import '../../utils/color_constants.dart';
 import '../Components/CustomAppButton.dart';
+import '../Components/ShakeWidget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -26,10 +30,28 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     context.read<HomeCubit>().fetchHomeData();
   }
+
   TextEditingController dateController = TextEditingController();
   TextEditingController destinationController = TextEditingController();
   TextEditingController budgetController = TextEditingController();
-  File? selectedImage;
+  File? _selectedImage;
+  String _validatefile = '';
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        _validatefile = '';
+      });
+    } else {
+      setState(() {
+        _validatefile = 'No file selected.';
+      });
+    }
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -108,8 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       SizedBox(height: height * 0.03),
                       if (state.getTripModel.getTripData == null ||
-                          state.getTripModel.settings?.message ==
-                              "No active and ongoing trips found.") ...[
+                          state.getTripModel.settings?.message == "No active and ongoing trips found.") ...[
                         Text(
                           "Travel Details",
                           style: TextStyle(
@@ -138,47 +159,150 @@ class _HomeScreenState extends State<HomeScreen> {
                           hint: 'enter spend amount',
                         ),
                         SizedBox(height: height * 0.015),
-
-                        selectedImage != null
-                            ? Container(
-                          height: height * 0.2,
-                          width: width * 0.9,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                              image: FileImage(selectedImage!),
-                              fit: BoxFit.cover,
+                        _selectedImage == null
+                            ? InkWell(
+                          onTap: () {
+                            showModalBottomSheet(
+                              backgroundColor: primary,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return SafeArea(
+                                  child: Wrap(
+                                    children: <Widget>[
+                                      ListTile(
+                                        leading: Icon(Icons.camera_alt, color: Colors.white),
+                                        title: Text(
+                                          'Upload File',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'Mullish',
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          _pickImage(ImageSource.camera);
+                                          context.pop();
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.photo_library, color: Colors.white),
+                                        title: Text(
+                                          'Choose from gallery',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'Mullish',
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          _pickImage(ImageSource.gallery);
+                                          context.pop();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            width: width,
+                            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 14),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey.shade600,
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Text(
+                              'Upload File',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Mullish',
+                              ),
                             ),
                           ),
                         )
-                            : Container(
-                          height: height * 0.2,
-                          width: width * 0.9,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade800,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "No image selected",
-                              style: TextStyle(color: Colors.white70),
+                            : Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(
+                                _selectedImage!,
+                                height: 80,
+                                width: 80,
+                                fit: BoxFit.cover,
+                              ),
                             ),
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedImage = null;
+                                  });
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.6),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // if (_validatefile.isNotEmpty) ...[
+                        //   Container(
+                        //     alignment: Alignment.topLeft,
+                        //     margin: EdgeInsets.only(bottom: 5),
+                        //     child: Text(
+                        //       _validatefile,
+                        //       style: TextStyle(
+                        //         fontFamily: "Poppins",
+                        //         fontSize: 12,
+                        //         color: Colors.red,
+                        //         fontWeight: FontWeight.w500,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ] else ...[
+                        //   const SizedBox(height: 15),
+                        // ],
+                        SizedBox(height: height * 0.025),
+                        BlocListener<postTripCubit, postTripState>(
+                          listener: (context, state) {
+                            if (state is PostTripSuccessState) {
+                              context.read<HomeCubit>().fetchHomeData();
+                            }
+                          },
+                          child: CustomAppButton1(
+                            isLoading: state is PostTripLoading,
+                            text: "Start Your Tour",
+                            onPlusTap: () {
+                              final Map<String, dynamic> data = {
+                                'trip_name': "vacation",
+                                'destination': destinationController.text,
+                                'start_date': dateController.text,
+                                'budget': budgetController.text,
+                                'image': _selectedImage,
+                              };
+                              print("data:${data}");
+                              context.read<postTripCubit>().postTrip(data);
+                            },
                           ),
                         ),
-
-                        SizedBox(height: height * 0.025),
-                        CustomAppButton1(text: "Start Your Tour", onPlusTap: (){
-
-                          final Map<String, dynamic> data = {
-                            'destination': destinationController.text,
-                            'start_date': dateController.text,
-                            'budget': budgetController.text,
-                            'image':  selectedImage!.path,
-
-                          };
-                          context.read<postTripCubit>().postTrip(data);
-
-                        }),
                         SizedBox(height: height * 0.035),
                       ],
                       Text(
@@ -191,7 +315,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(height: height * 0.02),
-                      if (state.getTripModel.getTripData==null || state.getTripModel.settings?.message ==
+                      if (state.getTripModel.getTripData == null ||
+                          state.getTripModel.settings?.message ==
                               "No active and ongoing trips found.")
                         Container(
                           width: double.infinity,
@@ -200,7 +325,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Color(0xFF2C4748),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Text( "No current tour found",style: TextStyle(fontFamily: 'Mullish',fontWeight: FontWeight.w500,fontSize: 16,color: Colors.white),),
+                          child: Text(
+                            "No current tour found",
+                            style: TextStyle(
+                              fontFamily: 'Mullish',
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
                         )
                       else
                         InkResponse(
@@ -306,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ElevatedButton.icon(
                                   onPressed: () {
                                     context.push(
-                                      '/update_expensive?id=${state.getTripModel.getTripData?.id ??''}&place=${state.getTripModel.getTripData?.destination ?? ''}&budget=${state.getTripModel.getTripData?.budget ?? ''}',
+                                      '/update_expensive?id=${state.getTripModel.getTripData?.id ?? ''}&place=${state.getTripModel.getTripData?.destination ?? ''}&budget=${state.getTripModel.getTripData?.budget ?? ''}',
                                     );
                                   },
                                   icon: Icon(
@@ -365,15 +498,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   borderRadius: BorderRadius.circular(16),
                                 ),
 
-                                child:     noDataWidget(context, "No previous tours found."),
-                                // Text(
-                                //   "No Previous tour found.",
-                                //   style: TextStyle(
-                                //     color: Colors.white70,
-                                //     fontSize: width * 0.04,
-                                //     fontFamily: 'Mulish',
-                                //   ),
-                                // ),
+                                child: Text(
+                                  "No Previous tour found.",
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: width * 0.04,
+                                    fontFamily: 'Mulish',
+                                  ),
+                                ),
                               )
                             else
                               Container(
@@ -558,27 +690,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
-  Widget noDataWidget(BuildContext context, String message) {
-    final width = MediaQuery.of(context).size.width;
-    return Column(
-      children: [
-        Image.asset(
-          "assets/nodata_image.png",
-          width: width * 0.5,
-        ),
-        SizedBox(height: 12),
-        Text(
-          message,
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: width * 0.045,
-            fontFamily: 'Mulish',
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildTextField({
     required TextEditingController controller,
@@ -611,33 +723,6 @@ class _HomeScreenState extends State<HomeScreen> {
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
-        ),
-      ),
-    );
-  }
-  Widget _customTextField({
-    required String hint,
-    required IconData icon,
-    required BuildContext context,
-  }) {
-    final width = MediaQuery.of(context).size.width;
-    return Container(
-      decoration: BoxDecoration(
-        color: Color(0xFF0F292F),
-        borderRadius: BorderRadius.circular(50),
-        border: Border.all(color: Color(0xFF3E5C5C)),
-      ),
-      child: TextField(
-        style: TextStyle(color: Colors.white, fontFamily: 'Mulish'),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: Color(0xFF7C9D9D), fontFamily: 'Mulish'),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: width * 0.05,
-            vertical: 18,
-          ),
-          suffixIcon: Icon(icon, color: Color(0xFF7C9D9D)),
         ),
       ),
     );

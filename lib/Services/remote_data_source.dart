@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,18 +44,14 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       final value = entry.value;
 
       if (value == null) continue;
-      final isFile =
-          value is String &&
-              value.contains('/') &&
-              (key.contains('image') || key.contains('file') || key.contains('picture') || key.contains('payment_screenshot'));
 
-      if (isFile) {
+      if (value is File && (key.contains('image') || key.contains('file') || key.contains('picture') || key.contains('payment_screenshot'))) {
         formMap[key] = await MultipartFile.fromFile(
-          value,
-          filename: value.split('/').last,
+          value.path,
+          filename: value.path.split('/').last,
         );
       } else {
-        formMap[key] = value;
+        formMap[key] = value.toString();
       }
     }
 
@@ -275,16 +272,24 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         'POST',
         Uri.parse(APIEndpointUrls.postTrip),
       );
+
+      // Add text fields
       data.forEach((key, value) {
-        if (key != 'image') {
+        if (key != 'image' && value != null) {
           request.fields[key] = value.toString();
         }
       });
 
+      // Add image file if it exists
       if (data.containsKey('image') && data['image'] != null) {
-        final imagePath = data['image'] as String;
-        final imageFile = await http.MultipartFile.fromPath('image', imagePath);
-        request.files.add(imageFile);
+        final imageFile = data['image'] as File; // Cast to File
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'image',
+            imageFile.path,
+            filename: imageFile.path.split('/').last,
+          ),
+        );
       }
 
       final streamedResponse = await request.send();

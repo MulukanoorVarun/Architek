@@ -11,6 +11,7 @@ import 'package:tripfin/Block/Logic/GetTrip/GetTripRepository.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_cubit.dart';
 import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
 import 'package:tripfin/Block/Logic/PiechartdataScreen/PiechartRepository.dart';
+import 'package:tripfin/Block/Logic/PostTrip/postTrip_cubit.dart';
 import 'package:tripfin/Block/Logic/Profiledetails/Profile_repository.dart';
 import 'package:tripfin/Services/remote_data_source.dart';
 import 'Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
@@ -19,6 +20,7 @@ import 'Block/Logic/Home/HomeCubit.dart';
 import 'Block/Logic/EditProfileScreen/TripcountCubit.dart';
 import 'Block/Logic/EditProfileScreen/TripcountRepository.dart';
 import 'Block/Logic/PiechartdataScreen/PiechartCubit.dart';
+import 'Block/Logic/PostTrip/postTrip_repository.dart';
 import 'Block/Logic/Profiledetails/Profile_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_repository.dart';
@@ -57,6 +59,12 @@ class StateInjector {
     RepositoryProvider<GetProfileRepo>(
       create:
           (context) => GetProfileImpl(
+            remoteDataSource: context.read<RemoteDataSource>(),
+          ),
+    ),
+    RepositoryProvider<PostTripRepository>(
+      create:
+          (context) => PostTripImpl(
             remoteDataSource: context.read<RemoteDataSource>(),
           ),
     ),
@@ -150,6 +158,10 @@ class StateInjector {
       create:
           (context) =>
               GetExpenseDetailCubit(context.read<GetExpenseDetailRepo>()),
+    ),  BlocProvider<postTripCubit>(
+      create:
+          (context) =>
+              postTripCubit(context.read<PostTripRepository>()),
     ),
   ];
 }
