@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tripfin/Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
+import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 
 // Assuming these are the correct paths in your project
 import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
@@ -182,14 +185,12 @@ class _VacationHistoryState extends State<VacationHistory> {
             if (state is PiechartLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is PiechartSuccess) {
-              final expenses = state.response.data?.expenses ?? [];
+              final expenses = state.response.data?.categoryData??[];
               final totalExpense = state.response.data?.totalExpense ?? 0.0;
               final categoryTotals = <String, double>{};
               for (var expense in expenses) {
                 final category = expense.categoryName ?? 'Miscellaneous';
-                categoryTotals[category] =
-                    (categoryTotals[category] ?? 0.0) +
-                    (expense.expense ?? 0.0);
+                categoryTotals[category] = (categoryTotals[category] ?? 0.0) + (expense.totalExpense?.toDouble() ?? 0.0);
               }
               return RefreshIndicator(
                 onRefresh: () async {
@@ -297,7 +298,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                           ),
                           onPressed: () {
                             context.push(
-                              '/update_expensive?id=${state.response.data?.expenses![0].tripId ?? ''}&place=${widget.place}&budget=${widget.budget}',
+                              '/update_expensive?id=${state.response.data?.tripId??""}&place=${widget.place}&budget=${widget.budget}',
                             );
                           },
                           child: Row(
@@ -464,33 +465,61 @@ class _VacationHistoryState extends State<VacationHistory> {
         final w = MediaQuery.of(context).size.width;
         final category = expense.categoryName ?? 'Miscellaneous';
         final remarks = expense.remarks ?? '';
-        final expenceId = expense.expenseId?? '';
+        final expenceId = expense.expenseId ?? '';
         final amount = expense.expense?.toDouble() ?? 0.0;
-
         expenseWidgets.add(
           Dismissible(
-            key: Key(category),
+            key: Key(expenceId), // Use expenceId for unique key
             background: Container(
               color: Colors.blue,
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.only(left: 20),
-              child: const Icon(Icons.edit, color: Colors.white, size: 30),
+              child: const Row(
+                children: [
+                  Icon(Icons.edit, color: Colors.white, size: 30),
+                  SizedBox(width: 10),
+                  Text(
+                    'Edit',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
             secondaryBackground: Container(
-              color: Colors.red, // Background for swipe-right (delete)
+              color: Colors.red,
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.only(right: 20),
-              child: const Icon(Icons.delete, color: Colors.white, size: 30),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'Delete',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Icon(Icons.delete, color: Colors.white, size: 30),
+                ],
+              ),
             ),
             confirmDismiss: (direction) async {
               if (direction == DismissDirection.endToStart) {
-                return await showDialog(
+
+                HapticFeedback.mediumImpact();
+                return await showDialog<bool>(
                   context: context,
                   builder:
                       (context) => AlertDialog(
                         title: const Text('Confirm Delete'),
                         content: const Text(
-                          'Are you sure you want to delete this item?',
+                          'Are you sure you want to delete this expense?',
                         ),
                         actions: [
                           TextButton(
@@ -498,19 +527,53 @@ class _VacationHistoryState extends State<VacationHistory> {
                             child: const Text('Cancel'),
                           ),
                           TextButton(
-                            onPressed: () => Navigator.of(context).pop(true),
-                            child: const Text('Delete'),
+                            onPressed: () async {
+                              try {
+                                await context
+                                    .read<GetExpenseDetailCubit>()
+                                    .deleteExpenseDetails(expenceId);
+                                CustomSnackBar.show(
+                                  context,
+                                  'Expense deleted successfully',
+                                );
+                                context.pop();
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Failed to delete expense: $e',
+                                    ),
+                                    backgroundColor: Colors.red,
+                                    duration: const Duration(seconds: 3),
+                                  ),
+                                );
+                                context.pop();
+                              }
+                            },
+                            child: Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            ),
                           ),
                         ],
                       ),
                 );
               } else if (direction == DismissDirection.startToEnd) {
+                HapticFeedback.lightImpact();
+                // Navigate to update screen
                 context.push(
-                  '/update_expensive?place=${widget.place}&budget=${widget.budget}&expenseId=${expenceId}',
+                  '/update_expensive?place=${widget.place}&budget=${widget.budget}&expenseId=$expenceId',
                 );
-                return false;
+                return false; // Prevent dismissal on edit
               }
               return false;
+            },
+            onDismissed: (direction) {
+              if (direction == DismissDirection.endToStart) {
+                context.read<GetExpenseDetailCubit>().deleteExpenseDetails(
+                  expenceId,
+                );
+              }
             },
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 4),
@@ -518,6 +581,13 @@ class _VacationHistoryState extends State<VacationHistory> {
               decoration: BoxDecoration(
                 color: const Color(0xFF223436),
                 borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -565,6 +635,111 @@ class _VacationHistoryState extends State<VacationHistory> {
             ),
           ),
         );
+
+        // expenseWidgets.add(
+        //   Dismissible(
+        //     key: Key(expenceId),
+        //     background: Container(
+        //       color: Colors.blue,
+        //       alignment: Alignment.centerLeft,
+        //       padding: const EdgeInsets.only(left: 20),
+        //       child: const Icon(Icons.edit, color: Colors.white, size: 30),
+        //     ),
+        //     secondaryBackground: Container(
+        //       color: Colors.red, // Background for swipe-right (delete)
+        //       alignment: Alignment.centerRight,
+        //       padding: const EdgeInsets.only(right: 20),
+        //       child: const Icon(Icons.delete, color: Colors.white, size: 30),
+        //     ),
+        //     confirmDismiss: (direction) async {
+        //       if (direction == DismissDirection.endToStart) {
+        //         return await showDialog(
+        //           context: context,
+        //           builder:
+        //               (context) => AlertDialog(
+        //                 title: const Text('Confirm Delete'),
+        //                 content: const Text(
+        //                   'Are you sure you want to delete this item?',
+        //                 ),
+        //                 actions: [
+        //                   TextButton(
+        //                     onPressed: () {
+        //                       context.pop();
+        //                     },
+        //                     child: Text('Cancel'),
+        //                   ),
+        //                   TextButton(
+        //                     onPressed: () {
+        //                       context
+        //                           .read<GetExpenseDetailCubit>()
+        //                           .deleteExpenseDetails(expenceId);
+        //                     },
+        //                     child: Text('Delete'),
+        //                   ),
+        //                 ],
+        //               ),
+        //         );
+        //       } else if (direction == DismissDirection.startToEnd) {
+        //         context.push(
+        //           '/update_expensive?place=${widget.place}&budget=${widget.budget}&expenseId=${expenceId}',
+        //         );
+        //         return false;
+        //       }
+        //       return false;
+        //     },
+        //     child: Container(
+        //       margin: const EdgeInsets.symmetric(vertical: 4),
+        //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        //       decoration: BoxDecoration(
+        //         color: const Color(0xFF223436),
+        //         borderRadius: BorderRadius.circular(12),
+        //       ),
+        //       child: Row(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: [
+        //           SizedBox(
+        //             width: w * 0.65,
+        //             child: Column(
+        //               crossAxisAlignment: CrossAxisAlignment.start,
+        //               children: [
+        //                 Text(
+        //                   category,
+        //                   style: const TextStyle(
+        //                     color: Colors.white,
+        //                     fontSize: 16,
+        //                     fontWeight: FontWeight.w500,
+        //                     fontFamily: 'Mullish',
+        //                   ),
+        //                 ),
+        //                 const SizedBox(height: 5),
+        //                 Text(
+        //                   remarks,
+        //                   style: const TextStyle(
+        //                     color: Color(0xffDBDBDB),
+        //                     fontSize: 12,
+        //                     fontWeight: FontWeight.w300,
+        //                     fontFamily: 'Mullish',
+        //                   ),
+        //                   maxLines: 2,
+        //                   overflow: TextOverflow.ellipsis,
+        //                 ),
+        //               ],
+        //             ),
+        //           ),
+        //           const Spacer(),
+        //           Text(
+        //             "-${amount.toStringAsFixed(0)}",
+        //             style: const TextStyle(
+        //               color: Colors.redAccent,
+        //               fontSize: 16,
+        //               fontWeight: FontWeight.w500,
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // );
       }
     }
 

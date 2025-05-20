@@ -1,52 +1,55 @@
 class Categoryresponsemodel {
-  List<CategoryModel>? data;
+  List<Data>? data;
   Settings? settings;
 
   Categoryresponsemodel({this.data, this.settings});
 
-  factory Categoryresponsemodel.fromJson(Map<String, dynamic> json) {
-    return Categoryresponsemodel(
-      data: json['data'] != null
-          ? List<CategoryModel>.from(
-          json['data'].map((x) => CategoryModel.fromJson(x)))
-          : null,
-      settings: json['settings'] != null
-          ? Settings.fromJson(json['settings'])
-          : null,
-    );
+  Categoryresponsemodel.fromJson(Map<String, dynamic> json) {
+    if (json['data'] != null) {
+      data = <Data>[];
+      json['data'].forEach((v) {
+        data!.add(new Data.fromJson(v));
+      });
+    }
+    settings = json['settings'] != null
+        ? new Settings.fromJson(json['settings'])
+        : null;
   }
 
-
   Map<String, dynamic> toJson() {
-    return {
-      'data': data?.map((x) => x.toJson()).toList(),
-      'settings': settings?.toJson(),
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    if (this.settings != null) {
+      data['settings'] = this.settings!.toJson();
+    }
+    return data;
   }
 }
 
-
-class CategoryModel {
+class Data {
   String? id;
   String? categoryName;
   bool? isDefault;
+  String? colorCode;
 
-  CategoryModel({this.id, this.categoryName, this.isDefault});
+  Data({this.id, this.categoryName, this.isDefault, this.colorCode});
 
-  factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    return CategoryModel(
-      id: json['id'],
-      categoryName: json['category_name'],
-      isDefault: json['is_default'],
-    );
+  Data.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    categoryName = json['category_name'];
+    isDefault = json['is_default'];
+    colorCode = json['color_code'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'category_name': categoryName,
-      'is_default': isDefault,
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['category_name'] = this.categoryName;
+    data['is_default'] = this.isDefault;
+    data['color_code'] = this.colorCode;
+    return data;
   }
 }
 
@@ -57,19 +60,17 @@ class Settings {
 
   Settings({this.success, this.message, this.status});
 
-  factory Settings.fromJson(Map<String, dynamic> json) {
-    return Settings(
-      success: json['success'],
-      message: json['message'],
-      status: json['status'],
-    );
+  Settings.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'message': message,
-      'status': status,
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
+    data['message'] = this.message;
+    data['status'] = this.status;
+    return data;
   }
 }

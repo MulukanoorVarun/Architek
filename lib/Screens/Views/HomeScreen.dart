@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripState.dart';
 import 'package:tripfin/Block/Logic/Home/HomeState.dart';
 
 import '../../Block/Logic/Home/HomeCubit.dart';
+import '../../Block/Logic/PostTrip/postTrip_cubit.dart';
+import '../Components/CustomAppButton.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -21,41 +26,23 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     context.read<HomeCubit>().fetchHomeData();
   }
-
-  final _dateController = TextEditingController();
-  DateTime? _selectedDate;
-
-  // Function to show date picker
+  TextEditingController dateController = TextEditingController();
+  TextEditingController destinationController = TextEditingController();
+  TextEditingController budgetController = TextEditingController();
+  File? selectedImage;
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF3E5C5C),
-              onPrimary: Colors.white,
-              surface: Color(0xFF0F292F),
-              onSurface: Colors.white,
-            ),
-            dialogBackgroundColor: const Color(0xFF0F292F),
-          ),
-          child: child!,
-        );
-      },
+      lastDate: DateTime.now(),
     );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
+    if (picked != null) {
+      final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
+      dateController.text = formattedDate;
     }
   }
 
-  // Function to handle refresh
   Future<void> _onRefresh() async {
     await context.read<HomeCubit>().fetchHomeData();
   }
@@ -122,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(height: height * 0.03),
                       if (state.getTripModel.getTripData == null ||
                           state.getTripModel.settings?.message ==
-                              "No trips found") ...[
+                              "No active and ongoing trips found.") ...[
                         Text(
                           "Travel Details",
                           style: TextStyle(
@@ -133,49 +120,65 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         SizedBox(height: height * 0.02),
-                        _customTextField(
-                          hint: "Enter Your Destination",
-                          icon: Icons.location_city,
-                          context: context,
+                        _buildTextField(
+                          controller: destinationController,
+                          hint: 'Where you travel',
                         ),
                         SizedBox(height: height * 0.015),
-                        _customTextField(
-                          hint: "Select Starting date",
-                          icon: Icons.calendar_month,
-                          context: context,
+                        _buildTextField(
+                          controller: dateController,
+                          hint: 'Select date',
+                          icon: Icons.calendar_today,
+                          readOnly: true,
+                          onTap: () => _selectDate(context),
                         ),
                         SizedBox(height: height * 0.015),
-                        _customTextField(
-                          hint: "Budget",
-                          icon: Icons.currency_rupee,
-                          context: context,
+                        _buildTextField(
+                          controller: budgetController,
+                          hint: 'enter spend amount',
                         ),
-                        SizedBox(height: height * 0.025),
-                        // Start Tour Button
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFF4A261),
-                              padding: EdgeInsets.symmetric(
-                                vertical: height * 0.02,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(40),
-                              ),
+                        SizedBox(height: height * 0.015),
+
+                        selectedImage != null
+                            ? Container(
+                          height: height * 0.2,
+                          width: width * 0.9,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: FileImage(selectedImage!),
+                              fit: BoxFit.cover,
                             ),
+                          ),
+                        )
+                            : Container(
+                          height: height * 0.2,
+                          width: width * 0.9,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade800,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
                             child: Text(
-                              "Start Your Tour",
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: width * 0.05,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Mulish',
-                              ),
+                              "No image selected",
+                              style: TextStyle(color: Colors.white70),
                             ),
                           ),
                         ),
+
+                        SizedBox(height: height * 0.025),
+                        CustomAppButton1(text: "Start Your Tour", onPlusTap: (){
+
+                          final Map<String, dynamic> data = {
+                            'destination': destinationController.text,
+                            'start_date': dateController.text,
+                            'budget': budgetController.text,
+                            'image':  selectedImage!.path,
+
+                          };
+                          context.read<postTripCubit>().postTrip(data);
+
+                        }),
                         SizedBox(height: height * 0.035),
                       ],
                       Text(
@@ -188,9 +191,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(height: height * 0.02),
-                      if (state.getTripModel.getTripData == null ||
-                          state.getTripModel.settings?.message ==
-                              "No trips found")
+                      if (state.getTripModel.getTripData==null || state.getTripModel.settings?.message ==
+                              "No active and ongoing trips found.")
                         Container(
                           width: double.infinity,
                           padding: EdgeInsets.all(width * 0.04),
@@ -198,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Color(0xFF2C4748),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child:     noDataWidget(context, "No current tour found."),
+                          child: Text( "No current tour found",style: TextStyle(fontFamily: 'Mullish',fontWeight: FontWeight.w500,fontSize: 16,color: Colors.white),),
                         )
                       else
                         InkResponse(
@@ -578,6 +580,41 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    IconData? icon,
+    TextInputType inputType = TextInputType.text,
+    int maxLines = 1,
+    bool readOnly = false,
+    VoidCallback? onTap,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: inputType,
+      maxLines: maxLines,
+      readOnly: readOnly,
+      onTap: onTap,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.white70),
+        prefixIcon: icon != null ? Icon(icon, color: Colors.white70) : null,
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade600),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.orangeAccent),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+      ),
+    );
+  }
   Widget _customTextField({
     required String hint,
     required IconData icon,

@@ -7,10 +7,8 @@ import 'package:tripfin/Block/Logic/CategoryList/CategoryState.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 import '../../Block/Logic/CategoryList/CategoryCubit.dart';
-import '../../Block/Logic/GetExpenceDetails/GetExpenseDetailsCubit.dart';
-import '../../Block/Logic/GetExpenceDetails/GetExpenseDetailsState.dart';
-import '../../Block/Logic/UpdateExpence/UpdateExpenceCubit.dart';
-import '../../Block/Logic/UpdateExpence/UpdateExpenceState.dart';
+import '../../Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
+import '../../Block/Logic/ExpenseDetails/ExpenseDetailsState.dart';
 import '../Components/CustomAppButton.dart';
 import '../Components/CutomAppBar.dart';
 
@@ -43,19 +41,22 @@ class _UpdateExpenseState extends State<UpdateExpense> {
   @override
   void initState() {
     super.initState();
-    if (widget.expenseId == "") {
-      context.read<Categorycubit>().GetCategory();
-    } else {
-      context.read<Categorycubit>().GetCategory();
+    context.read<Categorycubit>().GetCategory();
+    context.read<Categorycubit>().stream.listen((state) {
+      print('CategoryCubit State: $state'); // Debug state
+    });
+    if (widget.expenseId.isNotEmpty) {
       context.read<GetExpenseDetailCubit>().GetExpenseDetails(widget.expenseId);
     }
     context.read<GetExpenseDetailCubit>().stream.listen((state) {
+      print('GetExpenseDetailCubit State: $state'); // Debug state
       if (state is GetExpenseDetailLoaded) {
         final expenseData = state.expenseDetailModel.data;
+        print('Expense Data: $expenseData'); // Debug data
         setState(() {
-          // selectedCategory = expenseData['category_name'];
-          // selectedCategoryId = expenseData['category'];
-          paymentMode = expenseData?.paymentMode ?? "";
+          selectedCategoryId = expenseData?.category ?? "";
+          selectedCategory = expenseData?.categoryName ?? "";
+          paymentMode = expenseData?.paymentMode ?? "Online";
           amountController.text = expenseData?.expense.toString() ?? "";
           dateController.text = expenseData?.date ?? "";
           remarksController.text = expenseData?.remarks ?? "";
@@ -310,14 +311,14 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  BlocConsumer<UpdateExpenseCubit, UpdateExpenseState>(
+                  BlocConsumer<GetExpenseDetailCubit, GetExpenseDetailsState>(
                     listener: (context, state) {
-                      if (state is UpdateExpenseSuccessState) {
+                      if (state is ExpenceDetailSuccess) {
                         context.push(
                           '/vacation?budget=${widget.budget}&place=${widget.place}',
                         );
                         context.read<GetTripCubit>().GetTrip();
-                      } else if (state is UpdateExpenseError) {
+                      } else if (state is GetExpenseDetailError) {
                         CustomSnackBar.show(context, state.message);
                       }
                     },
@@ -327,7 +328,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                         height: 50,
                         child: CustomAppButton1(
                           text: 'Done',
-                          isLoading: state is UpdateExpenseLoading,
+                          isLoading: state is GetExpenseDetailError,
                           onPlusTap: () {
                             if (selectedCategoryId == null ||
                                 amountController.text.isEmpty ||
@@ -340,9 +341,13 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                               'date': dateController.text,
                               'remarks': remarksController.text,
                               'payment_mode': paymentMode,
-                              'trip': widget.id,
+                              'trip': widget.expenseId != "" ? widget.expenseId : widget.id,
                             };
-                            context.read<UpdateExpenseCubit>().addExpense(data);
+                            if (widget.expenseId != "") {
+                              context.read<GetExpenseDetailCubit>().updateExpenseDetails(data);
+                            } else {
+                              context.read<GetExpenseDetailCubit>().addExpense(data);
+                            }
                           },
                         ),
                       );
