@@ -12,7 +12,7 @@ class UpdateExpenseImpl implements UpdateExpenseRepository {
 
   @override
   Future<SuccessModel?> postExpenseUpdate(Map<String, dynamic> data) async {
-    return await remoteDataSource.updateExpense(data);
+    return await remoteDataSource.postExpense(data);
   }
 }
 

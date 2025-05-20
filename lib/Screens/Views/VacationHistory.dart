@@ -7,14 +7,15 @@ import 'package:go_router/go_router.dart';
 // Assuming these are the correct paths in your project
 import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import '../../Block/Logic/PiechartdataScreen/PiechartState.dart';
+import '../../utils/color_constants.dart';
 
-class Chartscreen extends StatefulWidget {
+class VacationHistory extends StatefulWidget {
   final String place;
   final String budget;
 
-  const Chartscreen({super.key, required this.place, required this.budget});
+  const VacationHistory({super.key, required this.place, required this.budget});
 
-  static const Map<String, Color> categoryColors = {
+  static Map<String, Color> categoryColors = {
     'Emergency': Colors.red,
     'Miscellaneous': Colors.green,
     'Transportation': Colors.blue,
@@ -40,24 +41,11 @@ class Chartscreen extends StatefulWidget {
     'Health': [Colors.cyan, Colors.cyanAccent],
   };
 
-  static const Map<String, IconData> categoryIcons = {
-    'Emergency': Icons.warning_rounded,
-    'Miscellaneous': Icons.category_rounded,
-    'Transportation': Icons.directions_car_rounded,
-    'Food': Icons.fastfood_rounded,
-    'Shopping': Icons.shopping_bag_rounded,
-    'Sightseeing': Icons.visibility_rounded,
-    'Activities': Icons.sports_rounded,
-    'Accommodation': Icons.hotel_rounded,
-    'Entertainment': Icons.theater_comedy_rounded,
-    'Health': Icons.local_hospital_rounded,
-  };
-
   @override
-  State<Chartscreen> createState() => _ChartscreenState();
+  State<VacationHistory> createState() => _VacationHistoryState();
 }
 
-class _ChartscreenState extends State<Chartscreen> {
+class _VacationHistoryState extends State<VacationHistory> {
   @override
   void initState() {
     super.initState();
@@ -68,7 +56,7 @@ class _ChartscreenState extends State<Chartscreen> {
     context.push(
       '/edit-expense',
       extra: {
-        'id': expense.trip, // Assuming expense has a trip field
+        'id': expense.trip,
         'place': widget.place,
         'budget': widget.budget,
         'expense': expense, // Pass the entire expense object
@@ -157,31 +145,34 @@ class _ChartscreenState extends State<Chartscreen> {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text("Finish Trip"),
-                    content: const Text("Are you sure you want to end this trip?"),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text("Cancel"),
+                  builder:
+                      (context) => AlertDialog(
+                        title: const Text("Finish Trip"),
+                        content: const Text(
+                          "Are you sure you want to end this trip?",
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("Cancel"),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              "Confirm",
+                              style: TextStyle(color: Colors.redAccent),
+                            ),
+                          ),
+                        ],
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Confirm", style: TextStyle(color: Colors.redAccent)),
-                      ),
-                    ],
-                  ),
                 );
               },
               child: const Text(
                 "Finish Trip",
-                style: TextStyle(
-                  color: Color(0xFFFFA726),
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: Color(0xFFFFA726), fontSize: 16),
               ),
             ),
           ],
@@ -198,7 +189,8 @@ class _ChartscreenState extends State<Chartscreen> {
               for (var expense in expenses) {
                 final category = expense.categoryName ?? 'Miscellaneous';
                 categoryTotals[category] =
-                    (categoryTotals[category] ?? 0.0) + (expense.expense ?? 0.0);
+                    (categoryTotals[category] ?? 0.0) +
+                    (expense.expense ?? 0.0);
               }
 
               return RefreshIndicator(
@@ -222,19 +214,31 @@ class _ChartscreenState extends State<Chartscreen> {
                         ],
                       ),
                       child: PieChart(
-                        dataMap: categoryTotals.isNotEmpty
-                            ? categoryTotals
-                            : {'No Expenses': 1.0},
-                        colorList: categoryTotals.isNotEmpty
-                            ? categoryTotals.keys
-                            .map((key) => Chartscreen.categoryColors[key] ?? Colors.grey)
-                            .toList()
-                            : [Colors.grey],
-                        gradientList: categoryTotals.isNotEmpty
-                            ? categoryTotals.keys
-                            .map((key) => Chartscreen.categoryGradients[key] ?? [Colors.grey, Colors.grey])
-                            .toList()
-                            : null,
+                        dataMap:
+                            categoryTotals.isNotEmpty
+                                ? categoryTotals
+                                : {'No Expenses': 1.0},
+                        colorList:
+                            categoryTotals.isNotEmpty
+                                ? categoryTotals.keys
+                                    .map(
+                                      (key) =>
+                                          VacationHistory.categoryColors[key] ??
+                                          Colors.grey,
+                                    )
+                                    .toList()
+                                : [Colors.grey],
+                        gradientList:
+                            categoryTotals.isNotEmpty
+                                ? categoryTotals.keys
+                                    .map(
+                                      (key) =>
+                                          VacationHistory
+                                              .categoryGradients[key] ??
+                                          [Colors.grey, Colors.grey],
+                                    )
+                                    .toList()
+                                : null,
                         animationDuration: const Duration(milliseconds: 1200),
                         chartLegendSpacing: 32,
                         chartRadius: MediaQuery.of(context).size.width / 1.8,
@@ -273,24 +277,46 @@ class _ChartscreenState extends State<Chartscreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
                           "Travel Expenses",
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
+                            color: Color(0xffFBFBFB),
+                            fontSize: 20,
+                            fontFamily: 'Mullish',
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        IconButton(
+                        FilledButton(
+                          style: ButtonStyle(
+                            visualDensity: VisualDensity.compact,
+                            backgroundColor: MaterialStateProperty.all(
+                              buttonBgColor,
+                            ),
+                          ),
                           onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Add expense functionality to be implemented')),
+                            context.push(
+                              '/update_expensive?place=${widget.place}&budget=${widget.budget}',
                             );
                           },
-                          icon: const Icon(Icons.add, color: Color(0xFFFFA726)),
+                          child: Row(
+                            spacing: 2,
+                            children: [
+                              Text(
+                                'Add',
+                                style: TextStyle(
+                                  color: Color(0xff1C3132),
+                                  fontSize: 14,
+                                  fontFamily: 'Lexend',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              Icon(Icons.add, color: Color(0xff1C3132)),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -357,26 +383,15 @@ class _ChartscreenState extends State<Chartscreen> {
         children: [
           const Text(
             "Travel Plan",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 18),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
               const Icon(Icons.location_on, color: Colors.white70, size: 20),
               const SizedBox(width: 8),
-              const Text(
-                "Place : ",
-                style: TextStyle(color: Colors.white70),
-              ),
-              Text(
-                widget.place,
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
+              const Text("Place : ", style: TextStyle(color: Colors.white70)),
+              Text(widget.place, style: const TextStyle(color: Colors.white)),
             ],
           ),
           const SizedBox(height: 8),
@@ -384,15 +399,10 @@ class _ChartscreenState extends State<Chartscreen> {
             children: [
               const Icon(Icons.currency_rupee, color: Colors.white70, size: 20),
               const SizedBox(width: 8),
-              const Text(
-                "Budget : ",
-                style: TextStyle(color: Colors.white70),
-              ),
+              const Text("Budget : ", style: TextStyle(color: Colors.white70)),
               Text(
                 widget.budget,
-                style: const TextStyle(
-                  color: Colors.greenAccent,
-                ),
+                style: const TextStyle(color: Colors.greenAccent),
               ),
             ],
           ),
@@ -408,31 +418,30 @@ class _ChartscreenState extends State<Chartscreen> {
     // Group expenses by date
     final Map<String, List<dynamic>> groupedExpenses = {};
     for (var expense in expenses) {
-      final date = expense.date != null
-          ? (expense.date is DateTime
-          ? dateFormat.format(expense.date)
-          : dateFormat.format(DateTime.parse(expense.date)))
-          : dateFormat.format(DateTime.now());
+      final date =
+          expense.date != null
+              ? (expense.date is DateTime
+                  ? dateFormat.format(expense.date)
+                  : dateFormat.format(DateTime.parse(expense.date)))
+              : dateFormat.format(DateTime.now());
       if (!groupedExpenses.containsKey(date)) {
         groupedExpenses[date] = [];
       }
       groupedExpenses[date]!.add(expense);
     }
-
-    // Sort dates in descending order
-    final sortedDates = groupedExpenses.keys.toList()
-      ..sort((a, b) => b.compareTo(a));
+    final sortedDates =
+        groupedExpenses.keys.toList()..sort((a, b) => b.compareTo(a));
 
     for (var date in sortedDates) {
       expenseWidgets.add(
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.only(top: 8),
           child: Row(
             children: [
               Container(
                 width: 120,
                 height: 40,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/date patch.png'),
                     fit: BoxFit.cover,
@@ -453,72 +462,45 @@ class _ChartscreenState extends State<Chartscreen> {
           ),
         ),
       );
-
       final dateExpenses = groupedExpenses[date]!;
       for (var expense in dateExpenses) {
         final category = expense.categoryName ?? 'Miscellaneous';
         final amount = expense.expense?.toDouble() ?? 0.0;
 
         expenseWidgets.add(
-          expensesItem(
-            category,
-            "-${amount.toStringAsFixed(0)}",
-            Chartscreen.categoryIcons[category] ?? Icons.category,
-            Chartscreen.categoryColors[category] ?? Colors.grey,
-            expense, // Pass the expense object to expensesItem
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF223436),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    category,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+                Text(
+                  "-${amount.toStringAsFixed(0)}",
+                  style: const TextStyle(color: Colors.redAccent, fontSize: 16),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.white70, size: 20),
+                  onPressed: () {
+                    _editExpense(expense);
+                  },
+                ),
+              ],
+            ),
           ),
         );
       }
     }
 
     return expenseWidgets;
-  }
-
-  Widget expensesItem(String title, String amount, IconData icon, Color color, dynamic expense) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF223436),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: color,
-            size: 24,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-            ),
-          ),
-          Text(
-            amount,
-            style: const TextStyle(
-              color: Colors.redAccent,
-              fontSize: 16,
-            ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(
-              Icons.edit,
-              color: Colors.white70,
-              size: 20,
-            ),
-            onPressed: () {
-              _editExpense(expense); // Navigate to EditExpenseScreen on tap
-            },
-          ),
-        ],
-      ),
-    );
   }
 }

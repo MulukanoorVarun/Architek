@@ -29,7 +29,7 @@ abstract class RemoteDataSource {
 
   Future<Categoryresponsemodel?> getcategory();
   Future<GetCurrencyModel?> getCurrency();
-  Future<SuccessModel?> updateExpense(Map<String, dynamic> data);
+  Future<SuccessModel?> postExpense(Map<String, dynamic> data);
   Future<Piechartexpencemodel?> Piechartdata();
   Future<Editexpencemodel?> EditExpensedata(Map<String, dynamic> data);
 }
@@ -170,20 +170,20 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<SuccessModel?> updateExpense(Map<String, dynamic> data) async {
+  Future<SuccessModel?> postExpense(Map<String, dynamic> data) async {
     try {
       final response = await ApiClient.post(
         APIEndpointUrls.editExpence,
         data: data,
       );
       if (response.statusCode == 200) {
-        debugPrint('updateExpense: ${response.data}');
+        debugPrint('postExpense: ${response.data}');
         return SuccessModel.fromJson(response.data);
       } else {
         return null;
       }
     } catch (e) {
-      debugPrint('Error updateExpense: $e');
+      debugPrint('Error postExpense: $e');
       return null;
     }
   }

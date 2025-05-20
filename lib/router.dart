@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tripfin/Screens/Views/ChartScreen.dart';
+import 'package:tripfin/Screens/Views/VacationHistory.dart';
 import 'package:tripfin/Screens/Views/EditExpenseScreen.dart';
 import 'package:tripfin/Screens/Views/HomeScreen.dart';
 import 'package:tripfin/Screens/Views/Splash.dart';
@@ -63,12 +63,12 @@ final GoRouter goRouter = GoRouter(
       },
     ),
     GoRoute(
-      path: '/piechart',
+      path: '/vacation',
       pageBuilder:
           (context, state){
             final budget = state.uri.queryParameters['budget'];
             final place = state.uri.queryParameters['place'];
-            return buildSlideTransitionPage(Chartscreen(budget: budget ?? "",place: place??"",), state);
+            return buildSlideTransitionPage(VacationHistory(budget: budget ?? "",place: place??"",), state);
           }
     ),
     GoRoute(

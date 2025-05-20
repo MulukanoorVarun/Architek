@@ -60,235 +60,243 @@ class _UpdateExpenseState extends State<UpdateExpense> {
     return Scaffold(
       backgroundColor: const Color(0xff102A2C),
       appBar: CustomAppBar(title: 'Vacation', actions: []),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Travel Plan',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontFamily: 'Poppins',
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xff1D3A3C),
-                borderRadius: BorderRadius.circular(16),
-              ),
+      body: BlocBuilder<Categorycubit, Categorystate>(
+        builder: (context, state) {
+          if (state is CategoryLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is CategoryLoaded) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.place, color: Colors.white),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Place : ',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                      Text(
-                        widget.place,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontFamily: "Mullish",
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                  const Text(
+                    'Travel Plan',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xff1D3A3C),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.place, color: Colors.white),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Place : ',
+                              style: TextStyle(color: Colors.white, fontSize: 16),
+                            ),
+                            Text(
+                              widget.place,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Mullish",
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  const Divider(color: Colors.grey, height: 24),
-                  Row(
-
-                    children: [
-                      const Icon(Icons.currency_rupee, color: Colors.white),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Budget : ',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                      Text(
-                        widget.budget,
-                        style: const TextStyle(
-                          color: Colors.greenAccent,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                        const Divider(color: Colors.grey, height: 24),
+                        Row(
+                          children: [
+                            const Icon(Icons.currency_rupee, color: Colors.white),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Budget : ',
+                              style: TextStyle(color: Colors.white, fontSize: 16),
+                            ),
+                            Text(
+                              widget.budget,
+                              style: const TextStyle(
+                                color: Colors.greenAccent,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-
-
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Travel Expenses',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontFamily: 'Poppins',
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xff1D3A3C),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                children: [
-                  _buildDropdownField(),
-                  const SizedBox(height: 16),
-                  _buildTextField(
-                    controller: amountController,
-                    hint: 'Amount',
-                    icon: Icons.attach_money,
-                    inputType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildTextField(
-                    controller: dateController,
-                    hint: 'When you Spent',
-                    icon: Icons.calendar_today,
-                    readOnly: true, // Prevent manual input
-                    onTap: () => _selectDate(context), // Open date picker on tap
-                  ),
-                  const SizedBox(height: 16),
-                  _buildTextField(
-                    controller: remarksController,
-                    hint: 'Remarks',
-                    maxLines: 3,
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 24),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Payment Mode',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                  const Text(
+                    'Travel Expenses',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontFamily: 'Poppins',
                     ),
                   ),
-                  Row(
-                    children: [
-                      Radio(
-                        value: "Online",
-                        groupValue: paymentMode,
-                        activeColor: Colors.orangeAccent,
-                        onChanged: (val) {
-                          setState(() {
-                            paymentMode = val.toString();
-                          });
-                        },
-                      ),
-                      const Text(
-                        'Online',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      Radio(
-                        value: "Cash",
-                        groupValue: paymentMode,
-                        activeColor: Colors.orangeAccent,
-                        onChanged: (val) {
-                          setState(() {
-                            paymentMode = val.toString();
-                          });
-                        },
-                      ),
-                      const Text('Cash', style: TextStyle(color: Colors.white)),
-                    ],
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xff1D3A3C),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade600),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              dropdownColor: const Color(0xff1D3A3C),
+                              value: selectedCategoryId,
+                              isExpanded: true,
+                              hint: const Text(
+                                'Select Category',
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                              items: state.categoryresponsemodel.data?.map((category) {
+                                return DropdownMenuItem<String>(
+                                  value: category.id,
+                                  child: Text(
+                                    category.categoryName ?? "",
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (val) {
+                                if (val != null) {
+                                  setState(() {
+                                    selectedCategoryId = val;
+                                    final catName = state.categoryresponsemodel.data
+                                        ?.firstWhere((element) => element.id == val);
+                                    selectedCategory = catName?.categoryName ?? "";
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: amountController,
+                          hint: 'Amount',
+                          icon: Icons.attach_money,
+                          inputType: TextInputType.number,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: dateController,
+                          hint: 'When you Spent',
+                          icon: Icons.calendar_today,
+                          readOnly: true,
+                          onTap: () => _selectDate(context),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: remarksController,
+                          hint: 'Remarks',
+                          maxLines: 3,
+                        ),
+                        const SizedBox(height: 24),
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Payment Mode',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Radio<String>(
+                              value: "Online",
+                              groupValue: paymentMode,
+                              activeColor: Colors.orangeAccent,
+                              onChanged: (val) {
+                                if (val != null) {
+                                  setState(() {
+                                    paymentMode = val;
+                                  });
+                                }
+                              },
+                            ),
+                            const Text(
+                              'Online',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Radio<String>(
+                              value: "Cash",
+                              groupValue: paymentMode,
+                              activeColor: Colors.orangeAccent,
+                              onChanged: (val) {
+                                if (val != null) {
+                                  setState(() {
+                                    paymentMode = val;
+                                  });
+                                }
+                              },
+                            ),
+                            const Text('Cash', style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  BlocConsumer<UpdateExpenseCubit, UpdateExpenseState>(
+                    listener: (context, state) {
+                      if (state is UpdateExpenseSuccessState) {
+                        context.push('/vacation?budget=${widget.budget}&place=${widget.place}');
+                        context.read<GetTripCubit>().GetTrip();
+                      } else if (state is UpdateExpenseError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(state.message)),
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      return SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: CustomAppButton1(
+                          text: 'Done',
+                          isLoading: state is UpdateExpenseLoading,
+                          onPlusTap: () {
+                            if (selectedCategoryId == null ||
+                                amountController.text.isEmpty ||
+                                dateController.text.isEmpty) {
+                              return;
+                            }
+                            final Map<String, dynamic> data = {
+                              'expense': amountController.text,
+                              'category': selectedCategoryId,
+                              'date': dateController.text,
+                              'remarks': remarksController.text,
+                              'payment_mode': paymentMode,
+                              'trip': widget.id,
+                            };
+                            context.read<UpdateExpenseCubit>().addExpense(data);
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 32),
-            BlocConsumer<UpdateExpenseCubit, UpdateExpenseState>(
-              listener: (context, state) {
-                if (state is UpdateExpenseSuccessState) {
-                  context.push('/piechart');
-                  context.read<GetTripCubit>().GetTrip();
-                }
-              },
-              builder: (context, state) {
-                return SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: CustomAppButton1(
-                    text: 'Done',
-                    // isLoading: state is UpdateExpenseLoading,
-                    onPlusTap: () {
-                      final Map<String, dynamic> data = {
-                        'expense': amountController.text,
-                        'category': selectedCategoryId,
-                        'date': dateController.text, // Use formatted date
-                        'remarks': remarksController.text,
-                        'payment_mode': paymentMode,
-                        'trip': widget.id,
-                      };
-                      context.read<UpdateExpenseCubit>().addExpense(data);
-                    },
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+            );
+          } else if (state is CategoryError) {
+            return Center(child: Text(state.message));
+          }
+          return const Center(child: Text("No Data"));
+        },
       ),
-    );
-  }
-
-  Widget _buildDropdownField() {
-    return BlocBuilder<Categorycubit, Categorystate>(
-      builder: (context, state) {
-        if (state is CategoryLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is CategoryLoaded) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade600),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                dropdownColor: const Color(0xff1D3A3C),
-                value: selectedCategoryId,
-                isExpanded: true,
-                hint: const Text(
-                  'Select Category',
-                  style: TextStyle(color: Colors.white70),
-                ),
-                icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                items: state.categoryresponsemodel.data?.map((category) {
-                  return DropdownMenuItem<String>(
-                    value: category.id,
-                    child: Text(
-                      category.categoryName ?? "",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (val) {
-                  setState(() {
-                    selectedCategoryId = val;
-                    final catName = state.categoryresponsemodel.data
-                        ?.firstWhere((element) => element.id == val);
-                    selectedCategory = catName?.categoryName ?? "";
-                  });
-                },
-              ),
-            ),
-          );
-        } else if (state is CategoryError) {
-          return Center(child: Text(state.message));
-        }
-        return const Center(child: Text("No Data"));
-      },
     );
   }
 
@@ -326,5 +334,13 @@ class _UpdateExpenseState extends State<UpdateExpense> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    amountController.dispose();
+    dateController.dispose();
+    remarksController.dispose();
+    super.dispose();
   }
 }

@@ -208,124 +208,139 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         )
                       else
-                        Container(
-                          padding: EdgeInsets.all(width * 0.035),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF2C4748),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(4),
-                                color: Color(0xff53676833),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(14),
-                                  child: Image.asset(
-                                    "assets/figmaimages.png",
-                                    width: width * 0.15,
-                                    height: width * 0.15,
-                                    fit: BoxFit.cover,
+                        InkResponse(
+                          onTap: () {
+                            context.push(
+                              '/vacation?budget=${state.getTripModel.getTripData?.budget?.toString() ?? "0.00"}&place=${state.getTripModel.getTripData?.destination ?? "Unknown"}',
+                            );
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(width * 0.035),
+                            decoration: BoxDecoration(
+                              color: Color(0xFF2C4748),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(4),
+                                  color: Color(0xff53676833),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(14),
+                                    child: Image.asset(
+                                      "assets/figmaimages.png",
+                                      width: width * 0.15,
+                                      height: width * 0.15,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(width: width * 0.035),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      state.getTripModel.getTripData
-                                          ?.destination ??
-                                          "Unknown",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: width * 0.05,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Mulish',
+                                SizedBox(width: width * 0.035),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        state
+                                                .getTripModel
+                                                .getTripData
+                                                ?.destination ??
+                                            "Unknown",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: width * 0.05,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Mulish',
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                    SizedBox(height: 6),
-                                    Text(
-                                      state.getTripModel.getTripData
-                                          ?.startDate ??
-                                          "N/A",
-                                      style: TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: width * 0.035,
-                                        fontFamily: 'Mulish',
+                                      SizedBox(height: 6),
+                                      Text(
+                                        state
+                                                .getTripModel
+                                                .getTripData
+                                                ?.startDate ??
+                                            "N/A",
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: width * 0.035,
+                                          fontFamily: 'Mulish',
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                    SizedBox(height: 6),
-                                    RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: "Budget: ",
-                                            style: TextStyle(
-                                              color: Colors.white60,
-                                              fontSize: width * 0.04,
-                                              fontFamily: 'Mulish',
+                                      SizedBox(height: 6),
+                                      RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: "Budget: ",
+                                              style: TextStyle(
+                                                color: Colors.white60,
+                                                fontSize: width * 0.04,
+                                                fontFamily: 'Mulish',
+                                              ),
                                             ),
-                                          ),
-                                          TextSpan(
-                                            text: state.getTripModel.getTripData
-                                                ?.budget
-                                                ?.toString() ??
-                                                "0.00",
-                                            style: TextStyle(
-                                              color: Colors.greenAccent,
-                                              fontSize: width * 0.04,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'Mulish',
+                                            TextSpan(
+                                              text:
+                                                  state
+                                                      .getTripModel
+                                                      .getTripData
+                                                      ?.budget
+                                                      ?.toString() ??
+                                                  "0.00",
+                                              style: TextStyle(
+                                                color: Colors.greenAccent,
+                                                fontSize: width * 0.04,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Mulish',
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: width * 0.02),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  context.push(
-                                    '/update_expensive?id=${state.getTripModel.getTripData?.id ?? ''}&place=${state.getTripModel.getTripData?.destination ?? ''}&budget=${state.getTripModel.getTripData?.budget ?? ''}',
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.add,
-                                  color: Colors.black87,
-                                  size: width * 0.045,
-                                ),
-                                label: Text(
-                                  "Add Spends",
-                                  style: TextStyle(
+                                SizedBox(width: width * 0.02),
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    context.push(
+                                      '/update_expensive?id=${state.getTripModel.getTripData?.id ??''}&place=${state.getTripModel.getTripData?.destination ?? ''}&budget=${state.getTripModel.getTripData?.budget ?? ''}',
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.add,
                                     color: Colors.black87,
-                                    fontSize: width * 0.04,
-                                    fontFamily: 'Mulish',
+                                    size: width * 0.045,
+                                  ),
+                                  label: Text(
+                                    "Add Spends",
+                                    style: TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: width * 0.04,
+                                      fontFamily: 'Mulish',
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    visualDensity: VisualDensity.compact,
+                                    backgroundColor: Color(0xFFF4A261),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: width * 0.025,
+                                      vertical: width * 0.035,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                 ),
-                                style: ElevatedButton.styleFrom(
-                                  visualDensity: VisualDensity.compact,
-                                  backgroundColor: Color(0xFFF4A261),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: width * 0.025,
-                                    vertical: width * 0.035,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       SizedBox(height: height * 0.03),
@@ -343,7 +358,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           children: [
                             if (state
-                                .getPrevousTripModel.previousTrips?.length ==
+                                    .getPrevousTripModel
+                                    .previousTrips
+                                    ?.length ==
                                 0)
                               Container(
                                 width: double.infinity,
@@ -363,14 +380,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               )
                             else
                               Container(
-                                height: MediaQuery.of(context).size.height * 0.5,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.5,
                                 child: ListView.builder(
-                                  itemCount: state.getPrevousTripModel
-                                      .previousTrips?.length ??
+                                  itemCount:
+                                      state
+                                          .getPrevousTripModel
+                                          .previousTrips
+                                          ?.length ??
                                       0,
                                   itemBuilder: (context, index) {
-                                    final trip = state.getPrevousTripModel
-                                        .previousTrips![index];
+                                    final trip =
+                                        state
+                                            .getPrevousTripModel
+                                            .previousTrips![index];
                                     return Container(
                                       margin: EdgeInsets.only(
                                         bottom: width * 0.035,
@@ -382,11 +405,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       child: Row(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         children: [
                                           ClipRRect(
-                                            borderRadius:
-                                            BorderRadius.circular(14),
+                                            borderRadius: BorderRadius.circular(
+                                              14,
+                                            ),
                                             child: Image.asset(
                                               "assets/figmaimages.png",
                                               width: width * 0.18,
@@ -398,7 +422,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   trip.destination ?? "",
@@ -409,7 +433,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     fontFamily: 'Mulish',
                                                   ),
                                                   overflow:
-                                                  TextOverflow.ellipsis,
+                                                      TextOverflow.ellipsis,
                                                   maxLines: 1,
                                                 ),
                                                 SizedBox(height: 6),
@@ -421,7 +445,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     fontFamily: 'Mulish',
                                                   ),
                                                   overflow:
-                                                  TextOverflow.ellipsis,
+                                                      TextOverflow.ellipsis,
                                                   maxLines: 1,
                                                 ),
                                                 SizedBox(height: 6),
@@ -433,26 +457,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         style: TextStyle(
                                                           color: Colors.white60,
                                                           fontSize:
-                                                          width * 0.04,
+                                                              width * 0.04,
                                                           fontFamily: 'Mulish',
                                                         ),
                                                       ),
                                                       TextSpan(
-                                                        text: trip.budget
-                                                            .toString() ??
+                                                        text:
+                                                            trip.budget
+                                                                .toString() ??
                                                             "",
                                                         style: TextStyle(
                                                           color:
-                                                          Colors.greenAccent,
-                                                          fontSize: width * 0.04,
+                                                              Colors
+                                                                  .greenAccent,
+                                                          fontSize:
+                                                              width * 0.04,
                                                           fontWeight:
-                                                          FontWeight.bold,
+                                                              FontWeight.bold,
                                                           fontFamily: 'Mulish',
                                                         ),
                                                       ),
                                                     ],
                                                   ),
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   maxLines: 1,
                                                 ),
                                               ],
@@ -463,11 +491,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                             width: width * 0.18,
                                             child: Column(
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.end,
+                                                  CrossAxisAlignment.end,
                                               children: [
                                                 Text(
                                                   trip.totalExpense
-                                                      .toString() ??
+                                                          .toString() ??
                                                       "",
                                                   style: TextStyle(
                                                     color: Colors.white,
@@ -476,7 +504,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     fontFamily: 'Mulish',
                                                   ),
                                                   overflow:
-                                                  TextOverflow.ellipsis,
+                                                      TextOverflow.ellipsis,
                                                   maxLines: 1,
                                                 ),
                                                 Text(
@@ -487,7 +515,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     fontFamily: 'Mulish',
                                                   ),
                                                   overflow:
-                                                  TextOverflow.ellipsis,
+                                                      TextOverflow.ellipsis,
                                                   maxLines: 1,
                                                 ),
                                               ],
@@ -547,16 +575,10 @@ class _HomeScreenState extends State<HomeScreen> {
         border: Border.all(color: Color(0xFF3E5C5C)),
       ),
       child: TextField(
-        style: TextStyle(
-          color: Colors.white,
-          fontFamily: 'Mulish',
-        ),
+        style: TextStyle(color: Colors.white, fontFamily: 'Mulish'),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(
-            color: Color(0xFF7C9D9D),
-            fontFamily: 'Mulish',
-          ),
+          hintStyle: TextStyle(color: Color(0xFF7C9D9D), fontFamily: 'Mulish'),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(
             horizontal: width * 0.05,
