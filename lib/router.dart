@@ -79,7 +79,6 @@ final GoRouter goRouter = GoRouter(
         final place = state.uri.queryParameters['place'] ?? '';
         final extra = state.extra as Map<String, dynamic>?;
         final expense = extra?['expense'];
-
         return buildSlideTransitionPage(
           EditExpenseScreen(
             id: id,

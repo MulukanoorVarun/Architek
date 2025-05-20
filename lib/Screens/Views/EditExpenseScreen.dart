@@ -41,15 +41,9 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
   @override
   void initState() {
     super.initState();
-
-
     context.read<Categorycubit>().GetCategory();
-
-
-
   }
 
-  // Function to show date picker and format selected date
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
