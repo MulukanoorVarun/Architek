@@ -12,6 +12,7 @@ class APIEndpointUrls {
   static const String tripcount = '${apiUrl}trip-summary';
   static const String getPreviousTrip = '${apiUrl}previous-trips';
   static const String getCategory = '${apiUrl}category';
+  static const String getExpenseDetails = '${apiUrl}expense-detail';
   static const String getCurrency = '${authUrl}currency';
   static const String editExpence = '${apiUrl}expense';
   static const String piechartdata = '${apiUrl}expense-pie-chart';

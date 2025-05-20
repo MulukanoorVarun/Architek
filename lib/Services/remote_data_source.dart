@@ -6,6 +6,7 @@ import 'package:tripfin/Model/GetPrevousTripModel.dart';
 import 'package:tripfin/Model/PiechartExpenceModel.dart';
 import 'package:tripfin/Model/UpdateExpenceModel.dart';
 import '../Model/CategoryResponseModel.dart';
+import '../Model/ExpenseDetailModel.dart';
 import '../Model/GetCurrencyModel.dart';
 import '../Model/GetProfileModel.dart';
 import '../Model/GetTripModel.dart';
@@ -18,16 +19,12 @@ import 'api_endpoint_urls.dart';
 abstract class RemoteDataSource {
   Future<RegisterModel?> registerApi(Map<String, dynamic> data);
   Future<SuccessModel?> loginApi(Map<String, dynamic> data);
-
   Future<GetTripModel?> getTrip();
-
   Future<GetPrevousTripModel?> getPrevousTrip();
-
   Future<GetprofileModel?> getProfiledetails();
-
   Future<TripsSummaryResponse?> getTripcount();
-
   Future<Categoryresponsemodel?> getcategory();
+  Future<ExpenseDetailModel?> getExpenseDetails();
   Future<GetCurrencyModel?> getCurrency();
   Future<SuccessModel?> postExpense(Map<String, dynamic> data);
   Future<Piechartexpencemodel?> Piechartdata();
@@ -154,6 +151,22 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
+  Future<ExpenseDetailModel?> getExpenseDetails() async {
+    try {
+      Response res = await ApiClient.get("${APIEndpointUrls.getCategory}");
+      if (res.statusCode == 200) {
+        debugPrint('getExpenseDetails:${res.data}');
+        return ExpenseDetailModel.fromJson(res.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error getExpenseDetails::$e');
+      return null;
+    }
+  }
+
+  @override
   Future<GetCurrencyModel?> getCurrency() async {
     try {
       Response res = await ApiClient.get("${APIEndpointUrls.getCurrency}");
@@ -204,7 +217,6 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     }
   }
 
-
   @override
   Future<Editexpencemodel?> EditExpensedata(Map<String, dynamic> data) async {
     try {
@@ -223,5 +235,4 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       return null;
     }
   }
-
 }

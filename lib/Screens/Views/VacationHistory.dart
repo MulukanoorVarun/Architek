@@ -182,9 +182,8 @@ class _VacationHistoryState extends State<VacationHistory> {
             if (state is PiechartLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is PiechartSuccess) {
-              final expenses = state.response?.data?.expenses ?? [];
-              final totalExpense = state.response?.data?.totalExpense ?? 0.0;
-
+              final expenses = state.response.data?.expenses ?? [];
+              final totalExpense = state.response.data?.totalExpense ?? 0.0;
               final categoryTotals = <String, double>{};
               for (var expense in expenses) {
                 final category = expense.categoryName ?? 'Miscellaneous';
@@ -192,7 +191,6 @@ class _VacationHistoryState extends State<VacationHistory> {
                     (categoryTotals[category] ?? 0.0) +
                     (expense.expense ?? 0.0);
               }
-
               return RefreshIndicator(
                 onRefresh: () async {
                   context.read<PiechartCubit>().fetchPieChartData();
@@ -299,7 +297,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                           ),
                           onPressed: () {
                             context.push(
-                              '/update_expensive?place=${widget.place}&budget=${widget.budget}',
+                              '/update_expensive?id=${state.response.data?.expenses![0].tripId ?? ''}&place=${widget.place}&budget=${widget.budget}',
                             );
                           },
                           child: Row(
@@ -415,7 +413,6 @@ class _VacationHistoryState extends State<VacationHistory> {
     final List<Widget> expenseWidgets = [];
     final dateFormat = DateFormat('dd.MM.yyyy');
 
-    // Group expenses by date
     final Map<String, List<dynamic>> groupedExpenses = {};
     for (var expense in expenses) {
       final date =
@@ -464,37 +461,107 @@ class _VacationHistoryState extends State<VacationHistory> {
       );
       final dateExpenses = groupedExpenses[date]!;
       for (var expense in dateExpenses) {
+        final w = MediaQuery.of(context).size.width;
         final category = expense.categoryName ?? 'Miscellaneous';
+        final remarks = expense.remarks ?? '';
         final amount = expense.expense?.toDouble() ?? 0.0;
 
+
         expenseWidgets.add(
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 4),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF223436),
-              borderRadius: BorderRadius.circular(12),
+          Dismissible(
+            key: Key(category),
+            background: Container(
+              color: Colors.blue,
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.only(left: 20),
+              child: const Icon(Icons.edit, color: Colors.white, size: 30),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    category,
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
+            secondaryBackground: Container(
+              color: Colors.red, // Background for swipe-right (delete)
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              child: const Icon(Icons.delete, color: Colors.white, size: 30),
+            ),
+            confirmDismiss: (direction) async {
+              if (direction == DismissDirection.endToStart) {
+                return await showDialog(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: const Text('Confirm Delete'),
+                        content: const Text(
+                          'Are you sure you want to delete this item?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      ),
+                );
+              } else if (direction == DismissDirection.startToEnd) {
+                context.push(
+                  '/update_expensive?place=${widget.place}&budget=${widget.budget}',
+                );
+                return false;
+              }
+              return false;
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF223436),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width:w * 0.65,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          category,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Mullish',
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          remarks,
+                          style: const TextStyle(
+                            color: Color(0xffDBDBDB),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w300,
+                            fontFamily: 'Mullish',
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Text(
-                  "-${amount.toStringAsFixed(0)}",
-                  style: const TextStyle(color: Colors.redAccent, fontSize: 16),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.white70, size: 20),
-                  onPressed: () {
-                    _editExpense(expense);
-                  },
-                ),
-              ],
+                  const Spacer(),
+                  Text(
+                    "-${amount.toStringAsFixed(0)}",
+                    style: const TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
