@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tripfin/Screens/Views/PerfectTripScreen.dart';
 import 'package:tripfin/Screens/Views/VacationHistory.dart';
 import 'package:tripfin/Screens/Views/HomeScreen.dart';
 import 'package:tripfin/Screens/Views/Splash.dart';
@@ -51,6 +52,12 @@ final GoRouter goRouter = GoRouter(
       pageBuilder:
           (context, state) =>
               buildSlideTransitionPage(Editprofilescreen(), state),
+    ),
+    GoRoute(
+      path: '/perfecttripscreen',
+      pageBuilder:
+          (context, state) =>
+          buildSlideTransitionPage(Perfecttripscreen(), state),
     ),
     GoRoute(
       path: '/update_expensive',
