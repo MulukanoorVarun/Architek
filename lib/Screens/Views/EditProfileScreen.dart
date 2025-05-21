@@ -62,7 +62,7 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
 
   Future<void> _updateProfile() async {
     try {
-      final Map<String,dynamic>data={
+      final Map<String, dynamic> data = {
         "full_name": _nameController.text,
         "email": _emailController.text,
         "status": "Active",
@@ -83,9 +83,12 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
         if (profileState is GetProfileLoading) {
           return Center(child: CircularProgressIndicator());
         } else if (profileState is GetProfileLoaded) {
-          _nameController.text = profileState.getprofileModel.data?.fullName ?? "";
-          _emailController.text = profileState.getprofileModel.data?.email ?? "";
-          _phoneController.text = profileState.getprofileModel.data?.mobile ?? "";
+          _nameController.text =
+              profileState.getprofileModel.data?.fullName ?? "";
+          _emailController.text =
+              profileState.getprofileModel.data?.email ?? "";
+          _phoneController.text =
+              profileState.getprofileModel.data?.mobile ?? "";
           return Scaffold(
             backgroundColor: Color(0xff304546),
             appBar: AppBar(
@@ -110,9 +113,11 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                           CircleAvatar(
                             backgroundColor: Colors.white,
                             radius: 60,
-                            backgroundImage: _image != null
-                                ? FileImage(_image!)
-                                : AssetImage('assets/nodata_image.png') as ImageProvider,
+                            backgroundImage:
+                                _image != null
+                                    ? FileImage(_image!)
+                                    : AssetImage('assets/nodata_image.png')
+                                        as ImageProvider,
                           ),
                           Positioned(
                             bottom: 0,

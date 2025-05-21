@@ -9,6 +9,7 @@ import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 import '../../Block/Logic/CategoryList/CategoryCubit.dart';
 import '../../Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
 import '../../Block/Logic/ExpenseDetails/ExpenseDetailsState.dart';
+import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import '../Components/CustomAppButton.dart';
 import '../Components/CutomAppBar.dart';
 
@@ -41,18 +42,32 @@ class _UpdateExpenseState extends State<UpdateExpense> {
   @override
   void initState() {
     super.initState();
+    print("TRipId:${widget.id}");
     context.read<Categorycubit>().GetCategory();
+    // Debug CategoryCubit state changes
     context.read<Categorycubit>().stream.listen((state) {
-      print('CategoryCubit State: $state'); // Debug state
+      print('CategoryCubit State: $state');
+      if (state is CategoryLoaded &&
+          state.categoryresponsemodel.data != null &&
+          selectedCategoryId == null) {
+        setState(() {
+          // Set default category if none selected
+          selectedCategoryId = state.categoryresponsemodel.data!.first.id;
+          selectedCategory =
+              state.categoryresponsemodel.data!.first.categoryName;
+        });
+      }
     });
+    // Fetch expense details if expenseId is provided
     if (widget.expenseId.isNotEmpty) {
       context.read<GetExpenseDetailCubit>().GetExpenseDetails(widget.expenseId);
     }
+    // Debug GetExpenseDetailCubit state changes
     context.read<GetExpenseDetailCubit>().stream.listen((state) {
-      print('GetExpenseDetailCubit State: $state'); // Debug state
+      print('GetExpenseDetailCubit State: $state');
       if (state is GetExpenseDetailLoaded) {
         final expenseData = state.expenseDetailModel.data;
-        print('Expense Data: $expenseData'); // Debug data
+        print('Expense Data: $expenseData');
         setState(() {
           selectedCategoryId = expenseData?.category ?? "";
           selectedCategory = expenseData?.categoryName ?? "";
@@ -84,283 +99,313 @@ class _UpdateExpenseState extends State<UpdateExpense> {
       backgroundColor: const Color(0xff102A2C),
       appBar: CustomAppBar(title: 'Vacation', actions: []),
       body: BlocBuilder<GetExpenseDetailCubit, GetExpenseDetailsState>(
-        builder: (context, state) {
-          if (state is GetExpenseDetailLoading) {
+        builder: (context, expenseState) {
+          // Handle initial state for new expense
+          if (widget.expenseId.isEmpty &&
+              expenseState is! GetExpenseDetailLoading) {
+            return _buildForm(context);
+          }
+          // Handle loading state
+          if (expenseState is GetExpenseDetailLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is GetExpenseDetailLoaded) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Travel Plan',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xff1D3A3C),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.place, color: Colors.white),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Place : ',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              widget.place,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontFamily: "Mullish",
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(color: Colors.grey, height: 24),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.currency_rupee,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Budget : ',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              widget.budget,
-                              style: const TextStyle(
-                                color: Colors.greenAccent,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Travel Expenses',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xff1D3A3C),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      children: [
-                        BlocBuilder<Categorycubit, Categorystate>(
-                          builder: (context, state) {
-                            if (state is CategoryLoaded) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.grey.shade600,
-                                  ),
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    dropdownColor: const Color(0xff1D3A3C),
-                                    value: selectedCategoryId,
-                                    isExpanded: true,
-                                    hint: const Text(
-                                      'Select Category',
-                                      style: TextStyle(color: Colors.white70),
-                                    ),
-                                    icon: const Icon(
-                                      Icons.arrow_drop_down,
-                                      color: Colors.white,
-                                    ),
-                                    items:
-                                        state.categoryresponsemodel.data?.map((
-                                          category,
-                                        ) {
-                                          return DropdownMenuItem<String>(
-                                            value: category.id,
-                                            child: Text(
-                                              category.categoryName ?? "",
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
-                                    onChanged: (val) {
-                                      if (val != null) {
-                                        setState(() {
-                                          selectedCategoryId = val;
-                                          final catName = state
-                                              .categoryresponsemodel
-                                              .data
-                                              ?.firstWhere(
-                                                (element) => element.id == val,
-                                              );
-                                          selectedCategory =
-                                              catName?.categoryName ?? "";
-                                        });
-                                      }
-                                    },
-                                  ),
-                                ),
-                              );
-                            } else if (state is CategoryError) {
-                              return Center(child: Text(state.message));
-                            }
-                            return const Center(child: Text("No Data"));
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: amountController,
-                          hint: 'Amount',
-                          icon: Icons.currency_rupee,
-                          inputType: TextInputType.number,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: dateController,
-                          hint: 'When you Spent',
-                          icon: Icons.calendar_today,
-                          readOnly: true,
-                          onTap: () => _selectDate(context),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: remarksController,
-                          hint: 'Remarks',
-                          maxLines: 3,
-                        ),
-                        const SizedBox(height: 24),
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Payment Mode',
-                            style: TextStyle(color: Colors.white, fontSize: 16),
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Radio<String>(
-                              value: "Online",
-                              groupValue: paymentMode,
-                              activeColor: Colors.orangeAccent,
-                              onChanged: (val) {
-                                if (val != null) {
-                                  setState(() {
-                                    paymentMode = val;
-                                  });
-                                }
-                              },
-                            ),
-                            const Text(
-                              'Online',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Radio<String>(
-                              value: "Cash",
-                              groupValue: paymentMode,
-                              activeColor: Colors.orangeAccent,
-                              onChanged: (val) {
-                                if (val != null) {
-                                  setState(() {
-                                    paymentMode = val;
-                                  });
-                                }
-                              },
-                            ),
-                            const Text(
-                              'Cash',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  BlocConsumer<GetExpenseDetailCubit, GetExpenseDetailsState>(
-                    listener: (context, state) {
-                      if (state is ExpenceDetailSuccess) {
-                        context.push(
-                          '/vacation?budget=${widget.budget}&place=${widget.place}',
-                        );
-                        context.read<GetTripCubit>().GetTrip();
-                      } else if (state is GetExpenseDetailError) {
-                        CustomSnackBar.show(context, state.message);
-                      }
-                    },
-                    builder: (context, state) {
-                      return SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: CustomAppButton1(
-                          text: 'Done',
-                          isLoading: state is GetExpenseDetailError,
-                          onPlusTap: () {
-                            if (selectedCategoryId == null ||
-                                amountController.text.isEmpty ||
-                                dateController.text.isEmpty) {
-                              return;
-                            }
-                            final Map<String, dynamic> data = {
-                              'expense': amountController.text,
-                              'category': selectedCategoryId,
-                              'date': dateController.text,
-                              'remarks': remarksController.text,
-                              'payment_mode': paymentMode,
-                              'trip': widget.expenseId != "" ? widget.expenseId : widget.id,
-                            };
-                            if (widget.expenseId != "") {
-                              context.read<GetExpenseDetailCubit>().updateExpenseDetails(data);
-                            } else {
-                              context.read<GetExpenseDetailCubit>().addExpense(data);
-                            }
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ],
+          }
+          // Handle loaded state
+          else if (expenseState is GetExpenseDetailLoaded) {
+            return _buildForm(context);
+          }
+          // Handle error state
+          else if (expenseState is GetExpenseDetailError) {
+            return Center(
+              child: Text(
+                expenseState.message,
+                style: const TextStyle(color: Colors.white),
               ),
             );
-          } else if (state is GetExpenseDetailError) {
-            return Center(child: Text(state.message));
           }
-          return const Center(child: Text("No Data"));
+          // Handle initial or unexpected state
+          return const Center(
+            child: Text(
+              "Loading data...",
+              style: TextStyle(color: Colors.white),
+            ),
+          );
         },
+      ),
+    );
+  }
+
+  Widget _buildForm(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Travel Plan',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xff1D3A3C),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.place, color: Colors.white),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Place : ',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    Text(
+                      widget.place,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: "Mullish",
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(color: Colors.grey, height: 24),
+                Row(
+                  children: [
+                    const Icon(Icons.currency_rupee, color: Colors.white),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Budget : ',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    Text(
+                      widget.budget,
+                      style: const TextStyle(
+                        color: Colors.greenAccent,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'Travel Expenses',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xff1D3A3C),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                BlocBuilder<Categorycubit, Categorystate>(
+                  builder: (context, categoryState) {
+                    if (categoryState is CategoryLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (categoryState is CategoryLoaded &&
+                        categoryState.categoryresponsemodel.data != null) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade600),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            dropdownColor: const Color(0xff1D3A3C),
+                            value: selectedCategoryId,
+                            isExpanded: true,
+                            hint: const Text(
+                              'Select Category',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                            icon: const Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.white,
+                            ),
+                            items:
+                                categoryState.categoryresponsemodel.data!.map((
+                                  category,
+                                ) {
+                                  return DropdownMenuItem<String>(
+                                    value: category.id,
+                                    child: Text(
+                                      category.categoryName ?? "",
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                setState(() {
+                                  selectedCategoryId = val;
+                                  final catName = categoryState
+                                      .categoryresponsemodel
+                                      .data!
+                                      .firstWhere(
+                                        (element) => element.id == val,
+                                      );
+                                  selectedCategory = catName.categoryName ?? "";
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    } else if (categoryState is CategoryError) {
+                      return Center(
+                        child: Text(
+                          categoryState.message,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }
+                    return const Center(
+                      child: Text(
+                        "No Categories Available",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: amountController,
+                  hint: 'Amount',
+                  icon: Icons.currency_rupee,
+                  inputType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: dateController,
+                  hint: 'When you Spent',
+                  icon: Icons.calendar_today,
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: remarksController,
+                  hint: 'Remarks',
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 24),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Payment Mode',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Radio<String>(
+                      value: "Online",
+                      groupValue: paymentMode,
+                      activeColor: Colors.orangeAccent,
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() {
+                            paymentMode = val;
+                          });
+                        }
+                      },
+                    ),
+                    const Text('Online', style: TextStyle(color: Colors.white)),
+                    Radio<String>(
+                      value: "Cash",
+                      groupValue: paymentMode,
+                      activeColor: Colors.orangeAccent,
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() {
+                            paymentMode = val;
+                          });
+                        }
+                      },
+                    ),
+                    const Text('Cash', style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+          BlocConsumer<GetExpenseDetailCubit, GetExpenseDetailsState>(
+            listener: (context, state) {
+              if (state is ExpenceDetailSuccess) {
+                print("kjsdhfbhfbashfbhsfblkhsbfjklhsbfsdhbf");
+                context.push(
+                  '/vacation?budget=${widget.budget}&place=${widget.place}',
+                );
+                context.read<PiechartCubit>().fetchPieChartData();
+                context.read<GetTripCubit>().GetTrip();
+
+              } else if (state is GetExpenseDetailError) {
+                CustomSnackBar.show(context, state.message);
+              }
+            },
+            builder: (context, state) {
+              return SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: CustomAppButton1(
+                  text: 'Done',
+                  isLoading: state is SaveExpenseDetailLoading,
+                  onPlusTap: () {
+                    if (selectedCategoryId == null ||
+                        amountController.text.isEmpty ||
+                        dateController.text.isEmpty) {
+                      CustomSnackBar.show(
+                        context,
+                        'Please fill all required fields',
+                      );
+                      return;
+                    }
+                    final Map<String, dynamic> data = {
+                      'expense': amountController.text,
+                      'category': selectedCategoryId,
+                      'date': dateController.text,
+                      'remarks': remarksController.text,
+                      'payment_mode': paymentMode,
+                      'trip':
+                          widget.expenseId.isNotEmpty
+                              ? widget.expenseId
+                              : widget.id,
+                    };
+                    if (widget.expenseId.isNotEmpty) {
+                      context
+                          .read<GetExpenseDetailCubit>()
+                          .updateExpenseDetails(data);
+                    } else {
+                      context.read<GetExpenseDetailCubit>().addExpense(data);
+                    }
+                  },
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

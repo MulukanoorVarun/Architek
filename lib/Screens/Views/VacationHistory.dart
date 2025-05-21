@@ -4,10 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tripfin/Block/Logic/EditProfileScreen/TripcountState.dart';
 import 'package:tripfin/Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
+import 'package:tripfin/Block/Logic/TripFinish/TripFinishCubit.dart';
+import 'package:tripfin/Block/Logic/TripFinish/TripFinishState.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 
-// Assuming these are the correct paths in your project
 import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import '../../Block/Logic/PiechartdataScreen/PiechartState.dart';
 import '../../utils/color_constants.dart';
@@ -17,32 +19,6 @@ class VacationHistory extends StatefulWidget {
   final String budget;
 
   const VacationHistory({super.key, required this.place, required this.budget});
-
-  static Map<String, Color> categoryColors = {
-    'Emergency': Colors.red,
-    'Miscellaneous': Colors.green,
-    'Transportation': Colors.blue,
-    'Food': Colors.yellow,
-    'Shopping': Colors.purple,
-    'Sightseeing': Colors.white,
-    'Activities': Colors.black,
-    'Accommodation': Colors.pink,
-    'Entertainment': Colors.orange,
-    'Health': Colors.cyan,
-  };
-
-  static const Map<String, List<Color>> categoryGradients = {
-    'Emergency': [Colors.red, Colors.redAccent],
-    'Miscellaneous': [Colors.green, Colors.greenAccent],
-    'Transportation': [Colors.blue, Colors.blueAccent],
-    'Food': [Colors.yellow, Color(0xFFFFD740)],
-    'Shopping': [Colors.purple, Colors.purpleAccent],
-    'Sightseeing': [Colors.white],
-    'Activities': [Colors.black],
-    'Accommodation': [Colors.pink, Colors.pinkAccent],
-    'Entertainment': [Colors.orange, Colors.orangeAccent],
-    'Health': [Colors.cyan, Colors.cyanAccent],
-  };
 
   @override
   State<VacationHistory> createState() => _VacationHistoryState();
@@ -55,18 +31,8 @@ class _VacationHistoryState extends State<VacationHistory> {
     context.read<PiechartCubit>().fetchPieChartData();
   }
 
-  void _editExpense(dynamic expense) {
-    context.push(
-      '/edit-expense',
-      extra: {
-        'id': expense.trip,
-        'place': widget.place,
-        'budget': widget.budget,
-        'expense': expense, // Pass the entire expense object
-      },
-    );
-  }
-
+  String? tripId;
+  String? finishTripText;
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -143,55 +109,136 @@ class _VacationHistoryState extends State<VacationHistory> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: const Text("Vacation"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder:
-                      (context) => AlertDialog(
-                        title: const Text("Finish Trip"),
-                        content: const Text(
-                          "Are you sure you want to end this trip?",
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text("Cancel"),
+
+          actions:
+              finishTripText == "No active trip found."
+                  ? []
+                  : [
+                BlocListener<TripFinishCubit, TripFinishState>(
+                  listener: (context, state) {
+                    if (state is FinishTripSuccessState) {
+                      final budgetStr = state.finishTripModel.data?.budget;
+                      final totalExpenseStr =
+                          state.finishTripModel.data?.totalExpense;
+
+                      if (budgetStr != null && totalExpenseStr != null) {
+                        final budget = double.tryParse(budgetStr);
+                        final totalExpense = double.tryParse(
+                          totalExpenseStr,
+                        );
+
+                        if (budget != null && totalExpense != null) {
+                          if (budget == totalExpense) {
+                            context.pushReplacement("/perfect_screen");
+                          } else if (budget < totalExpense) {
+                            context.pushReplacement("/out_of_theBudget");
+                          } else if (budget > totalExpense) {
+                            context.pushReplacement("/below_of_theBudget");
+                          }
+                        } else {
+                          context.pushReplacement("/error_screen");
+                        }
+                      } else {
+                        context.pushReplacement("/error_screen");
+                      }
+                    }
+                  },
+                  child: TextButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                          title: const Text("Finish Trip"),
+                          content: const Text(
+                            "Are you sure you want to end this trip?",
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              "Confirm",
-                              style: TextStyle(color: Colors.redAccent),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                context.pop();
+                              },
+                              child: const Text("Cancel"),
                             ),
-                          ),
-                        ],
+                            TextButton(
+                              onPressed: () {
+                                final Map<String, dynamic> data = {
+                                  "is_completed": "true",
+                                };
+                                context
+                                    .read<TripFinishCubit>()
+                                    .finishTrip(data);
+                              },
+                              child: const Text(
+                                "Confirm",
+                                style: TextStyle(
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child:  Text(
+                      "Finish Trip",
+                      style: TextStyle(
+                        color: Color(0xFFFFA726),
+                        fontSize: 16,
                       ),
-                );
-              },
-              child: const Text(
-                "Finish Trip",
-                style: TextStyle(color: Color(0xFFFFA726), fontSize: 16),
-              ),
-            ),
-          ],
+                    ),
+                  ),
+                ),
+              ],
         ),
         body: BlocBuilder<PiechartCubit, PiechartState>(
           builder: (context, state) {
             if (state is PiechartLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is PiechartSuccess) {
-              final expenses = state.response.data?.categoryData??[];
-              final totalExpense = state.response.data?.totalExpense ?? 0.0;
+              tripId = state.response.data?.tripId ?? '';
+              finishTripText = state.message ?? "";
+              final expenses = state.response.data?.expenseData ?? [];
+              final totalExpense =
+                  state.response.data?.totalExpense?.toDouble() ?? 0.0;
               final categoryTotals = <String, double>{};
+              final categoryColorMap = <String, Color>{};
+              final categoryGradientMap = <String, List<Color>>{};
+
+              // Aggregate expenses by category and map colors from colorCode
               for (var expense in expenses) {
                 final category = expense.categoryName ?? 'Miscellaneous';
-                categoryTotals[category] = (categoryTotals[category] ?? 0.0) + (expense.totalExpense?.toDouble() ?? 0.0);
+                categoryTotals[category] =
+                    (categoryTotals[category] ?? 0.0) +
+                    (expense.totalExpense?.toDouble() ?? 0.0);
+
+                // Parse colorCode (assuming it's a hex string like '#FF0000' or 'FF0000')
+                try {
+                  if (expense.colorCode != null &&
+                      expense.colorCode!.isNotEmpty) {
+                    final hexColor = expense.colorCode!.replaceAll('#', '');
+                    final color = Color(int.parse('FF$hexColor', radix: 16));
+                    categoryColorMap[category] = color;
+                    categoryGradientMap[category] = [
+                      color,
+                      color.withOpacity(0.7),
+                    ];
+                  } else {
+                    categoryColorMap[category] = Colors.grey;
+                    categoryGradientMap[category] = [
+                      Colors.grey,
+                      Colors.grey.withOpacity(0.7),
+                    ];
+                  }
+                } catch (e) {
+                  categoryColorMap[category] = Colors.grey;
+                  categoryGradientMap[category] = [
+                    Colors.grey,
+                    Colors.grey.withOpacity(0.7),
+                  ];
+                }
               }
+
               return RefreshIndicator(
                 onRefresh: () async {
                   context.read<PiechartCubit>().fetchPieChartData();
@@ -222,8 +269,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                                 ? categoryTotals.keys
                                     .map(
                                       (key) =>
-                                          VacationHistory.categoryColors[key] ??
-                                          Colors.grey,
+                                          categoryColorMap[key] ?? Colors.grey,
                                     )
                                     .toList()
                                 : [Colors.grey],
@@ -232,12 +278,13 @@ class _VacationHistoryState extends State<VacationHistory> {
                                 ? categoryTotals.keys
                                     .map(
                                       (key) =>
-                                          VacationHistory
-                                              .categoryGradients[key] ??
+                                          categoryGradientMap[key] ??
                                           [Colors.grey, Colors.grey],
                                     )
                                     .toList()
-                                : null,
+                                : [
+                                  [Colors.grey, Colors.grey],
+                                ],
                         animationDuration: const Duration(milliseconds: 1200),
                         chartLegendSpacing: 32,
                         chartRadius: MediaQuery.of(context).size.width / 1.8,
@@ -276,7 +323,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -298,13 +345,13 @@ class _VacationHistoryState extends State<VacationHistory> {
                           ),
                           onPressed: () {
                             context.push(
-                              '/update_expensive?id=${state.response.data?.tripId??""}&place=${widget.place}&budget=${widget.budget}',
+                              '/update_expensive?id=${state.response.data?.tripId ?? ''}&place=${widget.place}&budget=${widget.budget}',
                             );
                           },
                           child: Row(
-                            spacing: 2,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
+                              const Text(
                                 'Add',
                                 style: TextStyle(
                                   color: Color(0xff1C3132),
@@ -313,7 +360,12 @@ class _VacationHistoryState extends State<VacationHistory> {
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              Icon(Icons.add, color: Color(0xff1C3132)),
+                              const SizedBox(width: 2),
+                              Icon(
+                                Icons.add,
+                                color: const Color(0xff1C3132),
+                                size: 16,
+                              ),
                             ],
                           ),
                         ),
@@ -418,9 +470,7 @@ class _VacationHistoryState extends State<VacationHistory> {
     for (var expense in expenses) {
       final date =
           expense.date != null
-              ? (expense.date is DateTime
-                  ? dateFormat.format(expense.date)
-                  : dateFormat.format(DateTime.parse(expense.date)))
+              ? dateFormat.format(DateTime.parse(expense.date))
               : dateFormat.format(DateTime.now());
       if (!groupedExpenses.containsKey(date)) {
         groupedExpenses[date] = [];
@@ -433,16 +483,16 @@ class _VacationHistoryState extends State<VacationHistory> {
     for (var date in sortedDates) {
       expenseWidgets.add(
         Padding(
-          padding: EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.only(top: 8),
           child: Row(
             children: [
               Container(
                 width: 120,
                 height: 40,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/date patch.png'),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fill,
                   ),
                 ),
                 child: Center(
@@ -464,12 +514,12 @@ class _VacationHistoryState extends State<VacationHistory> {
       for (var expense in dateExpenses) {
         final w = MediaQuery.of(context).size.width;
         final category = expense.categoryName ?? 'Miscellaneous';
-        final remarks = expense.remarks ?? '';
-        final expenceId = expense.expenseId ?? '';
-        final amount = expense.expense?.toDouble() ?? 0.0;
+        final expenseId = expense.expenseId ?? '';
+        final amount = expense.totalExpense?.toDouble() ?? 0.0;
+
         expenseWidgets.add(
           Dismissible(
-            key: Key(expenceId), // Use expenceId for unique key
+            key: ValueKey(expenseId),
             background: Container(
               color: Colors.blue,
               alignment: Alignment.centerLeft,
@@ -511,7 +561,6 @@ class _VacationHistoryState extends State<VacationHistory> {
             ),
             confirmDismiss: (direction) async {
               if (direction == DismissDirection.endToStart) {
-
                 HapticFeedback.mediumImpact();
                 return await showDialog<bool>(
                   context: context,
@@ -531,11 +580,14 @@ class _VacationHistoryState extends State<VacationHistory> {
                               try {
                                 await context
                                     .read<GetExpenseDetailCubit>()
-                                    .deleteExpenseDetails(expenceId);
+                                    .deleteExpenseDetails(expenseId);
                                 CustomSnackBar.show(
                                   context,
                                   'Expense deleted successfully',
                                 );
+                                context
+                                    .read<PiechartCubit>()
+                                    .fetchPieChartData();
                                 context.pop();
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -547,10 +599,10 @@ class _VacationHistoryState extends State<VacationHistory> {
                                     duration: const Duration(seconds: 3),
                                   ),
                                 );
-                                context.pop();
+                                Navigator.of(context).pop(false);
                               }
                             },
-                            child: Text(
+                            child: const Text(
                               'Delete',
                               style: TextStyle(color: Colors.red),
                             ),
@@ -560,21 +612,15 @@ class _VacationHistoryState extends State<VacationHistory> {
                 );
               } else if (direction == DismissDirection.startToEnd) {
                 HapticFeedback.lightImpact();
-                // Navigate to update screen
+                print("TRipId:${tripId}");
                 context.push(
-                  '/update_expensive?place=${widget.place}&budget=${widget.budget}&expenseId=$expenceId',
+                  '/update_expensive?id=${tripId}&place=${widget.place}&budget=${widget.budget}&expenseId=$expenseId',
                 );
-                return false; // Prevent dismissal on edit
+                return false;
               }
               return false;
             },
-            onDismissed: (direction) {
-              if (direction == DismissDirection.endToStart) {
-                context.read<GetExpenseDetailCubit>().deleteExpenseDetails(
-                  expenceId,
-                );
-              }
-            },
+            // Removed onDismissed to prevent redundant deletion
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 4),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
@@ -608,7 +654,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          remarks,
+                          category, // Replaced remarks with categoryName
                           style: const TextStyle(
                             color: Color(0xffDBDBDB),
                             fontSize: 12,
@@ -635,111 +681,6 @@ class _VacationHistoryState extends State<VacationHistory> {
             ),
           ),
         );
-
-        // expenseWidgets.add(
-        //   Dismissible(
-        //     key: Key(expenceId),
-        //     background: Container(
-        //       color: Colors.blue,
-        //       alignment: Alignment.centerLeft,
-        //       padding: const EdgeInsets.only(left: 20),
-        //       child: const Icon(Icons.edit, color: Colors.white, size: 30),
-        //     ),
-        //     secondaryBackground: Container(
-        //       color: Colors.red, // Background for swipe-right (delete)
-        //       alignment: Alignment.centerRight,
-        //       padding: const EdgeInsets.only(right: 20),
-        //       child: const Icon(Icons.delete, color: Colors.white, size: 30),
-        //     ),
-        //     confirmDismiss: (direction) async {
-        //       if (direction == DismissDirection.endToStart) {
-        //         return await showDialog(
-        //           context: context,
-        //           builder:
-        //               (context) => AlertDialog(
-        //                 title: const Text('Confirm Delete'),
-        //                 content: const Text(
-        //                   'Are you sure you want to delete this item?',
-        //                 ),
-        //                 actions: [
-        //                   TextButton(
-        //                     onPressed: () {
-        //                       context.pop();
-        //                     },
-        //                     child: Text('Cancel'),
-        //                   ),
-        //                   TextButton(
-        //                     onPressed: () {
-        //                       context
-        //                           .read<GetExpenseDetailCubit>()
-        //                           .deleteExpenseDetails(expenceId);
-        //                     },
-        //                     child: Text('Delete'),
-        //                   ),
-        //                 ],
-        //               ),
-        //         );
-        //       } else if (direction == DismissDirection.startToEnd) {
-        //         context.push(
-        //           '/update_expensive?place=${widget.place}&budget=${widget.budget}&expenseId=${expenceId}',
-        //         );
-        //         return false;
-        //       }
-        //       return false;
-        //     },
-        //     child: Container(
-        //       margin: const EdgeInsets.symmetric(vertical: 4),
-        //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        //       decoration: BoxDecoration(
-        //         color: const Color(0xFF223436),
-        //         borderRadius: BorderRadius.circular(12),
-        //       ),
-        //       child: Row(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           SizedBox(
-        //             width: w * 0.65,
-        //             child: Column(
-        //               crossAxisAlignment: CrossAxisAlignment.start,
-        //               children: [
-        //                 Text(
-        //                   category,
-        //                   style: const TextStyle(
-        //                     color: Colors.white,
-        //                     fontSize: 16,
-        //                     fontWeight: FontWeight.w500,
-        //                     fontFamily: 'Mullish',
-        //                   ),
-        //                 ),
-        //                 const SizedBox(height: 5),
-        //                 Text(
-        //                   remarks,
-        //                   style: const TextStyle(
-        //                     color: Color(0xffDBDBDB),
-        //                     fontSize: 12,
-        //                     fontWeight: FontWeight.w300,
-        //                     fontFamily: 'Mullish',
-        //                   ),
-        //                   maxLines: 2,
-        //                   overflow: TextOverflow.ellipsis,
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //           const Spacer(),
-        //           Text(
-        //             "-${amount.toStringAsFixed(0)}",
-        //             style: const TextStyle(
-        //               color: Colors.redAccent,
-        //               fontSize: 16,
-        //               fontWeight: FontWeight.w500,
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // );
       }
     }
 

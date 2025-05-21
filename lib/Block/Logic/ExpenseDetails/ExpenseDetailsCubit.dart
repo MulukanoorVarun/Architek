@@ -55,7 +55,7 @@ class GetExpenseDetailCubit extends Cubit<GetExpenseDetailsState> {
   }
 
   Future<void> addExpense(Map<String, dynamic> data) async {
-    emit(GetExpenseDetailLoading());
+    emit(SaveExpenseDetailLoading());
     try {
       final res = await ExpenseDetailRepo.postExpenseUpdate(data);
       if (res != null) {

@@ -1,6 +1,6 @@
 class APIEndpointUrls {
   static const String baseUrl = 'http://travel.ridev.in/';
-  // static const String baseUrl = 'http://192.168.80.75:8090/';
+  // static const String baseUrl = 'http://192.168.80.193:8000/';
   static const String apiUrl = 'api/';
   static const String authUrl = 'auth/';
   static const String register = '${authUrl}register';
@@ -20,7 +20,7 @@ class APIEndpointUrls {
   static const String piechartdata = '${apiUrl}expense-pie-chart';
   static const String editexpense = '${apiUrl}expense-detail';
   static const String updateprofile = '${authUrl}user-detail';
-  static const String finishtrip = '${authUrl}finshed-trip';
+  static const String finishtrip = '${apiUrl}finshed-trip';
 
 
 

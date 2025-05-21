@@ -1,27 +1,21 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
-import 'package:tripfin/Model/EditExpenceModel.dart';
-import 'package:tripfin/Model/FinishTripModel.dart';
 import 'package:tripfin/Model/GetPrevousTripModel.dart';
 import 'package:tripfin/Model/PiechartExpenceModel.dart';
 import '../Model/CategoryResponseModel.dart';
 import '../Model/ExpenseDetailModel.dart';
+import '../Model/FinishTripModel.dart';
 import '../Model/GetCurrencyModel.dart';
 import '../Model/GetProfileModel.dart';
 import '../Model/GetTripModel.dart';
-import '../Model/ProfileUpdateResponseModel.dart';
 import '../Model/RegisterModel.dart';
 import '../Model/SuccessModel.dart';
 import '../Model/TripsSummaryResponse.dart';
 import 'ApiClient.dart';
 import 'api_endpoint_urls.dart';
 import 'package:http/http.dart' as http;
-
-
 
 abstract class RemoteDataSource {
   Future<RegisterModel?> registerApi(Map<String, dynamic> data);
@@ -38,12 +32,11 @@ abstract class RemoteDataSource {
   Future<SuccessModel?> updateExpensedata(Map<String, dynamic> data);
   Future<SuccessModel?> deleteExpenseDetails(String id);
   Future<SuccessModel?> postTrip(Map<String, dynamic> data);
-  Future<SuccessModel?> finishtrip();
-  Future<SuccessModel?> updateprofile(Map<String,dynamic> data);
+  Future<FinishTripModel?> finishtrip(Map<String, dynamic> data);
+  Future<SuccessModel?> updateprofile(Map<String, dynamic> data);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
-
   Future<FormData> buildFormData(Map<String, dynamic> data) async {
     final formMap = <String, dynamic>{};
     for (final entry in data.entries) {
@@ -52,7 +45,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
       if (value == null) continue;
 
-      if (value is File && (key.contains('image') || key.contains('file') || key.contains('picture') || key.contains('payment_screenshot'))) {
+      if (value is File &&
+          (key.contains('image') ||
+              key.contains('file') ||
+              key.contains('picture') ||
+              key.contains('payment_screenshot'))) {
         formMap[key] = await MultipartFile.fromFile(
           value.path,
           filename: value.path.split('/').last,
@@ -254,59 +251,17 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     }
   }
 
-  // @override
-  // Future<SuccessModel?> postTrip(Map<String, dynamic> data) async {
-  //   try {
-  //     final response = await ApiClient.post(
-  //       APIEndpointUrls.postTrip,
-  //       data: data,
-  //     );
-  //     if (response.statusCode == 200) {
-  //       debugPrint('postTrip: ${response.data}');
-  //       return SuccessModel.fromJson(response.data);
-  //     } else {
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error postTrip: $e');
-  //     return null;
-  //   }
-  // }
   @override
   Future<SuccessModel?> postTrip(Map<String, dynamic> data) async {
     try {
-      final request = http.MultipartRequest(
-        'POST',
-        Uri.parse(APIEndpointUrls.postTrip),
+      final response = await ApiClient.post(
+        APIEndpointUrls.postTrip,
+        data: data,
       );
-
-      // Add text fields
-      data.forEach((key, value) {
-        if (key != 'image' && value != null) {
-          request.fields[key] = value.toString();
-        }
-      });
-
-      // Add image file if it exists
-      if (data.containsKey('image') && data['image'] != null) {
-        final imageFile = data['image'] as File; // Cast to File
-        request.files.add(
-          await http.MultipartFile.fromPath(
-            'image',
-            imageFile.path,
-            filename: imageFile.path.split('/').last,
-          ),
-        );
-      }
-
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-      if (streamedResponse.statusCode == 200) {
-        debugPrint('postTrip: ${response.body}');
-        final responseData = jsonDecode(response.body) as Map<String, dynamic>;
-        return SuccessModel.fromJson(responseData);
+      if (response.statusCode == 200) {
+        debugPrint('postTrip: ${response.data}');
+        return SuccessModel.fromJson(response.data);
       } else {
-        debugPrint('postTrip failed with status: ${streamedResponse.statusCode}');
         return null;
       }
     } catch (e) {
@@ -315,6 +270,48 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     }
   }
 
+  // @override
+  // Future<SuccessModel?> postTrip(Map<String, dynamic> data) async {
+  //   try {
+  //     final request = http.MultipartRequest(
+  //       'POST',
+  //       Uri.parse(APIEndpointUrls.postTrip)
+  //     );
+  //
+  //     // Add fields to the request
+  //     data.forEach((key, value) {
+  //       if (key != 'image' && value != null) {
+  //         request.fields[key] = value.toString();
+  //       }
+  //     });
+  //
+  //     // Add image file if present
+  //     if (data.containsKey('image') && data['image'] != null) {
+  //       final imageFile = data['image'] as File;
+  //       request.files.add(
+  //         await http.MultipartFile.fromPath(
+  //           'image',
+  //           imageFile.path,
+  //           filename: imageFile.path.split('/').last,
+  //         ),
+  //       );
+  //     }
+  //
+  //     // Send the request
+  //     final response = await request.send();
+  //     final responseBody = await response.stream.bytesToString();
+  //
+  //     // Parse the response
+  //     if (response.statusCode == 200) {
+  //       return SuccessModel.fromJson(jsonDecode(responseBody));
+  //     } else {
+  //       throw Exception('Failed to post trip: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Error postTrip: $e');
+  //     return null;
+  //   }
+  // }
 
   @override
   Future<Piechartexpencemodel?> Piechartdata() async {
@@ -352,13 +349,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<SuccessModel?> updateprofile(Map<String,dynamic> data) async {
-    var formdata = await  buildFormData(data);
+  Future<SuccessModel?> updateprofile(Map<String, dynamic> data) async {
+    var formdata = await buildFormData(data);
     try {
       final response = await ApiClient.put(
         APIEndpointUrls.updateprofile,
         data: formdata,
-
       );
       if (response.statusCode == 200) {
         debugPrint('updateProfile: ${response.data}');
@@ -373,14 +369,15 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<SuccessModel?> finishtrip() async {
+  Future<FinishTripModel?> finishtrip(data) async {
     try {
       final response = await ApiClient.post(
         APIEndpointUrls.finishtrip,
+        data: data,
       );
       if (response.statusCode == 200) {
         debugPrint('finishtrip: ${response.data}');
-        return SuccessModel.fromJson(response.data);
+        return FinishTripModel.fromJson(response.data);
       } else {
         return null;
       }
@@ -389,7 +386,4 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       return null;
     }
   }
-
 }
-
-

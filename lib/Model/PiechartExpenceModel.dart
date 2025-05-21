@@ -5,14 +5,12 @@ class Piechartexpencemodel {
   Piechartexpencemodel({this.data, this.settings});
 
   Piechartexpencemodel.fromJson(Map<String, dynamic> json) {
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
-    settings = json['settings'] != null
-        ? new Settings.fromJson(json['settings'])
-        : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
+    settings = json['settings'] != null ? Settings.fromJson(json['settings']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -27,61 +25,77 @@ class Data {
   String? tripId;
   String? destination;
   int? totalExpense;
-  String? currency;
-  List<CategoryData>? categoryData;
+  List<ExpenseData>? expenseData;
 
-  Data(
-      {this.tripId,
-        this.destination,
-        this.totalExpense,
-        this.currency,
-        this.categoryData});
+  Data({this.tripId, this.destination, this.totalExpense, this.expenseData});
 
   Data.fromJson(Map<String, dynamic> json) {
-    tripId = json['trip_id'];
-    destination = json['destination'];
-    totalExpense = json['total_expense'];
-    currency = json['currency'];
-    if (json['category_data'] != null) {
-      categoryData = <CategoryData>[];
-      json['category_data'].forEach((v) {
-        categoryData!.add(new CategoryData.fromJson(v));
+    tripId = json['trip_id'] as String?;
+    destination = json['destination'] as String?;
+    // Handle double or int for totalExpense
+    totalExpense = (json['total_expense'] is double)
+        ? (json['total_expense'] as double).toInt()
+        : json['total_expense'] as int?;
+    if (json['expense_data'] != null) {
+      expenseData = <ExpenseData>[];
+      json['expense_data'].forEach((v) {
+        expenseData!.add(ExpenseData.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['trip_id'] = this.tripId;
-    data['destination'] = this.destination;
-    data['total_expense'] = this.totalExpense;
-    data['currency'] = this.currency;
-    if (this.categoryData != null) {
-      data['category_data'] =
-          this.categoryData!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['trip_id'] = tripId;
+    data['destination'] = destination;
+    data['total_expense'] = totalExpense;
+    if (expenseData != null) {
+      data['expense_data'] = expenseData!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
-class CategoryData {
+class ExpenseData {
+  String? expenseId;
   String? categoryName;
   int? totalExpense;
-  double? percentage;
+  int? percentage;
+  String? colorCode;
+  String? date;
 
-  CategoryData({this.categoryName, this.totalExpense, this.percentage});
+  ExpenseData({
+    this.expenseId,
+    this.categoryName,
+    this.totalExpense,
+    this.percentage,
+    this.colorCode,
+    this.date,
+  });
 
-  CategoryData.fromJson(Map<String, dynamic> json) {
-    categoryName = json['category_name'];
-    totalExpense = json['total_expense'];
-    percentage = json['percentage'];
+  ExpenseData.fromJson(Map<String, dynamic> json) {
+    expenseId = json['expense_id'] as String?;
+    categoryName = json['category_name'] as String?;
+    // Handle double or int for totalExpense
+    totalExpense = (json['total_expense'] is double)
+        ? (json['total_expense'] as double).toInt()
+        : json['total_expense'] as int?;
+    // Handle double or int for percentage
+    percentage = (json['percentage'] is double)
+        ? (json['percentage'] as double).toInt()
+        : json['percentage'] as int?;
+    colorCode = json['color_code'] as String?;
+    date = json['date'] as String?;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['category_name'] = this.categoryName;
-    data['total_expense'] = this.totalExpense;
-    data['percentage'] = this.percentage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['expense_id'] = expenseId;
+    data['category_name'] = categoryName;
+    data['total_expense'] = totalExpense;
+    data['percentage'] = percentage;
+    data['color_code'] = colorCode;
+    data['date'] = date;
     return data;
   }
 }
@@ -94,16 +108,20 @@ class Settings {
   Settings({this.success, this.message, this.status});
 
   Settings.fromJson(Map<String, dynamic> json) {
-    success = json['success'];
-    message = json['message'];
-    status = json['status'];
+    success = (json['success'] is double)
+        ? (json['success'] as double).toInt()
+        : json['success'] as int?;
+    message = json['message'] as String?;
+    status = (json['status'] is double)
+        ? (json['status'] as double).toInt()
+        : json['status'] as int?;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
-    data['status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
+    data['message'] = message;
+    data['status'] = status;
     return data;
   }
 }

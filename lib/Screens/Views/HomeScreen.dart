@@ -129,8 +129,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(height: height * 0.03),
-                      if (state.getTripModel.getTripData == null ||
-                          state.getTripModel.settings?.message == "No active and ongoing trips found.") ...[
+                      if (state.getTripModel.data == null ||
+                          state.getTripModel.settings?.message ==
+                              "No active and ongoing trips found.") ...[
                         Text(
                           "Travel Details",
                           style: TextStyle(
@@ -161,125 +162,117 @@ class _HomeScreenState extends State<HomeScreen> {
                         SizedBox(height: height * 0.015),
                         _selectedImage == null
                             ? InkWell(
-                          onTap: () {
-                            showModalBottomSheet(
-                              backgroundColor: primary,
-                              context: context,
-                              builder: (BuildContext context) {
-                                return SafeArea(
-                                  child: Wrap(
-                                    children: <Widget>[
-                                      ListTile(
-                                        leading: Icon(Icons.camera_alt, color: Colors.white),
-                                        title: Text(
-                                          'Upload File',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: 'Mullish',
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 15,
+                              onTap: () {
+                                showModalBottomSheet(
+                                  backgroundColor: primary,
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return SafeArea(
+                                      child: Wrap(
+                                        children: <Widget>[
+                                          ListTile(
+                                            leading: Icon(
+                                              Icons.camera_alt,
+                                              color: Colors.white,
+                                            ),
+                                            title: Text(
+                                              'Upload File',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: 'Mullish',
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              _pickImage(ImageSource.camera);
+                                              context.pop();
+                                            },
                                           ),
-                                        ),
-                                        onTap: () {
-                                          _pickImage(ImageSource.camera);
-                                          context.pop();
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.photo_library, color: Colors.white),
-                                        title: Text(
-                                          'Choose from gallery',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: 'Mullish',
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 15,
+                                          ListTile(
+                                            leading: Icon(
+                                              Icons.photo_library,
+                                              color: Colors.white,
+                                            ),
+                                            title: Text(
+                                              'Choose from gallery',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: 'Mullish',
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              _pickImage(ImageSource.gallery);
+                                              context.pop();
+                                            },
                                           ),
-                                        ),
-                                        onTap: () {
-                                          _pickImage(ImageSource.gallery);
-                                          context.pop();
-                                        },
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                          child: Container(
-                            width: width,
-                            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 14),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey.shade600,
-                                width: 1.0,
-                              ),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Text(
-                              'Upload File',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'Mullish',
-                              ),
-                            ),
-                          ),
-                        )
-                            : Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.file(
-                                _selectedImage!,
-                                height: 80,
-                                width: 80,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedImage = null;
-                                  });
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.6),
-                                    shape: BoxShape.circle,
+                              child: Container(
+                                width: width,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.0,
+                                  vertical: 14,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.grey.shade600,
+                                    width: 1.0,
                                   ),
-                                  child: Icon(
-                                    Icons.close,
-                                    color: Colors.white,
-                                    size: 18,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Text(
+                                  'Upload File',
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: 'Mullish',
                                   ),
                                 ),
                               ),
+                            )
+                            : Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.file(
+                                    _selectedImage!,
+                                    height: 80,
+                                    width: 80,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedImage = null;
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.6),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        // if (_validatefile.isNotEmpty) ...[
-                        //   Container(
-                        //     alignment: Alignment.topLeft,
-                        //     margin: EdgeInsets.only(bottom: 5),
-                        //     child: Text(
-                        //       _validatefile,
-                        //       style: TextStyle(
-                        //         fontFamily: "Poppins",
-                        //         fontSize: 12,
-                        //         color: Colors.red,
-                        //         fontWeight: FontWeight.w500,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ] else ...[
-                        //   const SizedBox(height: 15),
-                        // ],
                         SizedBox(height: height * 0.025),
                         BlocListener<postTripCubit, postTripState>(
                           listener: (context, state) {
@@ -292,12 +285,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             text: "Start Your Tour",
                             onPlusTap: () {
                               final Map<String, dynamic> data = {
-                                'trip_name': "vacation",
                                 'destination': destinationController.text,
                                 'start_date': dateController.text,
                                 'budget': budgetController.text,
-                                'image': _selectedImage,
                               };
+                              if (_selectedImage != null) {
+                                data['image'] = _selectedImage;
+                              }
                               print("data:${data}");
                               context.read<postTripCubit>().postTrip(data);
                             },
@@ -315,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(height: height * 0.02),
-                      if (state.getTripModel.getTripData == null ||
+                      if (state.getTripModel.data == null ||
                           state.getTripModel.settings?.message ==
                               "No active and ongoing trips found.")
                         Container(
@@ -338,9 +332,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       else
                         InkResponse(
                           onTap: () {
-                            context.push(
-                              '/vacation?budget=${state.getTripModel.getTripData?.budget?.toString() ?? "0.00"}&place=${state.getTripModel.getTripData?.destination ?? "Unknown"}',
-                            );
+                            if (state.getTripModel.totalExpense > 0) {
+                              context.push(
+                                '/vacation?budget=${state.getTripModel.data?.budget?.toString() ?? "0.00"}&place=${state.getTripModel.data?.destination ?? "Unknown"}',
+                              );
+                            } else {
+                              context.push(
+                                '/update_expensive?id=${state.getTripModel.data?.id ?? ''}&place=${state.getTripModel.data?.destination ?? ''}&budget=${state.getTripModel.data?.budget ?? ''}',
+                              );
+                            }
                           },
                           child: Container(
                             padding: EdgeInsets.all(width * 0.035),
@@ -371,10 +371,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        state
-                                                .getTripModel
-                                                .getTripData
-                                                ?.destination ??
+                                        state.getTripModel.data?.destination ??
                                             "Unknown",
                                         style: TextStyle(
                                           color: Colors.white,
@@ -387,10 +384,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       SizedBox(height: 6),
                                       Text(
-                                        state
-                                                .getTripModel
-                                                .getTripData
-                                                ?.startDate ??
+                                        state.getTripModel.data?.startDate ??
                                             "N/A",
                                         style: TextStyle(
                                           color: Colors.white70,
@@ -416,7 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               text:
                                                   state
                                                       .getTripModel
-                                                      .getTripData
+                                                      .data
                                                       ?.budget
                                                       ?.toString() ??
                                                   "0.00",
@@ -439,7 +433,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ElevatedButton.icon(
                                   onPressed: () {
                                     context.push(
-                                      '/update_expensive?id=${state.getTripModel.getTripData?.id ?? ''}&place=${state.getTripModel.getTripData?.destination ?? ''}&budget=${state.getTripModel.getTripData?.budget ?? ''}',
+                                      '/update_expensive?id=${state.getTripModel.data?.id ?? ''}&place=${state.getTripModel.data?.destination ?? ''}&budget=${state.getTripModel.data?.budget ?? ''}',
                                     );
                                   },
                                   icon: Icon(
@@ -523,134 +517,153 @@ class _HomeScreenState extends State<HomeScreen> {
                                         state
                                             .getPrevousTripModel
                                             .previousTrips![index];
-                                    return Container(
-                                      margin: EdgeInsets.only(
-                                        bottom: width * 0.035,
-                                      ),
-                                      padding: EdgeInsets.all(width * 0.035),
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFF2C4748),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                              14,
+                                    return InkResponse(
+                                      onTap: () {
+                                        final trip =
+                                            state
+                                                .getPrevousTripModel
+                                                .previousTrips?[index];
+                                        if (trip != null) {
+                                          context.push(
+                                            '/vacation?budget=${state.getTripModel.data?.budget?.toString() ?? "0.00"}&place=${state.getTripModel.data?.destination ?? "Unknown"}',
+                                          );
+                                        }
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.only(
+                                          bottom: width * 0.035,
+                                        ),
+                                        padding: EdgeInsets.all(width * 0.035),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF2C4748),
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(14),
+                                              child: Image.asset(
+                                                "assets/figmaimages.png",
+                                                width: width * 0.18,
+                                                height: width * 0.18,
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
-                                            child: Image.asset(
-                                              "assets/figmaimages.png",
+                                            SizedBox(width: width * 0.035),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    trip.destination ?? "",
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: width * 0.05,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily: 'Mulish',
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                  SizedBox(height: 6),
+                                                  Text(
+                                                    trip.startDate ?? "",
+                                                    style: TextStyle(
+                                                      color: Colors.white70,
+                                                      fontSize: width * 0.035,
+                                                      fontFamily: 'Mulish',
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                  SizedBox(height: 6),
+                                                  RichText(
+                                                    text: TextSpan(
+                                                      children: [
+                                                        TextSpan(
+                                                          text: "Budget: ",
+                                                          style: TextStyle(
+                                                            color:
+                                                                Colors.white60,
+                                                            fontSize:
+                                                                width * 0.04,
+                                                            fontFamily:
+                                                                'Mulish',
+                                                          ),
+                                                        ),
+                                                        TextSpan(
+                                                          text:
+                                                              trip.budget
+                                                                  .toString() ??
+                                                              "",
+                                                          style: TextStyle(
+                                                            color:
+                                                                Colors
+                                                                    .greenAccent,
+                                                            fontSize:
+                                                                width * 0.04,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontFamily:
+                                                                'Mulish',
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: width * 0.02),
+                                            SizedBox(
                                               width: width * 0.18,
-                                              height: width * 0.18,
-                                              fit: BoxFit.cover,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    trip.totalExpense
+                                                            .toString() ??
+                                                        "",
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: width * 0.045,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily: 'Mulish',
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                  Text(
+                                                    "Spends",
+                                                    style: TextStyle(
+                                                      color: Colors.white70,
+                                                      fontSize: width * 0.035,
+                                                      fontFamily: 'Mulish',
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(width: width * 0.035),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  trip.destination ?? "",
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: width * 0.05,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontFamily: 'Mulish',
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                ),
-                                                SizedBox(height: 6),
-                                                Text(
-                                                  trip.startDate ?? "",
-                                                  style: TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: width * 0.035,
-                                                    fontFamily: 'Mulish',
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                ),
-                                                SizedBox(height: 6),
-                                                RichText(
-                                                  text: TextSpan(
-                                                    children: [
-                                                      TextSpan(
-                                                        text: "Budget: ",
-                                                        style: TextStyle(
-                                                          color: Colors.white60,
-                                                          fontSize:
-                                                              width * 0.04,
-                                                          fontFamily: 'Mulish',
-                                                        ),
-                                                      ),
-                                                      TextSpan(
-                                                        text:
-                                                            trip.budget
-                                                                .toString() ??
-                                                            "",
-                                                        style: TextStyle(
-                                                          color:
-                                                              Colors
-                                                                  .greenAccent,
-                                                          fontSize:
-                                                              width * 0.04,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontFamily: 'Mulish',
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(width: width * 0.02),
-                                          SizedBox(
-                                            width: width * 0.18,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                Text(
-                                                  trip.totalExpense
-                                                          .toString() ??
-                                                      "",
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: width * 0.045,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontFamily: 'Mulish',
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                ),
-                                                Text(
-                                                  "Spends",
-                                                  style: TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: width * 0.035,
-                                                    fontFamily: 'Mulish',
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     );
                                   },
@@ -690,7 +703,6 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
-
 
   Widget _buildTextField({
     required TextEditingController controller,

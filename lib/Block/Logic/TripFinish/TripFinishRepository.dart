@@ -1,9 +1,9 @@
-import 'package:dio/dio.dart';
-import '../../../Model/SuccessModel.dart';
+
+import '../../../Model/FinishTripModel.dart';
 import '../../../Services/remote_data_source.dart';
 
 abstract class TripFinishRepository{
-  Future<SuccessModel?> finishtrip(FormData data);
+  Future<FinishTripModel?> finishtrip(Map<String, dynamic> data);
 }
 
 class FinishTripImpl implements TripFinishRepository {
@@ -12,7 +12,7 @@ class FinishTripImpl implements TripFinishRepository {
   const FinishTripImpl({required this.remoteDataSource});
 
   @override
-  Future<SuccessModel?> finishtrip(FormData data) async {
-    return await remoteDataSource.finishtrip();
+  Future<FinishTripModel?> finishtrip(Map<String, dynamic> data) async {
+    return await remoteDataSource.finishtrip(data);
   }
 }

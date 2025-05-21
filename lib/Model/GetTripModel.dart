@@ -1,70 +1,56 @@
 class GetTripModel {
-  GetTripData? getTripData;
+  Data? data;
+  dynamic? totalExpense;
   Settings? settings;
 
-  GetTripModel({this.getTripData, this.settings});
+  GetTripModel({this.data, this.totalExpense, this.settings});
 
-  factory GetTripModel.fromJson(Map<String, dynamic> json) {
-    return GetTripModel(
-      getTripData: json['data'] != null ? GetTripData.fromJson(json['data']) : null,
-      settings: json['settings'] != null ? Settings.fromJson(json['settings']) : null,
-    );
+  GetTripModel.fromJson(Map<String, dynamic> json) {
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    totalExpense = json['total_expense'];
+    settings = json['settings'] != null
+        ? new Settings.fromJson(json['settings'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (getTripData != null) {
-      data['data'] = getTripData!.toJson();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
     }
-    if (settings != null) {
-      data['settings'] = settings!.toJson();
+    data['total_expense'] = this.totalExpense;
+    if (this.settings != null) {
+      data['settings'] = this.settings!.toJson();
     }
     return data;
   }
 }
 
-class GetTripData {
+class Data {
   String? id;
   String? destination;
   String? startDate;
-  String? endDate;
-  double? budget;
+  String? budget;
+  Null? image;
 
-  GetTripData({
-    this.id,
-    this.destination,
-    this.startDate,
-    this.endDate,
-    this.budget,
-  });
+  Data({this.id, this.destination, this.startDate, this.budget, this.image});
 
-  factory GetTripData.fromJson(Map<String, dynamic> json) {
-    return GetTripData(
-      id: json['id'] as String? ?? '',
-      destination: json['destination'] as String? ?? '',
-      startDate: json['start_date'] as String? ?? '',
-      endDate: json['end_date'] as String? ?? '',
-      budget: _parseBudget(json['budget']),
-    );
+  Data.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    destination = json['destination'];
+    startDate = json['start_date'];
+    budget = json['budget'];
+    image = json['image'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['destination'] = destination;
-    data['start_date'] = startDate;
-    data['end_date'] = endDate;
-    data['budget'] = budget;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['destination'] = this.destination;
+    data['start_date'] = this.startDate;
+    data['budget'] = this.budget;
+    data['image'] = this.image;
     return data;
-  }
-
-  static double _parseBudget(dynamic budget) {
-    if (budget == null) return 0.0;
-    if (budget is num) return budget.toDouble();
-    if (budget is String) {
-      return double.tryParse(budget) ?? 0.0;
-    }
-    return 0.0;
   }
 }
 
@@ -75,27 +61,17 @@ class Settings {
 
   Settings({this.success, this.message, this.status});
 
-  factory Settings.fromJson(Map<String, dynamic> json) {
-    return Settings(
-      success: _parseInt(json['success']),
-      message: json['message'] as String? ?? '',
-      status: _parseInt(json['status']),
-    );
+  Settings.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['success'] = success;
-    data['message'] = message;
-    data['status'] = status;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
+    data['message'] = this.message;
+    data['status'] = this.status;
     return data;
-  }
-
-  static int? _parseInt(dynamic value) {
-    if (value == null) return null;
-    if (value is int) return value;
-    if (value is double) return value.toInt();
-    if (value is String) return int.tryParse(value);
-    return null;
   }
 }

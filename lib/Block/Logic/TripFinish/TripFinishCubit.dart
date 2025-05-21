@@ -6,16 +6,15 @@ import 'package:tripfin/Block/Logic/TripFinish/TripFinishState.dart';
 class TripFinishCubit extends Cubit<TripFinishState> {
   final TripFinishRepository updateProfileRepository;
 
-  TripFinishCubit(this.updateProfileRepository)
-      : super(FinishTripInitial());
+  TripFinishCubit(this.updateProfileRepository) : super(FinishTripInitial());
 
-  Future<void> updateProfile(FormData data) async {
+  Future<void> finishTrip(Map<String, dynamic> data) async {
     emit(FinishTripLoading());
     try {
       final res = await updateProfileRepository.finishtrip(data);
       if (res != null) {
         if (res.settings?.success == 1) {
-          emit(FinishTripSuccessState(successModel: res));
+          emit(FinishTripSuccessState(finishTripModel: res));
         }
       } else {
         emit(FinishTripError(message: 'Unexpected null response'));

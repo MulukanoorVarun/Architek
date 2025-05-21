@@ -14,12 +14,10 @@ class FinishTripInitial extends TripFinishState {}
 class FinishTripLoading extends TripFinishState {}
 
 class FinishTripSuccessState extends TripFinishState {
-  final SuccessModel successModel;
+  final FinishTripModel finishTripModel;
 
-  const FinishTripSuccessState({required this.successModel});
+  const FinishTripSuccessState({required this.finishTripModel});
 
-  @override
-  List<Object?> get props => [Finishtripmodel];
 }
 
 class FinishTripError extends TripFinishState {

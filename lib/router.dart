@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tripfin/Screens/Views/PerfectTripScreen.dart';
 import 'package:tripfin/Screens/Views/VacationHistory.dart';
 import 'package:tripfin/Screens/Views/HomeScreen.dart';
 import 'package:tripfin/Screens/Views/Splash.dart';
@@ -10,6 +9,8 @@ import 'Screens/Authentication/Login_Screen.dart';
 import 'Screens/Authentication/RegisterScreen.dart';
 import 'Screens/Views/EditProfileScreen.dart';
 import 'Screens/Views/Onboardscreen.dart';
+import 'Screens/Views/OutOfBudgetScreen.dart';
+import 'Screens/Views/PerfectScreen.dart';
 import 'Screens/Views/UpdateExpenceScreen.dart';
 import 'main.dart';
 
@@ -48,17 +49,28 @@ final GoRouter goRouter = GoRouter(
           (context, state) => buildSlideTransitionPage(ProfileScreen(), state),
     ),
     GoRoute(
+      path: '/perfect_screen',
+      pageBuilder:
+          (context, state) => buildSlideTransitionPage(PerfectScreen(), state),
+    ),
+    GoRoute(
+      path: '/out_of_theBudget',
+      pageBuilder:
+          (context, state) =>
+              buildSlideTransitionPage(OutOfBudgetScreen(), state),
+    ),
+    // GoRoute(
+    //   path: '/out_of_theBudget',
+    //   pageBuilder:
+    //       (context, state) => buildSlideTransitionPage(OutOfBudgetScreen(), state),
+    // ),
+    GoRoute(
       path: '/edit_profile_screen',
       pageBuilder:
           (context, state) =>
               buildSlideTransitionPage(Editprofilescreen(), state),
     ),
-    GoRoute(
-      path: '/perfecttripscreen',
-      pageBuilder:
-          (context, state) =>
-          buildSlideTransitionPage(Perfecttripscreen(), state),
-    ),
+
     GoRoute(
       path: '/update_expensive',
       pageBuilder: (context, state) {

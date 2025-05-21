@@ -1,4 +1,4 @@
-package com.example.tripfin
+package com.trip.fin
 
 import io.flutter.embedding.android.FlutterActivity
 

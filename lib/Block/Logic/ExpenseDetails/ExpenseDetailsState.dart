@@ -13,6 +13,8 @@ class GetExpenseDetailIntailly extends GetExpenseDetailsState {}
 
 class GetExpenseDetailLoading extends GetExpenseDetailsState {}
 
+class SaveExpenseDetailLoading extends GetExpenseDetailsState {}
+
 class ExpenceDetailSuccess extends GetExpenseDetailsState {
   final SuccessModel successModel;
   ExpenceDetailSuccess({required this.successModel});

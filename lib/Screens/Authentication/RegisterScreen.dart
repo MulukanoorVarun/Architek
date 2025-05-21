@@ -36,7 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void initState() {
-    context.read<GetCurrencyCubit>().GetCurrency();
+    // context.read<GetCurrencyCubit>().GetCurrency();
     super.initState();
   }
 
@@ -98,16 +98,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _handleRegistration(BuildContext context) {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedCurrency == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select a currency'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
+    // if (_formKey.currentState!.validate()) {
+      // if (_selectedCurrency == null) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(
+      //       content: Text('Please select a currency'),
+      //       backgroundColor: Colors.red,
+      //     ),
+      //   );
+      //   return;
+      // }
 
       final registerData = {
         'full_name': _nameController.text.trim(),
@@ -115,11 +115,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'password': _passwordController.text,
         'confirm_password': _conformPasswordController.text,
         'email': _emailController.text.trim(),
-        'currency': _selectCurrency.text,
+        // 'currency': _selectCurrency.text,
       };
 
       context.read<RegisterCubit>().postRegister(registerData);
-    }
+    // }
   }
 
   @override
@@ -137,12 +137,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           },
           builder: (context, state) {
             final isLoading = state is RegisterLoading;
-            return BlocBuilder<GetCurrencyCubit, GetCurrenecyState>(
-              builder: (context, state) {
-                if (state is GetCurrencyLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (state is GetCurrencyLoaded) {
-                  return Stack(
+            return
+            // BlocBuilder<GetCurrencyCubit, GetCurrenecyState>(
+            //   builder: (context, state) {
+            //     if (state is GetCurrencyLoading) {
+            //       return Center(child: CircularProgressIndicator());
+            //     } else if (state is GetCurrencyLoaded) {
+            //       return
+                  Stack(
                     children: [
                       Form(
                         key: _formKey,
@@ -256,175 +258,175 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
 
-                              const SizedBox(height: 16),
+                              // const SizedBox(height: 16),
 
-                              _buildLabel('Preferred Currency'),
-                              const SizedBox(height: 8),
-
-                              DropdownButtonHideUnderline(
-                                child: DropdownButton2<String>(
-                                  isExpanded: true,
-                                  hint: Text(
-                                    "Select Currency",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: "Poppins",
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  items:
-                                      (state.currencyModel.data?.isNotEmpty ??
-                                              false)
-                                          ? state.currencyModel.data!.map((
-                                            Currency item,
-                                          ) {
-                                            return DropdownMenuItem<String>(
-                                              value: item.key,
-                                              child: Text(
-                                                item.value ?? 'Unknown',
-                                                style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 14,
-                                                  fontFamily: "Poppins",
-                                                ),
-                                              ),
-                                            );
-                                          }).toList()
-                                          : [
-                                            DropdownMenuItem<String>(
-                                              enabled: false,
-                                              child: Text(
-                                                'No data found',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.grey,
-                                                  fontFamily: "Poppins",
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                  value: _selectedCurrency,
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _selectedCurrency = value;
-                                      print(
-                                        'selectCurrency:${_selectedCurrency}',
-                                      );
-                                    });
-                                  },
-                                  buttonStyleData: ButtonStyleData(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
-                                    height: 50,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Color(0x1AFFFFFF),
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(28),
-                                      ),
-                                      border: Border.all(
-                                        width: 1,
-                                        color: Colors.white54,
-                                      ),
-                                    ),
-                                  ),
-                                  dropdownStyleData: DropdownStyleData(
-                                    maxHeight: 250,
-                                    padding: EdgeInsets.zero,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                    ),
-                                    scrollbarTheme: ScrollbarThemeData(
-                                      thumbVisibility: MaterialStatePropertyAll(
-                                        false,
-                                      ),
-                                    ),
-                                  ),
-                                  menuItemStyleData: MenuItemStyleData(
-                                    height: 45,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
-                                  ),
-                                  dropdownSearchData: DropdownSearchData(
-                                    searchController: _selectCurrency,
-                                    searchInnerWidgetHeight: 50,
-                                    searchInnerWidget: Container(
-                                      height: 50,
-                                      padding: EdgeInsets.all(5),
-                                      child: TextFormField(
-                                        controller: _selectCurrency,
-                                        focusNode: _currencyFocusNode,
-                                        expands: true,
-                                        maxLines: null,
-                                        decoration: InputDecoration(
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 8,
-                                          ),
-                                          hintText:
-                                              "Search and select Currency",
-                                          hintStyle: TextStyle(
-                                            color: Color(0xFFB0B0B0),
-                                            fontSize: 12,
-                                            fontFamily: "Poppins",
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                            borderSide: BorderSide(
-                                              width: 1,
-                                              color: Color(0xffCDE2FB),
-                                            ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              7,
-                                            ),
-                                            borderSide: BorderSide(
-                                              width: 1,
-                                              color: Color(0xffCDE2FB),
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              7,
-                                            ),
-                                            borderSide: BorderSide(
-                                              width: 1,
-                                              color: Color(0xffCDE2FB),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    searchMatchFn: (item, searchValue) {
-                                      final currency = state.currencyModel.data!
-                                          .firstWhere(
-                                            (cur) => cur.key == item.value,
-                                          );
-
-                                      return currency.value != null &&
-                                          currency.value!
-                                              .toLowerCase()
-                                              .contains(
-                                                searchValue.toLowerCase(),
-                                              );
-                                    },
-                                  ),
-                                  onMenuStateChange: (isOpen) {
-                                    if (!isOpen) {
-                                      _selectCurrency.clear();
-                                    }
-                                  },
-                                ),
-                              ),
+                              // _buildLabel('Preferred Currency'),
+                              // const SizedBox(height: 8),
+                              //
+                              // DropdownButtonHideUnderline(
+                              //   child: DropdownButton2<String>(
+                              //     isExpanded: true,
+                              //     hint: Text(
+                              //       "Select Currency",
+                              //       style: TextStyle(
+                              //         fontSize: 14,
+                              //         fontFamily: "Poppins",
+                              //         color: Colors.grey,
+                              //       ),
+                              //     ),
+                              //     items:
+                              //         (state.currencyModel.data?.isNotEmpty ??
+                              //                 false)
+                              //             ? state.currencyModel.data!.map((
+                              //               Currency item,
+                              //             ) {
+                              //               return DropdownMenuItem<String>(
+                              //                 value: item.key,
+                              //                 child: Text(
+                              //                   item.value ?? 'Unknown',
+                              //                   style: TextStyle(
+                              //                     color: Colors.grey,
+                              //                     fontSize: 14,
+                              //                     fontFamily: "Poppins",
+                              //                   ),
+                              //                 ),
+                              //               );
+                              //             }).toList()
+                              //             : [
+                              //               DropdownMenuItem<String>(
+                              //                 enabled: false,
+                              //                 child: Text(
+                              //                   'No data found',
+                              //                   style: TextStyle(
+                              //                     fontSize: 14,
+                              //                     color: Colors.grey,
+                              //                     fontFamily: "Poppins",
+                              //                   ),
+                              //                 ),
+                              //               ),
+                              //             ],
+                              //     value: _selectedCurrency,
+                              //     onChanged: (String? value) {
+                              //       setState(() {
+                              //         _selectedCurrency = value;
+                              //         print(
+                              //           'selectCurrency:${_selectedCurrency}',
+                              //         );
+                              //       });
+                              //     },
+                              //     buttonStyleData: ButtonStyleData(
+                              //       padding: EdgeInsets.symmetric(
+                              //         horizontal: 16,
+                              //       ),
+                              //       height: 50,
+                              //       width: double.infinity,
+                              //       decoration: BoxDecoration(
+                              //         color: Color(0x1AFFFFFF),
+                              //         borderRadius: BorderRadius.all(
+                              //           Radius.circular(28),
+                              //         ),
+                              //         border: Border.all(
+                              //           width: 1,
+                              //           color: Colors.white54,
+                              //         ),
+                              //       ),
+                              //     ),
+                              //     dropdownStyleData: DropdownStyleData(
+                              //       maxHeight: 250,
+                              //       padding: EdgeInsets.zero,
+                              //       decoration: BoxDecoration(
+                              //         color: Colors.white,
+                              //         borderRadius: BorderRadius.all(
+                              //           Radius.circular(10),
+                              //         ),
+                              //       ),
+                              //       scrollbarTheme: ScrollbarThemeData(
+                              //         thumbVisibility: MaterialStatePropertyAll(
+                              //           false,
+                              //         ),
+                              //       ),
+                              //     ),
+                              //     menuItemStyleData: MenuItemStyleData(
+                              //       height: 45,
+                              //       padding: EdgeInsets.symmetric(
+                              //         horizontal: 16,
+                              //       ),
+                              //     ),
+                              //     dropdownSearchData: DropdownSearchData(
+                              //       searchController: _selectCurrency,
+                              //       searchInnerWidgetHeight: 50,
+                              //       searchInnerWidget: Container(
+                              //         height: 50,
+                              //         padding: EdgeInsets.all(5),
+                              //         child: TextFormField(
+                              //           controller: _selectCurrency,
+                              //           focusNode: _currencyFocusNode,
+                              //           expands: true,
+                              //           maxLines: null,
+                              //           decoration: InputDecoration(
+                              //             isDense: true,
+                              //             contentPadding: EdgeInsets.symmetric(
+                              //               horizontal: 10,
+                              //               vertical: 8,
+                              //             ),
+                              //             hintText:
+                              //                 "Search and select Currency",
+                              //             hintStyle: TextStyle(
+                              //               color: Color(0xFFB0B0B0),
+                              //               fontSize: 12,
+                              //               fontFamily: "Poppins",
+                              //             ),
+                              //             border: OutlineInputBorder(
+                              //               borderRadius: BorderRadius.circular(
+                              //                 8,
+                              //               ),
+                              //               borderSide: BorderSide(
+                              //                 width: 1,
+                              //                 color: Color(0xffCDE2FB),
+                              //               ),
+                              //             ),
+                              //             enabledBorder: OutlineInputBorder(
+                              //               borderRadius: BorderRadius.circular(
+                              //                 7,
+                              //               ),
+                              //               borderSide: BorderSide(
+                              //                 width: 1,
+                              //                 color: Color(0xffCDE2FB),
+                              //               ),
+                              //             ),
+                              //             focusedBorder: OutlineInputBorder(
+                              //               borderRadius: BorderRadius.circular(
+                              //                 7,
+                              //               ),
+                              //               borderSide: BorderSide(
+                              //                 width: 1,
+                              //                 color: Color(0xffCDE2FB),
+                              //               ),
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       ),
+                              //       searchMatchFn: (item, searchValue) {
+                              //         final currency = state.currencyModel.data!
+                              //             .firstWhere(
+                              //               (cur) => cur.key == item.value,
+                              //             );
+                              //
+                              //         return currency.value != null &&
+                              //             currency.value!
+                              //                 .toLowerCase()
+                              //                 .contains(
+                              //                   searchValue.toLowerCase(),
+                              //                 );
+                              //       },
+                              //     ),
+                              //     onMenuStateChange: (isOpen) {
+                              //       if (!isOpen) {
+                              //         _selectCurrency.clear();
+                              //       }
+                              //     },
+                              //   ),
+                              // ),
 
                               const SizedBox(height: 32),
 
@@ -462,12 +464,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                     ],
-                  );
-                } else if (state is GetCurrencyError) {
-                  return Center(child: Text(state.message));
-                }
-                return Center(child: Text("No Data"));
-              },
+                  // )
+              //   } else if (state is GetCurrencyError) {
+              //     return Center(child: Text(state.message));
+              //   }
+              //   return Center(child: Text("No Data"));
+              // },
             );
           },
         ),
