@@ -13,12 +13,9 @@ class PostTripInitial extends postTripState {
   const PostTripInitial();
 }
 
-// Loading state when the registration API call is in progress
 class PostTripLoading extends postTripState {
   PostTripLoading();
 }
-
-// Success state when registration is successful
 class PostTripSuccessState extends postTripState {
   final SuccessModel successModel;
   const PostTripSuccessState({required this.successModel});

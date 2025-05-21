@@ -432,10 +432,19 @@ class _VacationHistoryState extends State<VacationHistory> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Travel Plan",
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
+           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+             children: [
+               Text(
+                "Travel Plan",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+                         ),
+               IconButton(visualDensity: VisualDensity.compact,
+                   onPressed: (){
+
+                 
+               }, icon: Icon(Icons.edit,color: Colors.white70,))
+             ],
+           ),
           const SizedBox(height: 12),
           Row(
             children: [

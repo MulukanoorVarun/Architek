@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryState.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
+import 'package:tripfin/Block/Logic/Home/HomeCubit.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 import '../../Block/Logic/CategoryList/CategoryCubit.dart';
 import '../../Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
@@ -354,12 +355,11 @@ class _UpdateExpenseState extends State<UpdateExpense> {
           BlocConsumer<GetExpenseDetailCubit, GetExpenseDetailsState>(
             listener: (context, state) {
               if (state is ExpenceDetailSuccess) {
-                print("kjsdhfbhfbashfbhsfblkhsbfjklhsbfsdhbf");
-                context.push(
+                context.pushReplacement(
                   '/vacation?budget=${widget.budget}&place=${widget.place}',
                 );
                 context.read<PiechartCubit>().fetchPieChartData();
-                context.read<GetTripCubit>().GetTrip();
+                context.read<HomeCubit>().fetchHomeData();
 
               } else if (state is GetExpenseDetailError) {
                 CustomSnackBar.show(context, state.message);

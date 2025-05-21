@@ -10,6 +10,7 @@ import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripState.dart';
 import 'package:tripfin/Block/Logic/Home/HomeState.dart';
 import 'package:tripfin/Block/Logic/PostTrip/potTrip_state.dart';
+import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 
 import '../../Block/Logic/Home/HomeCubit.dart';
 import '../../Block/Logic/PostTrip/postTrip_cubit.dart';
@@ -35,7 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController destinationController = TextEditingController();
   TextEditingController budgetController = TextEditingController();
   File? _selectedImage;
-  String _validatefile = '';
+  String? destinationError;
+  String? dateError;
+  String? budgetError;
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage(ImageSource source) async {
@@ -43,13 +46,47 @@ class _HomeScreenState extends State<HomeScreen> {
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
-        _validatefile = '';
       });
-    } else {
-      setState(() {
-        _validatefile = 'No file selected.';
-      });
-    }
+    } else {}
+  }
+
+  bool _validateInputs() {
+    bool isValid = true;
+    setState(() {
+      // Destination validation
+      if (destinationController.text.trim().isEmpty) {
+        destinationError = "Destination is required";
+        isValid = false;
+      } else if (destinationController.text.trim().length < 2) {
+        destinationError = "Destination must be at least 2 characters";
+        isValid = false;
+      } else {
+        destinationError = null;
+      }
+
+      // Date validation
+      if (dateController.text.trim().isEmpty) {
+        dateError = "Date is required";
+        isValid = false;
+      } else {
+        dateError = null;
+      }
+
+      // Budget validation
+      if (budgetController.text.trim().isEmpty) {
+        budgetError = "Budget is required";
+        isValid = false;
+      } else {
+        final budget = double.tryParse(budgetController.text.trim());
+        if (budget == null || budget <= 0) {
+          budgetError = "Enter a valid positive amount";
+          isValid = false;
+        } else {
+          budgetError = null;
+        }
+      }
+    });
+    return isValid;
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -145,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         _buildTextField(
                           controller: destinationController,
                           hint: 'Where you travel',
+                          errorText: destinationError,
                         ),
                         SizedBox(height: height * 0.015),
                         _buildTextField(
@@ -153,11 +191,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           icon: Icons.calendar_today,
                           readOnly: true,
                           onTap: () => _selectDate(context),
+                          errorText: dateError,
                         ),
                         SizedBox(height: height * 0.015),
                         _buildTextField(
                           controller: budgetController,
-                          hint: 'enter spend amount',
+                          hint: 'Enter spend amount',
+                          errorText: budgetError,
                         ),
                         SizedBox(height: height * 0.015),
                         _selectedImage == null
@@ -284,16 +324,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             isLoading: state is PostTripLoading,
                             text: "Start Your Tour",
                             onPlusTap: () {
-                              final Map<String, dynamic> data = {
-                                'destination': destinationController.text,
-                                'start_date': dateController.text,
-                                'budget': budgetController.text,
-                              };
-                              if (_selectedImage != null) {
-                                data['image'] = _selectedImage;
+                              if (_validateInputs()) {
+                                final Map<String, dynamic> data = {
+                                  'destination': destinationController.text,
+                                  'start_date': dateController.text,
+                                  'budget': budgetController.text,
+                                };
+                                if (_selectedImage != null) {
+                                  data['image'] = _selectedImage;
+                                }
+                                context.read<postTripCubit>().postTrip(data);
+                              } else {
+                                CustomSnackBar.show(
+                                  context,
+                                  'Please fix the errors in the form',
+                                );
                               }
-                              print("data:${data}");
-                              context.read<postTripCubit>().postTrip(data);
                             },
                           ),
                         ),
@@ -429,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(width: width * 0.02),
+                                SizedBox(height: 50,),
                                 ElevatedButton.icon(
                                   onPressed: () {
                                     context.push(
@@ -442,7 +488,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     size: width * 0.045,
                                   ),
                                   label: Text(
-                                    "Add Spends",
+                                    "Spends",
                                     style: TextStyle(
                                       color: Colors.black87,
                                       fontSize: width * 0.04,
@@ -463,6 +509,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
+
                           ),
                         ),
                       SizedBox(height: height * 0.03),
@@ -708,35 +755,49 @@ class _HomeScreenState extends State<HomeScreen> {
     required TextEditingController controller,
     required String hint,
     IconData? icon,
-    TextInputType inputType = TextInputType.text,
-    int maxLines = 1,
     bool readOnly = false,
     VoidCallback? onTap,
+    String? errorText,
   }) {
-    return TextField(
-      controller: controller,
-      keyboardType: inputType,
-      maxLines: maxLines,
-      readOnly: readOnly,
-      onTap: onTap,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white70),
-        prefixIcon: icon != null ? Icon(icon, color: Colors.white70) : null,
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey.shade600),
-          borderRadius: BorderRadius.circular(30),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          readOnly: readOnly,
+          onTap: onTap,
+          style: TextStyle(color: Colors.white, fontFamily: 'Mulish'),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: Colors.white70),
+            suffixIcon: icon != null ? Icon(icon, color: Colors.white70) : null,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(color: Colors.grey.shade600),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(color: Colors.grey.shade600),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(color: Colors.white),
+            ),
+          ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.orangeAccent),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-      ),
+        if (errorText != null)
+          Padding(
+            padding: EdgeInsets.only(top: 4.0, left: 12.0),
+            child: Text(
+              errorText,
+              style: TextStyle(
+                color: Colors.redAccent,
+                fontSize: 12.0,
+                fontFamily: 'Mulish',
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
