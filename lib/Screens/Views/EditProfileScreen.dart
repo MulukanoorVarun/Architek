@@ -5,6 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../Block/Logic/Profiledetails/Profile_cubit.dart';
 import '../../Block/Logic/Profiledetails/Profile_state.dart';
+import '../../Block/Logic/UpdateProfile/UpdateProfileCubit.dart';
+import '../../Block/Logic/UpdateProfile/UpdateProfileRepository.dart';
+import '../../Services/remote_data_source.dart';
 import '../Components/CustomAppButton.dart';
 
 class Editprofilescreen extends StatefulWidget {
@@ -13,58 +16,64 @@ class Editprofilescreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<Editprofilescreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<ProfileCubit>().GetProfile();
-  }
-
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProfileCubit>().GetProfile();
+  }
+
   Future<void> _pickImageFromGallery() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile.path);
+          print('Image selected: ${_image!.path}');
+        });
+      } else {
+        print('No image selected from gallery');
+      }
+    } catch (e) {
+      print('Error picking image from gallery: $e');
     }
   }
 
   Future<void> _takePhoto() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile.path);
+          print('Image captured: ${_image!.path}');
+        });
+      } else {
+        print('No image captured from camera');
+      }
+    } catch (e) {
+      print('Error taking photo: $e');
     }
   }
 
-  Future<void> profileUpdate() async {
-    final formData = FormData.fromMap({
-      "full_name": _nameController.text,
-      "email": _emailController.text,
-      "status": "Active",
-      "mobile": _phoneController.text,
-      if (_image != null)
-        "image": await MultipartFile.fromFile(
-          _image!.path,
-          filename: _image!.path.split('/').last,
-        ),
-    });
-    print('FormData files: ${formData.files}');
-    if (_image != null) {
-      print('Image path: ${_image!.path}');
-      if (await _image!.exists()) {
-        print('Image file exists');
-      } else {
-        print('Image file does not exist');
-      }
+  Future<void> _updateProfile() async {
+    try {
+      final Map<String,dynamic>data={
+        "full_name": _nameController.text,
+        "email": _emailController.text,
+        "status": "Active",
+        "mobile": _phoneController.text,
+        "image": _image!.path,
+      };
+
+      context.read<UpdateProfileCubit>().updateProfile(data);
+    } catch (e) {
+      print('Error preparing FormData: $e');
     }
-    print('Calling UpdateprofileCubit with FormData');
   }
 
   @override
@@ -74,12 +83,9 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
         if (profileState is GetProfileLoading) {
           return Center(child: CircularProgressIndicator());
         } else if (profileState is GetProfileLoaded) {
-          _nameController.text =
-              profileState.getprofileModel.data?.fullName ?? "";
-          _emailController.text =
-              profileState.getprofileModel.data?.email ?? "";
-          _phoneController.text =
-              profileState.getprofileModel.data?.mobile ?? "";
+          _nameController.text = profileState.getprofileModel.data?.fullName ?? "";
+          _emailController.text = profileState.getprofileModel.data?.email ?? "";
+          _phoneController.text = profileState.getprofileModel.data?.mobile ?? "";
           return Scaffold(
             backgroundColor: Color(0xff304546),
             appBar: AppBar(
@@ -98,20 +104,15 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    // Profile Picture
                     Center(
                       child: Stack(
                         children: [
                           CircleAvatar(
                             backgroundColor: Colors.white,
                             radius: 60,
-                            backgroundImage:
-                                _image != null
-                                    ? FileImage(_image!)
-                                    : AssetImage(
-                                          'assets/profile_placeholder.png',
-                                        )
-                                        as ImageProvider,
+                            backgroundImage: _image != null
+                                ? FileImage(_image!)
+                                : AssetImage('assets/nodata_image.png') as ImageProvider,
                           ),
                           Positioned(
                             bottom: 0,
@@ -159,13 +160,10 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                       ),
                     ),
                     SizedBox(height: 30),
-                    // Name Field
                     _buildTextField("Name", _nameController),
                     SizedBox(height: 20),
-                    // Email Field
                     _buildTextField("Email", _emailController),
                     SizedBox(height: 20),
-                    // Phone Field
                     _buildTextField("Mobile Number", _phoneController),
                     SizedBox(height: 30),
                   ],
@@ -177,7 +175,7 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
               child: CustomAppButton1(
                 height: 56,
                 text: 'Save Changes',
-                onPlusTap: () {},
+                onPlusTap: _updateProfile,
               ),
             ),
           );

@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
+import 'package:tripfin/Model/EditExpenceModel.dart';
+import 'package:tripfin/Model/FinishTripModel.dart';
 import 'package:tripfin/Model/GetPrevousTripModel.dart';
 import 'package:tripfin/Model/PiechartExpenceModel.dart';
 import '../Model/CategoryResponseModel.dart';
@@ -10,12 +13,14 @@ import '../Model/ExpenseDetailModel.dart';
 import '../Model/GetCurrencyModel.dart';
 import '../Model/GetProfileModel.dart';
 import '../Model/GetTripModel.dart';
+import '../Model/ProfileUpdateResponseModel.dart';
 import '../Model/RegisterModel.dart';
 import '../Model/SuccessModel.dart';
 import '../Model/TripsSummaryResponse.dart';
 import 'ApiClient.dart';
 import 'api_endpoint_urls.dart';
 import 'package:http/http.dart' as http;
+
 
 
 abstract class RemoteDataSource {
@@ -33,6 +38,8 @@ abstract class RemoteDataSource {
   Future<SuccessModel?> updateExpensedata(Map<String, dynamic> data);
   Future<SuccessModel?> deleteExpenseDetails(String id);
   Future<SuccessModel?> postTrip(Map<String, dynamic> data);
+  Future<SuccessModel?> finishtrip();
+  Future<SuccessModel?> updateprofile(Map<String,dynamic> data);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -343,4 +350,46 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       return null;
     }
   }
+
+  @override
+  Future<SuccessModel?> updateprofile(Map<String,dynamic> data) async {
+    var formdata = await  buildFormData(data);
+    try {
+      final response = await ApiClient.put(
+        APIEndpointUrls.updateprofile,
+        data: formdata,
+
+      );
+      if (response.statusCode == 200) {
+        debugPrint('updateProfile: ${response.data}');
+        return SuccessModel.fromJson(response.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error updateProfile: $e');
+      return null;
+    }
+  }
+
+  @override
+  Future<SuccessModel?> finishtrip() async {
+    try {
+      final response = await ApiClient.post(
+        APIEndpointUrls.finishtrip,
+      );
+      if (response.statusCode == 200) {
+        debugPrint('finishtrip: ${response.data}');
+        return SuccessModel.fromJson(response.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error finishtrip: $e');
+      return null;
+    }
+  }
+
 }
+
+

@@ -26,7 +26,9 @@ class _OnboardscreenState extends State<Onboardscreen> {
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
+
         children: [
+
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -72,6 +74,7 @@ class _OnboardscreenState extends State<Onboardscreen> {
             ),
           ),
         ],
+
       ),
     );
   }
