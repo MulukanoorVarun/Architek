@@ -29,7 +29,7 @@ abstract class RemoteDataSource {
   Future<GetCurrencyModel?> getCurrency();
   Future<SuccessModel?> postExpense(Map<String, dynamic> data);
   Future<Piechartexpencemodel?> Piechartdata(String? tripid);
-  Future<SuccessModel?> updateExpensedata(Map<String, dynamic> data,String Id);
+  Future<SuccessModel?> updateExpensedata(Map<String, dynamic> data, String Id);
   Future<SuccessModel?> deleteExpenseDetails(String id);
   Future<SuccessModel?> postTrip(Map<String, dynamic> data);
   Future<FinishTripModel?> finishtrip(Map<String, dynamic> data);
@@ -273,7 +273,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<Piechartexpencemodel?> Piechartdata(String? tripid) async {
     try {
-      final response = await ApiClient.get("${APIEndpointUrls.piechartdata}?trip_id=${tripid}");
+      final response = await ApiClient.get(
+        "${APIEndpointUrls.piechartdata}?trip_id=${tripid}",
+      );
       if (response.statusCode == 200) {
         debugPrint('chartExpense: ${response.data}');
         return Piechartexpencemodel.fromJson(response.data);
@@ -287,7 +289,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<SuccessModel?> updateExpensedata(Map<String, dynamic> data,String Id) async {
+  Future<SuccessModel?> updateExpensedata(
+    Map<String, dynamic> data,
+    String Id,
+  ) async {
     try {
       final response = await ApiClient.put(
         "${APIEndpointUrls.putExpenseDetails}/${Id}",

@@ -89,7 +89,6 @@ class _UpdateExpenseState extends State<UpdateExpense> {
       dateController.text = formattedDate;
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,12 +97,6 @@ class _UpdateExpenseState extends State<UpdateExpense> {
       body: BlocConsumer<GetExpenseDetailCubit, GetExpenseDetailsState>(
         listener: (context, state) {
           if (state is ExpenceDetailSuccess) {
-            CustomSnackBar.show(
-              context,
-              widget.expenseId.isEmpty
-                  ? 'Expense added successfully!'
-                  : 'Expense updated successfully!',
-            );
             Future.microtask(() {
               context.pushReplacement(
                 '/vacation?budget=${widget.budget}&place=${widget.place}',

@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileState.dart';
 
-import '../EditProfileScreen/TripcountRepository.dart';
 import '../Profiledetails/Profile_repository.dart';
+import '../TripCount/TripcountRepository.dart';
 
 class CombinedProfileCubit extends Cubit<CombinedProfileState> {
   final GetProfileRepo getProfileRepo;
@@ -30,13 +30,14 @@ class CombinedProfileCubit extends Cubit<CombinedProfileState> {
         return;
       }
 
-      emit(CombinedProfileLoaded(
-        profileModel: profile,
-        tripSummaryModel: tripSummary,
-      ));
+      emit(
+        CombinedProfileLoaded(
+          profileModel: profile,
+          tripSummaryModel: tripSummary,
+        ),
+      );
     } catch (e) {
       emit(CombinedProfileError(message: e.toString()));
     }
   }
-
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +17,7 @@ import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 import '../../Block/Logic/Home/HomeCubit.dart';
 import '../../Block/Logic/PostTrip/postTrip_cubit.dart';
 import '../../utils/color_constants.dart';
+import '../../utils/spinkittsLoader.dart';
 import '../Components/CustomAppButton.dart';
 import '../Components/ShakeWidget.dart';
 
@@ -112,7 +114,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
-
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         if (state is HomeLoading) {
@@ -132,26 +133,49 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          InkResponse(
+                          InkWell(
                             onTap: () {
                               context.push('/profile_screen');
                             },
-                            child: CircleAvatar(
-                              radius: width * 0.07,
-                              backgroundImage: AssetImage("assets/profile.png"),
+                            borderRadius: BorderRadius.circular(width * 0.05), // Match CircleAvatar radius
+                            child: ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl: state.profileModel.data?.image ?? '',
+                                width: width * 0.1, // Set consistent width
+                                height: width * 0.1, // Set consistent height
+                                fit: BoxFit.cover,
+                                imageBuilder: (context, imageProvider) => CircleAvatar(
+                                  radius: width * 0.05, // Consistent radius
+                                  backgroundImage: imageProvider,
+                                ),
+                                placeholder: (context, url) => CircleAvatar(
+                                  radius: width * 0.05,
+                                  child: Center(
+                                    child: spinkits.getSpinningLinespinkit(), // Ensure spinner fits
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => CircleAvatar(
+                                  radius: width * 0.05,
+                                  backgroundImage: const AssetImage('assets/placeholder.png'),
+                                ),
+                              ),
                             ),
                           ),
-                          SizedBox(width: width * 0.03),
-                          Text(
-                            state.profileModel.data?.fullName ?? "Unknown",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: width * 0.06,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Mulish',
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: Text(
+                              state.profileModel.data?.fullName ?? "Unknown",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: width * 0.06,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Mulish',
+                              ),
+                              overflow: TextOverflow.ellipsis, // Prevent text overflow
                             ),
                           ),
                         ],
@@ -326,6 +350,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         BlocConsumer<postTripCubit, postTripState>(
                           listener: (context, state) {
                             if (state is PostTripSuccessState) {
+                              destinationController.clear();
+                              dateController.clear();
+                              budgetController.clear();
                               context.read<HomeCubit>().fetchHomeData();
                             }
                           },

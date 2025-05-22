@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tripfin/Block/Logic/EditProfileScreen/TripcountRepository.dart';
-import 'package:tripfin/Block/Logic/EditProfileScreen/TripcountState.dart';
+import 'TripcountRepository.dart';
+import 'TripcountState.dart';
+
 
 class Tripcountcubit extends Cubit<Tripcountstate> {
   final Tripcountrepository getTripcountRep;

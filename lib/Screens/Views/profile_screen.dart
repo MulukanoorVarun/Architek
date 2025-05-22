@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import 'package:tripfin/Screens/Components/CutomAppBar.dart';
 import 'package:tripfin/utils/color_constants.dart';
 
 import '../../utils/Preferances.dart';
+import '../../utils/spinkittsLoader.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -22,6 +24,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
     return Scaffold(
       backgroundColor: primary,
       appBar: CustomAppBar(title: 'Profile', actions: []),
@@ -39,10 +44,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 24,
-                          backgroundColor: primary,
-                          backgroundImage: AssetImage('assets/profile.png'),
+                        ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: state.profileModel.data?.image ?? '',
+                            width: width * 0.15,
+                            height: width * 0.15,
+                            fit: BoxFit.cover,
+                            imageBuilder:
+                                (context, imageProvider) => CircleAvatar(
+                                  radius: width * 0.05,
+                                  backgroundImage: imageProvider,
+                                ),
+                            placeholder:
+                                (context, url) => CircleAvatar(
+                                  radius: width * 0.05,
+                                  child: Center(
+                                    child:
+                                        spinkits
+                                            .getSpinningLinespinkit(), // Ensure spinner fits
+                                  ),
+                                ),
+                            errorWidget:
+                                (context, url, error) => CircleAvatar(
+                                  radius: width * 0.05,
+                                  backgroundImage: const AssetImage(
+                                    'assets/placeholder.png',
+                                  ),
+                                ),
+                          ),
                         ),
                         SizedBox(width: 10),
                         Expanded(
@@ -53,14 +82,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: Text(
-                                      state.profileModel.data?.fullName ?? "",
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        fontFamily: "Mullish",
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(height: 4),
+                                        Text(
+                                          state.profileModel.data?.fullName ??
+                                              "",
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            fontFamily: "Mullish",
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        SizedBox(height: 6),
+                                        Text(
+                                          state.profileModel.data?.mobile ?? "",
+                                          style: TextStyle(
+                                            color: Color(0xffFEFEFE),
+                                            fontFamily: "Mullish",
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   IconButton(

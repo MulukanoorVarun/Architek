@@ -1,14 +1,20 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tripfin/Block/Logic/UpdateProfile/UpdateProfileState.dart';
 
+import '../../Block/Logic/CombinedProfile/CombinedProfileCubit.dart';
+import '../../Block/Logic/Home/HomeCubit.dart';
 import '../../Block/Logic/Profiledetails/Profile_cubit.dart';
 import '../../Block/Logic/Profiledetails/Profile_state.dart';
 import '../../Block/Logic/UpdateProfile/UpdateProfileCubit.dart';
 import '../Components/CustomAppButton.dart';
+import '../Components/CutomAppBar.dart';
 
 class Editprofilescreen extends StatefulWidget {
   @override
@@ -68,9 +74,10 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
         "email": _emailController.text,
         "status": "Active",
         "mobile": _phoneController.text,
-        "image": _image != null ? _image!.path : null, // Only include if image is selected
+        "image": _image,
       };
 
+      data.removeWhere((key, value) => value == null);
       context.read<UpdateProfileCubit>().updateProfile(data);
     } catch (e) {
       print('Error preparing FormData: $e');
@@ -82,6 +89,9 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
     return BlocBuilder<ProfileCubit, GetProfileState>(
       builder: (context, profileState) {
         if (profileState is GetProfileLoading) {
@@ -94,22 +104,12 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
           _phoneController.text =
               profileState.getprofileModel.data?.mobile ?? "";
 
-          // Get the image URL from the API
-          final String? profileImageUrl = profileState.getprofileModel.data?.image;
+          final String? profileImageUrl =
+              profileState.getprofileModel.data?.image;
 
           return Scaffold(
             backgroundColor: const Color(0xff304546),
-            appBar: AppBar(
-              backgroundColor: const Color(0xff304546),
-              title: const Text(
-                'Edit Profile',
-                style: TextStyle(color: Colors.white),
-              ),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
+            appBar: CustomAppBar(title: 'Edit Profile', actions: []),
             body: Padding(
               padding: const EdgeInsets.all(20.0),
               child: SingleChildScrollView(
@@ -118,43 +118,35 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                     Center(
                       child: Stack(
                         children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.white,
-                            radius: 60,
-                            child: ClipOval(
-                              child: _image != null
-                                  ? Image.file(
-                                _image!,
-                                width: 120,
-                                height: 120,
-                                fit: BoxFit.cover,
-                              )
-                                  : (profileImageUrl != null && profileImageUrl.isNotEmpty)
-                                  ? Image.network(
-                                profileImageUrl,
-                                width: 120,
-                                height: 120,
-                                fit: BoxFit.cover,
-                                loadingBuilder: (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                },
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Image.asset(
-                                    'assets/nodata_image.png',
-                                    width: 120,
-                                    height: 120,
-                                    fit: BoxFit.cover,
-                                  );
-                                },
-                              )
-                                  : Image.asset(
-                                'assets/nodata_image.png',
-                                width: 120,
-                                height: 120,
-                                fit: BoxFit.cover,
+                          ClipOval(
+                            child: _image != null
+                                ? Image.file(
+                              _image!,
+                              width:150,
+                              height: 150,
+                              fit: BoxFit.cover,
+                            )
+                                : CachedNetworkImage(
+                              imageUrl: profileState.getprofileModel.data?.image??"",
+                              width:120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                              imageBuilder: (context, imageProvider) => CircleAvatar(
+                                radius: width * 15, // Matches width/height for circular shape
+                                backgroundImage: imageProvider,
+                                backgroundColor: Colors.white, // From old code
+                              ),
+                              placeholder: (context, url) => CircleAvatar(
+                                radius: width * 0.15,
+                                backgroundColor: Colors.white,
+                                child: const Center(
+                                  child: CircularProgressIndicator(), // From old code
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => CircleAvatar(
+                                radius: width * 0.15,
+                                backgroundColor: Colors.white,
+                                backgroundImage: const AssetImage('assets/nodata_image.png'), // From old code
                               ),
                             ),
                           ),
@@ -172,7 +164,9 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                                       child: Column(
                                         children: [
                                           ListTile(
-                                            leading: const Icon(Icons.photo_library),
+                                            leading: const Icon(
+                                              Icons.photo_library,
+                                            ),
                                             title: const Text('Gallery'),
                                             onTap: () {
                                               Navigator.pop(context);
@@ -180,7 +174,9 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                                             },
                                           ),
                                           ListTile(
-                                            leading: const Icon(Icons.camera_alt),
+                                            leading: const Icon(
+                                              Icons.camera_alt,
+                                            ),
                                             title: const Text('Camera'),
                                             onTap: () {
                                               Navigator.pop(context);
@@ -214,14 +210,30 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                 ),
               ),
             ),
-            bottomNavigationBar: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 80),
-              child: CustomAppButton1(
-                height: 56,
-                text: 'Save Changes',
-                onPlusTap: _updateProfile,
-              ),
-            ),
+            bottomNavigationBar:
+                BlocConsumer<UpdateProfileCubit, UpdateProfileState>(
+                  listener: (context, state) {
+                    if (state is UpdateProfileSuccessState) {
+                       context.read<HomeCubit>().fetchHomeData();
+                       context.read<CombinedProfileCubit>().fetchCombinedProfile();
+                      context.pop();
+                    }
+                  },
+                  builder: (context, state) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 80,
+                      ),
+                      child: CustomAppButton1(
+                        isLoading: state is UpdateProfileLoading,
+                        height: 56,
+                        text: 'Save Changes',
+                        onPlusTap: _updateProfile,
+                      ),
+                    );
+                  },
+                ),
           );
         } else if (profileState is GetProfileError) {
           return Center(child: Text(profileState.message));
@@ -238,7 +250,10 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
       cursorColor: const Color(0xff898989),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Color(0xff898989), fontFamily: 'Mullish'),
+        labelStyle: const TextStyle(
+          color: Color(0xff898989),
+          fontFamily: 'Mullish',
+        ),
         enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xff898989), width: 2),
           borderRadius: BorderRadius.circular(10),

@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tripfin/Block/Logic/EditProfileScreen/TripcountState.dart';
 import 'package:tripfin/Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
 import 'package:tripfin/Block/Logic/TripFinish/TripFinishCubit.dart';
 import 'package:tripfin/Block/Logic/TripFinish/TripFinishState.dart';

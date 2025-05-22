@@ -21,13 +21,13 @@ import 'package:tripfin/Services/remote_data_source.dart';
 import 'Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
 import 'Block/Logic/ExpenseDetails/ExpenseDetailsRepository.dart';
 import 'Block/Logic/Home/HomeCubit.dart';
-import 'Block/Logic/EditProfileScreen/TripcountCubit.dart';
-import 'Block/Logic/EditProfileScreen/TripcountRepository.dart';
 import 'Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import 'Block/Logic/PostTrip/postTrip_repository.dart';
 import 'Block/Logic/Profiledetails/Profile_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_repository.dart';
+import 'Block/Logic/TripCount/TripcountCubit.dart';
+import 'Block/Logic/TripCount/TripcountRepository.dart';
 
 
 
