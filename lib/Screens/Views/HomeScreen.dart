@@ -216,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               color: Colors.white,
                                             ),
                                             title: Text(
-                                              'Upload File',
+                                              'Upload Image for Trip',
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontFamily: 'Mullish',

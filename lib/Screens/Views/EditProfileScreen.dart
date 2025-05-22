@@ -1,13 +1,13 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+
 import '../../Block/Logic/Profiledetails/Profile_cubit.dart';
 import '../../Block/Logic/Profiledetails/Profile_state.dart';
 import '../../Block/Logic/UpdateProfile/UpdateProfileCubit.dart';
-import '../../Block/Logic/UpdateProfile/UpdateProfileRepository.dart';
-import '../../Services/remote_data_source.dart';
 import '../Components/CustomAppButton.dart';
 
 class Editprofilescreen extends StatefulWidget {
@@ -20,6 +20,7 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   File? _image;
+
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -67,12 +68,15 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
         "email": _emailController.text,
         "status": "Active",
         "mobile": _phoneController.text,
-        "image": _image!.path,
+        "image": _image != null ? _image!.path : null, // Only include if image is selected
       };
 
       context.read<UpdateProfileCubit>().updateProfile(data);
     } catch (e) {
       print('Error preparing FormData: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating profile: $e')),
+      );
     }
   }
 
@@ -81,7 +85,7 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
     return BlocBuilder<ProfileCubit, GetProfileState>(
       builder: (context, profileState) {
         if (profileState is GetProfileLoading) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (profileState is GetProfileLoaded) {
           _nameController.text =
               profileState.getprofileModel.data?.fullName ?? "";
@@ -89,16 +93,20 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
               profileState.getprofileModel.data?.email ?? "";
           _phoneController.text =
               profileState.getprofileModel.data?.mobile ?? "";
+
+          // Get the image URL from the API
+          final String? profileImageUrl = profileState.getprofileModel.data?.image;
+
           return Scaffold(
-            backgroundColor: Color(0xff304546),
+            backgroundColor: const Color(0xff304546),
             appBar: AppBar(
-              backgroundColor: Color(0xff304546),
-              title: Text(
+              backgroundColor: const Color(0xff304546),
+              title: const Text(
                 'Edit Profile',
                 style: TextStyle(color: Colors.white),
               ),
               leading: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.white),
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -113,11 +121,42 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                           CircleAvatar(
                             backgroundColor: Colors.white,
                             radius: 60,
-                            backgroundImage:
-                                _image != null
-                                    ? FileImage(_image!)
-                                    : AssetImage('assets/nodata_image.png')
-                                        as ImageProvider,
+                            child: ClipOval(
+                              child: _image != null
+                                  ? Image.file(
+                                _image!,
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              )
+                                  : (profileImageUrl != null && profileImageUrl.isNotEmpty)
+                                  ? Image.network(
+                                profileImageUrl,
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    'assets/nodata_image.png',
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              )
+                                  : Image.asset(
+                                'assets/nodata_image.png',
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
                           Positioned(
                             bottom: 0,
@@ -133,16 +172,16 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                                       child: Column(
                                         children: [
                                           ListTile(
-                                            leading: Icon(Icons.photo_library),
-                                            title: Text('Gallery'),
+                                            leading: const Icon(Icons.photo_library),
+                                            title: const Text('Gallery'),
                                             onTap: () {
                                               Navigator.pop(context);
                                               _pickImageFromGallery();
                                             },
                                           ),
                                           ListTile(
-                                            leading: Icon(Icons.camera_alt),
-                                            title: Text('Camera'),
+                                            leading: const Icon(Icons.camera_alt),
+                                            title: const Text('Camera'),
                                             onTap: () {
                                               Navigator.pop(context);
                                               _takePhoto();
@@ -154,7 +193,7 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                                   },
                                 );
                               },
-                              child: CircleAvatar(
+                              child: const CircleAvatar(
                                 radius: 20,
                                 backgroundColor: Color(0xFFF4A261),
                                 child: Icon(Icons.edit, color: Colors.black),
@@ -164,19 +203,19 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     _buildTextField("Name", _nameController),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     _buildTextField("Email", _emailController),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     _buildTextField("Mobile Number", _phoneController),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),
             ),
             bottomNavigationBar: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 80),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 80),
               child: CustomAppButton1(
                 height: 56,
                 text: 'Save Changes',
@@ -187,7 +226,7 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
         } else if (profileState is GetProfileError) {
           return Center(child: Text(profileState.message));
         }
-        return Center(child: Text("No Data"));
+        return const Center(child: Text("No Data"));
       },
     );
   }
@@ -195,17 +234,17 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
   Widget _buildTextField(String label, TextEditingController controller) {
     return TextField(
       controller: controller,
-      style: TextStyle(color: Colors.white),
-      cursorColor: Color(0xff898989),
+      style: const TextStyle(color: Colors.white),
+      cursorColor: const Color(0xff898989),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Color(0xff898989), fontFamily: 'Mullish'),
+        labelStyle: const TextStyle(color: Color(0xff898989), fontFamily: 'Mullish'),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xff898989), width: 2),
+          borderSide: const BorderSide(color: Color(0xff898989), width: 2),
           borderRadius: BorderRadius.circular(10),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xff898989), width: 2),
+          borderSide: const BorderSide(color: Color(0xff898989), width: 2),
           borderRadius: BorderRadius.circular(10),
         ),
       ),
