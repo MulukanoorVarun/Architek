@@ -7,8 +7,11 @@ import 'package:tripfin/Screens/Views/Splash.dart';
 import 'package:tripfin/Screens/Views/profile_screen.dart';
 import 'Screens/Authentication/Login_Screen.dart';
 import 'Screens/Authentication/RegisterScreen.dart';
+import 'Screens/Views/BelowBudget.dart';
 import 'Screens/Views/EditProfileScreen.dart';
 import 'Screens/Views/Onboardscreen.dart';
+import 'Screens/Views/OutOfBudgetScreen.dart';
+import 'Screens/Views/PerfectTripScreen.dart';
 import 'Screens/Views/UpdateExpenceScreen.dart';
 import 'main.dart';
 
@@ -46,22 +49,36 @@ final GoRouter goRouter = GoRouter(
       pageBuilder:
           (context, state) => buildSlideTransitionPage(ProfileScreen(), state),
     ),
-    // GoRoute(
-    //   path: '/perfect_screen',
-    //   pageBuilder:
-    //       (context, state) => buildSlideTransitionPage(PerfectScreen(), state),
-    // ),
-    // GoRoute(
-    //   path: '/out_of_theBudget',
-    //   pageBuilder:
-    //       (context, state) =>
-    //           buildSlideTransitionPage(OutOfBudgetScreen(), state),
-    // ),
-    // GoRoute(
-    //   path: '/out_of_theBudget',
-    //   pageBuilder:
-    //       (context, state) => buildSlideTransitionPage(OutOfBudgetScreen(), state),
-    // ),
+    GoRoute(
+      path: '/perfect_budget',
+      pageBuilder: (context, state) {
+        final message = state.uri.queryParameters['message'];
+        return buildSlideTransitionPage(
+          Perfecttripscreen(message: message ?? ""),
+          state,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/out_of_theBudget',
+      pageBuilder: (context, state) {
+        final message = state.uri.queryParameters['message'];
+        return buildSlideTransitionPage(
+          Outofbudgetscreen(message: message ?? ""),
+          state,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/below_of_theBudget',
+      pageBuilder: (context, state) {
+        final message = state.uri.queryParameters['message'];
+        return buildSlideTransitionPage(
+          BudgetBossScreen(message: message ?? ""),
+          state,
+        );
+      },
+    ),
     GoRoute(
       path: '/edit_profile_screen',
       pageBuilder:
@@ -93,7 +110,7 @@ final GoRouter goRouter = GoRouter(
         final tripID = state.uri.queryParameters['tripId'];
         final budget = state.uri.queryParameters['budget'];
         return buildSlideTransitionPage(
-          VacationHistory(tripId: tripID??"",budget: budget??"",),
+          VacationHistory(tripId: tripID ?? "", budget: budget ?? ""),
           state,
         );
       },

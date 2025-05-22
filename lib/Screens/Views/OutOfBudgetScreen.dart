@@ -1,112 +1,69 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:tripfin/utils/color_constants.dart';
 import '../Components/CustomAppButton.dart';
 
 class Outofbudgetscreen extends StatelessWidget {
-  final int savings;
-
-  const Outofbudgetscreen({Key? key, this.savings = 48000}) : super(key: key);
+  final String message;
+  const Outofbudgetscreen({Key? key, required this.message}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(
-        0xff1C3132,
-      ), // Dark teal background (matches image)
-      body: SafeArea(
+      backgroundColor: primary,
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 40),
         child: Column(
-          crossAxisAlignment:
-          CrossAxisAlignment.start, // Align content to the left
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 15.0,
-              ), // Left padding for "Wow!" and subtitle
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Hey Budget Boss',
-                    style: TextStyle(
-                      fontFamily: 'Mullish',
-                      color: Color(0xFFffffff), // Orange color (matches image)
-                      fontSize: 18, // Matches the size in the image
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4), // Exact spacing as in the image
-                  // Subtitle: "You are with in the budget boss."
-                  Padding(
-                    padding: const EdgeInsets.all(1.0),
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Your are',
-                            style: TextStyle(
-                              color: Colors.white,
-                              // White color for "You saved"
-                              fontSize: 18,
-                              fontFamily: 'Mullish',
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: 'out of budget',
-                            style: TextStyle(
-                              color: Color(0xffFF3B3B),
-                              // White color for "You saved"
-                              fontSize: 18,
-                              fontFamily: 'Mullish',
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+            const Text(
+              'Hey Budget Boss',
+              style: TextStyle(
+                fontFamily: 'Mullish',
+                color: Color(0xFFffffff),
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(height: 20), // Exact spacing as in the image
-            // Illustration (centered)
-            Center(
-              child: Image.asset(
-                'assets/screen2backImage.png', // Your image asset
-                height: 300, // Matches the size in the image
-              ),
-            ),
-            const SizedBox(height: 10), // Exact spacing as in the image
-            // Savings: "You saved 48,000" with split colors
+            const SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.all(14.0),
+              padding: EdgeInsets.all(1.0),
               child: RichText(
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: 'You spent more ',
+                      text: 'Your are  ',
                       style: TextStyle(
-                        color: Colors.white, // White color for "You saved"
-                        fontSize: 20,
+                        color: Colors.white,
+                        fontSize: 18,
                         fontFamily: 'Mullish',
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     TextSpan(
-                      text: '2,000 extra  ',
+                      text: 'out of budget',
                       style: TextStyle(
-                        color: Color(0xffFF4545), // White color for "You saved"
-                        fontSize: 20,
+                        color: Color(0xffFF3B3B),
+                        fontSize: 18,
                         fontFamily: 'Mullish',
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
                 ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Center(child: Image.asset('assets/screen2backImage.png')),
+            SizedBox(height: 10),
+            Text(
+              message,
+              style: TextStyle(
+                color: Color(0xffDBDBDB),
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
+                fontFamily: 'Mullish',
               ),
             ),
           ],
@@ -121,8 +78,6 @@ class Outofbudgetscreen extends StatelessWidget {
           },
         ),
       ),
-
     );
   }
 }
-

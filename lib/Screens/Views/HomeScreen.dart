@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -93,8 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
     );
     if (picked != null) {
       final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
@@ -195,153 +196,163 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         SizedBox(height: height * 0.015),
                         _buildTextField(
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          keyboardType: TextInputType.numberWithOptions(
+                            decimal: false,
+                            signed: false,
+                          ),
+
                           controller: budgetController,
                           hint: 'Enter spend amount',
                           errorText: budgetError,
                         ),
-                        SizedBox(height: height * 0.015),
-                        _selectedImage == null
-                            ? InkWell(
-                              onTap: () {
-                                showModalBottomSheet(
-                                  backgroundColor: primary,
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return SafeArea(
-                                      child: Wrap(
-                                        children: <Widget>[
-                                          ListTile(
-                                            leading: Icon(
-                                              Icons.camera_alt,
-                                              color: Colors.white,
-                                            ),
-                                            title: Text(
-                                              'Upload Image for Trip',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: 'Mullish',
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              _pickImage(ImageSource.camera);
-                                              context.pop();
-                                            },
-                                          ),
-                                          ListTile(
-                                            leading: Icon(
-                                              Icons.photo_library,
-                                              color: Colors.white,
-                                            ),
-                                            title: Text(
-                                              'Choose from gallery',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: 'Mullish',
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              _pickImage(ImageSource.gallery);
-                                              context.pop();
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                              child: Container(
-                                width: width,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 12.0,
-                                  vertical: 14,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.grey.shade600,
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: Text(
-                                  'Upload File',
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'Mullish',
-                                  ),
-                                ),
-                              ),
-                            )
-                            : Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.file(
-                                    _selectedImage!,
-                                    height: 80,
-                                    width: 80,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _selectedImage = null;
-                                      });
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.6),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        Icons.close,
-                                        color: Colors.white,
-                                        size: 18,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                        // SizedBox(height: height * 0.015),
+                        // _selectedImage == null
+                        //     ? InkWell(
+                        //       onTap: () {
+                        //         showModalBottomSheet(
+                        //           backgroundColor: primary,
+                        //           context: context,
+                        //           builder: (BuildContext context) {
+                        //             return SafeArea(
+                        //               child: Wrap(
+                        //                 children: <Widget>[
+                        //                   ListTile(
+                        //                     leading: Icon(
+                        //                       Icons.camera_alt,
+                        //                       color: Colors.white,
+                        //                     ),
+                        //                     title: Text(
+                        //                       'Upload Image for Trip',
+                        //                       style: TextStyle(
+                        //                         color: Colors.white,
+                        //                         fontFamily: 'Mullish',
+                        //                         fontWeight: FontWeight.w400,
+                        //                         fontSize: 15,
+                        //                       ),
+                        //                     ),
+                        //                     onTap: () {
+                        //                       _pickImage(ImageSource.camera);
+                        //                       context.pop();
+                        //                     },
+                        //                   ),
+                        //                   ListTile(
+                        //                     leading: Icon(
+                        //                       Icons.photo_library,
+                        //                       color: Colors.white,
+                        //                     ),
+                        //                     title: Text(
+                        //                       'Choose from gallery',
+                        //                       style: TextStyle(
+                        //                         color: Colors.white,
+                        //                         fontFamily: 'Mullish',
+                        //                         fontWeight: FontWeight.w400,
+                        //                         fontSize: 15,
+                        //                       ),
+                        //                     ),
+                        //                     onTap: () {
+                        //                       _pickImage(ImageSource.gallery);
+                        //                       context.pop();
+                        //                     },
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             );
+                        //           },
+                        //         );
+                        //       },
+                        //       child: Container(
+                        //         width: width,
+                        //         padding: EdgeInsets.symmetric(
+                        //           horizontal: 12.0,
+                        //           vertical: 14,
+                        //         ),
+                        //         decoration: BoxDecoration(
+                        //           border: Border.all(
+                        //             color: Colors.grey.shade600,
+                        //             width: 1.0,
+                        //           ),
+                        //           borderRadius: BorderRadius.circular(30),
+                        //         ),
+                        //         child: Text(
+                        //           'Upload File',
+                        //           style: TextStyle(
+                        //             color: Colors.white70,
+                        //             fontSize: 16.0,
+                        //             fontWeight: FontWeight.w500,
+                        //             fontFamily: 'Mullish',
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     )
+                        //     : Stack(
+                        //       children: [
+                        //         ClipRRect(
+                        //           borderRadius: BorderRadius.circular(8),
+                        //           child: Image.file(
+                        //             _selectedImage!,
+                        //             height: 80,
+                        //             width: 80,
+                        //             fit: BoxFit.cover,
+                        //           ),
+                        //         ),
+                        //         Positioned(
+                        //           top: 0,
+                        //           right: 0,
+                        //           child: GestureDetector(
+                        //             onTap: () {
+                        //               setState(() {
+                        //                 _selectedImage = null;
+                        //               });
+                        //             },
+                        //             child: Container(
+                        //               decoration: BoxDecoration(
+                        //                 color: Colors.black.withOpacity(0.6),
+                        //                 shape: BoxShape.circle,
+                        //               ),
+                        //               child: Icon(
+                        //                 Icons.close,
+                        //                 color: Colors.white,
+                        //                 size: 18,
+                        //               ),
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
                         SizedBox(height: height * 0.025),
-                        BlocListener<postTripCubit, postTripState>(
+                        BlocConsumer<postTripCubit, postTripState>(
                           listener: (context, state) {
                             if (state is PostTripSuccessState) {
                               context.read<HomeCubit>().fetchHomeData();
                             }
                           },
-                          child: CustomAppButton1(
-                            isLoading: state is PostTripLoading,
-                            text: "Start Your Tour",
-                            onPlusTap: () {
-                              if (_validateInputs()) {
-                                final Map<String, dynamic> data = {
-                                  'destination': destinationController.text,
-                                  'start_date': dateController.text,
-                                  'budget': budgetController.text,
-                                };
-                                if (_selectedImage != null) {
-                                  data['image'] = _selectedImage;
+                          builder: (context, state) {
+                            return CustomAppButton1(
+                              isLoading: state is PostTripLoading,
+                              text: "Start Your Tour",
+                              onPlusTap: () {
+                                if (_validateInputs()) {
+                                  final Map<String, dynamic> data = {
+                                    'destination': destinationController.text,
+                                    'start_date': dateController.text,
+                                    'budget': budgetController.text,
+                                  };
+                                  if (_selectedImage != null) {
+                                    data['image'] = _selectedImage;
+                                  }
+                                  context.read<postTripCubit>().postTrip(data);
+                                } else {
+                                  CustomSnackBar.show(
+                                    context,
+                                    'Please fix the errors in the form',
+                                  );
                                 }
-                                context.read<postTripCubit>().postTrip(data);
-                              } else {
-                                CustomSnackBar.show(
-                                  context,
-                                  'Please fix the errors in the form',
-                                );
-                              }
-                            },
-                          ),
+                              },
+                            );
+                          },
                         ),
                         SizedBox(height: height * 0.035),
                       ],
@@ -757,6 +768,8 @@ class _HomeScreenState extends State<HomeScreen> {
     bool readOnly = false,
     VoidCallback? onTap,
     String? errorText,
+    TextInputType? keyboardType, // Added for specifying input type
+    List<TextInputFormatter>? inputFormatters, // Added for input restrictions
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -765,6 +778,8 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: controller,
           readOnly: readOnly,
           onTap: onTap,
+          keyboardType: keyboardType, // Apply keyboard type
+          inputFormatters: inputFormatters, // Apply input formatters
           style: TextStyle(color: Colors.white, fontFamily: 'Mulish'),
           decoration: InputDecoration(
             hintText: hint,

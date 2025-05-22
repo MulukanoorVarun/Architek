@@ -1,54 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tripfin/utils/color_constants.dart';
 
 import '../Components/CustomAppButton.dart';
 
 class Perfecttripscreen extends StatelessWidget {
-  final int savings;
-
-  const Perfecttripscreen({Key? key, this.savings = 48000}) : super(key: key);
+  final String message;
+  const Perfecttripscreen({Key? key, required this.message}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(
-        0xff1C3132,
-      ), // Dark teal background (matches image)
-      body: SafeArea(
+      backgroundColor: primary,
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 50),
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start, // Align content to the left
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 15.0,
-              ), // Left padding for "Wow!" and subtitle
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Perfect Boss !',
-
-                    style: TextStyle(
-                      fontFamily: 'Mullish',
-                      color: Color(0xFFDDA25F), // Orange color (matches image)
-                      fontSize: 32, // Matches the size in the image
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4), // Exact spacing as in the image
-                  // Subtitle: "You are with in the budget boss."
-                  const Text(
-                    'You finished the tour with in the Budget.',
-                    style: TextStyle(
-                      fontFamily: 'Mullish',
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white, // White color (matches image)
-                      fontSize: 14, // Matches the smaller size in the image
-                    ),
-                  ),
-                ],
+            const Text(
+              'Perfect Boss !',
+              style: TextStyle(
+                fontFamily: 'Mullish',
+                color: Color(0xFFDDA25F),
+                fontSize: 32,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'You finished the tour with in the Budget.',
+              style: TextStyle(
+                fontFamily: 'Mullish',
+                fontWeight: FontWeight.w400,
+                color: Color(0xffFBFBFB),
+                fontSize: 18,
               ),
             ),
             const SizedBox(height: 20), // Exact spacing as in the image
@@ -60,38 +46,13 @@ class Perfecttripscreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10), // Exact spacing as in the image
-            // Savings: "You saved 48,000" with split colors
-            Padding(
-              padding: const EdgeInsets.all(14.0),
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'You In Perfect ',
-                      style: TextStyle(
-                        color: Colors.white, // White color for "You saved"
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Mullish',
-
-                      ),
-                    ),
-                    TextSpan(
-                      text: savings
-                          .toStringAsFixed(0)
-                          .replaceAllMapped(
-                            RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-                            (Match m) => '${m[1]},',
-                          ),
-                      style: const TextStyle(
-                        color: Color(0xff55EE4A), // Light green for "48,000"
-                        fontSize: 24,
-                        fontFamily: 'Mullish',
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
+            Text(
+              message,
+              style: TextStyle(
+                color: Color(0xffDBDBDB),
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
+                fontFamily: 'Mullish',
               ),
             ),
           ],

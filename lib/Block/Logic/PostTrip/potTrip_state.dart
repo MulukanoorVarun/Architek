@@ -8,13 +8,11 @@ abstract class postTripState extends Equatable {
   List<Object?> get props => [];
 }
 
-// Initial state when the registration process has not started
 class PostTripInitial extends postTripState {
-  const PostTripInitial();
+
 }
 
 class PostTripLoading extends postTripState {
-  PostTripLoading();
 }
 class PostTripSuccessState extends postTripState {
   final SuccessModel successModel;

@@ -9,6 +9,7 @@ import 'package:tripfin/Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
 import 'package:tripfin/Block/Logic/TripFinish/TripFinishCubit.dart';
 import 'package:tripfin/Block/Logic/TripFinish/TripFinishState.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
+import '../../Block/Logic/Home/HomeCubit.dart';
 import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import '../../Block/Logic/PiechartdataScreen/PiechartState.dart';
 import '../../utils/color_constants.dart';
@@ -120,10 +121,10 @@ class _VacationHistoryState extends State<VacationHistory> {
                     BlocListener<TripFinishCubit, TripFinishState>(
                       listener: (context, state) {
                         if (state is FinishTripSuccessState) {
+                          context.read<HomeCubit>().fetchHomeData();
                           final budgetStr = state.finishTripModel.data?.budget;
                           final totalExpenseStr =
                               state.finishTripModel.data?.totalExpense;
-
                           if (budgetStr != null && totalExpenseStr != null) {
                             final budget = double.tryParse(budgetStr);
                             final totalExpense = double.tryParse(
@@ -132,17 +133,19 @@ class _VacationHistoryState extends State<VacationHistory> {
 
                             if (budget != null && totalExpense != null) {
                               if (budget == totalExpense) {
-                                context.pushReplacement("/perfect_screen");
+                                context.pushReplacement(
+                                  "/perfect_budget?message=${state.finishTripModel.settings?.message ?? ''}",
+                                );
                               } else if (budget < totalExpense) {
-                                context.pushReplacement("/out_of_theBudget");
+                                context.pushReplacement(
+                                  "/out_of_theBudget?message=${state.finishTripModel.settings?.message ?? ''}",
+                                );
                               } else if (budget > totalExpense) {
-                                context.pushReplacement("/below_of_theBudget");
+                                context.pushReplacement(
+                                  "/below_of_theBudget?message=${state.finishTripModel.settings?.message ?? ''}",
+                                );
                               }
-                            } else {
-                              context.pushReplacement("/error_screen");
                             }
-                          } else {
-                            context.pushReplacement("/error_screen");
                           }
                         }
                       },
