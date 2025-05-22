@@ -28,8 +28,8 @@ abstract class RemoteDataSource {
   Future<ExpenseDetailModel?> getExpenseDetails(String id);
   Future<GetCurrencyModel?> getCurrency();
   Future<SuccessModel?> postExpense(Map<String, dynamic> data);
-  Future<Piechartexpencemodel?> Piechartdata();
-  Future<SuccessModel?> updateExpensedata(Map<String, dynamic> data);
+  Future<Piechartexpencemodel?> Piechartdata(String? tripid);
+  Future<SuccessModel?> updateExpensedata(Map<String, dynamic> data,String Id);
   Future<SuccessModel?> deleteExpenseDetails(String id);
   Future<SuccessModel?> postTrip(Map<String, dynamic> data);
   Future<FinishTripModel?> finishtrip(Map<String, dynamic> data);
@@ -270,53 +270,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     }
   }
 
-  // @override
-  // Future<SuccessModel?> postTrip(Map<String, dynamic> data) async {
-  //   try {
-  //     final request = http.MultipartRequest(
-  //       'POST',
-  //       Uri.parse(APIEndpointUrls.postTrip)
-  //     );
-  //
-  //     // Add fields to the request
-  //     data.forEach((key, value) {
-  //       if (key != 'image' && value != null) {
-  //         request.fields[key] = value.toString();
-  //       }
-  //     });
-  //
-  //     // Add image file if present
-  //     if (data.containsKey('image') && data['image'] != null) {
-  //       final imageFile = data['image'] as File;
-  //       request.files.add(
-  //         await http.MultipartFile.fromPath(
-  //           'image',
-  //           imageFile.path,
-  //           filename: imageFile.path.split('/').last,
-  //         ),
-  //       );
-  //     }
-  //
-  //     // Send the request
-  //     final response = await request.send();
-  //     final responseBody = await response.stream.bytesToString();
-  //
-  //     // Parse the response
-  //     if (response.statusCode == 200) {
-  //       return SuccessModel.fromJson(jsonDecode(responseBody));
-  //     } else {
-  //       throw Exception('Failed to post trip: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Error postTrip: $e');
-  //     return null;
-  //   }
-  // }
-
   @override
-  Future<Piechartexpencemodel?> Piechartdata() async {
+  Future<Piechartexpencemodel?> Piechartdata(String? tripid) async {
     try {
-      final response = await ApiClient.get(APIEndpointUrls.piechartdata);
+      final response = await ApiClient.get("${APIEndpointUrls.piechartdata}?trip_id=${tripid}");
       if (response.statusCode == 200) {
         debugPrint('chartExpense: ${response.data}');
         return Piechartexpencemodel.fromJson(response.data);
@@ -330,10 +287,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<SuccessModel?> updateExpensedata(Map<String, dynamic> data) async {
+  Future<SuccessModel?> updateExpensedata(Map<String, dynamic> data,String Id) async {
     try {
       final response = await ApiClient.put(
-        "${APIEndpointUrls.putExpenseDetails}",
+        "${APIEndpointUrls.putExpenseDetails}/${Id}",
         data: data,
       );
       if (response.statusCode == 200) {

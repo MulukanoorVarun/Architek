@@ -11,10 +11,10 @@ class PiechartCubit extends Cubit<PiechartState> {
 
   PiechartCubit(this.piechartrepository) : super(PiechartInitial());
 
-  Future<void> fetchPieChartData() async {
+  Future<void> fetchPieChartData(String? tripid) async {
     emit(PiechartLoading());
     try {
-      final response = await piechartrepository.Piechartdata();
+      final response = await piechartrepository.Piechartdata(tripid);
       if (response != null) {
         if (response.settings?.success == 1) {
           emit(PiechartSuccess(

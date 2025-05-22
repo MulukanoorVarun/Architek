@@ -4,53 +4,33 @@ import 'ExpenseDetailsState.dart';
 
 class GetExpenseDetailCubit extends Cubit<GetExpenseDetailsState> {
   final GetExpenseDetailRepo ExpenseDetailRepo;
-  GetExpenseDetailCubit(this.ExpenseDetailRepo)
-    : super(GetExpenseDetailIntailly());
+  GetExpenseDetailCubit(this.ExpenseDetailRepo) : super(GetExpenseDetailIntailly());
 
   Future<void> GetExpenseDetails(String id) async {
     emit(GetExpenseDetailLoading());
     try {
       final res = await ExpenseDetailRepo.getExpensiveDetails(id);
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          emit(GetExpenseDetailLoaded(expenseDetailModel: res));
-        }
+      if (res != null && res.settings?.success == 1) {
+        emit(GetExpenseDetailLoaded(expenseDetailModel: res));
       } else {
-        emit(GetExpenseDetailError(message: res?.settings?.message ?? ""));
+        emit(GetExpenseDetailError(message: res?.settings?.message ?? "Failed to fetch expense details"));
       }
     } catch (e) {
-      emit(GetExpenseDetailError(message: "An Error Occured: $e"));
+      emit(GetExpenseDetailError(message: "An error occurred: $e"));
     }
   }
 
-  Future<void> updateExpenseDetails(Map<String, dynamic> data) async {
-    emit(GetExpenseDetailLoading());
+  Future<void> updateExpenseDetails(Map<String, dynamic> data, String id) async {
+    emit(SaveExpenseDetailLoading());
     try {
-      final res = await ExpenseDetailRepo.putExpensiveDetails(data);
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          emit(ExpenceDetailSuccess(successModel: res));
-        }
+      final res = await ExpenseDetailRepo.putExpensiveDetails(data, id);
+      if (res != null && res.settings?.success == 1) {
+        emit(ExpenceDetailSuccess(successModel: res));
       } else {
-        emit(GetExpenseDetailError(message: res?.settings?.message ?? ""));
+        emit(GetExpenseDetailError(message: res?.settings?.message ?? "Failed to update expense"));
       }
     } catch (e) {
-      emit(GetExpenseDetailError(message: "An Error Occured: $e"));
-    }
-  }
-  Future<void> deleteExpenseDetails(String id) async {
-    emit(GetExpenseDetailLoading());
-    try {
-      final res = await ExpenseDetailRepo.deleteExpensiveDetails(id);
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          emit(ExpenceDetailSuccess(successModel: res));
-        }
-      } else {
-        emit(GetExpenseDetailError(message: res?.settings?.message ?? ""));
-      }
-    } catch (e) {
-      emit(GetExpenseDetailError(message: "An Error Occured: $e"));
+      emit(GetExpenseDetailError(message: "An error occurred: $e"));
     }
   }
 
@@ -58,15 +38,27 @@ class GetExpenseDetailCubit extends Cubit<GetExpenseDetailsState> {
     emit(SaveExpenseDetailLoading());
     try {
       final res = await ExpenseDetailRepo.postExpenseUpdate(data);
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          emit(ExpenceDetailSuccess(successModel: res));
-        } else {
-          emit(GetExpenseDetailError(message: res.settings?.message ?? ''));
-        }
+      if (res != null && res.settings?.success == 1) {
+        emit(ExpenceDetailSuccess(successModel: res));
+      } else {
+        emit(GetExpenseDetailError(message: res?.settings?.message ?? "Failed to add expense"));
       }
     } catch (e) {
-      emit(GetExpenseDetailError(message: "An Error Occured: $e"));
+      emit(GetExpenseDetailError(message: "An error occurred: $e"));
+    }
+  }
+
+  Future<void> deleteExpenseDetails(String id) async {
+    emit(GetExpenseDetailLoading());
+    try {
+      final res = await ExpenseDetailRepo.deleteExpensiveDetails(id);
+      if (res != null && res.settings?.success == 1) {
+        emit(ExpenceDetailSuccess(successModel: res));
+      } else {
+        emit(GetExpenseDetailError(message: res?.settings?.message ?? "Failed to delete expense"));
+      }
+    } catch (e) {
+      emit(GetExpenseDetailError(message: "An error occurred: $e"));
     }
   }
 }

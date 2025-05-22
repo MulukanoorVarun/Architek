@@ -572,7 +572,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 .previousTrips?[index];
                                         if (trip != null) {
                                           context.push(
-                                            '/vacation?budget=${state.getTripModel.data?.budget?.toString() ?? "0.00"}&place=${state.getTripModel.data?.destination ?? "Unknown"}',
+                                            '/vacation?budget=${state.getTripModel.data?.budget?.toString() ?? "0.00"}&place=${state.getTripModel.data?.destination ?? "Unknown"}&tripId=${trip.tripId??""}',
                                           );
                                         }
                                       },

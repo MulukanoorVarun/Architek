@@ -6,7 +6,7 @@ import '../../../Model/ExpenseDetailModel.dart';
 abstract class GetExpenseDetailRepo {
   Future<ExpenseDetailModel?> getExpensiveDetails(String id);
   Future<SuccessModel?> deleteExpensiveDetails(String id);
-  Future<SuccessModel?> putExpensiveDetails(Map<String, dynamic> data);
+  Future<SuccessModel?> putExpensiveDetails(Map<String, dynamic> data,String Id);
   Future<SuccessModel?> postExpenseUpdate(Map<String, dynamic> data);
 }
 
@@ -20,8 +20,8 @@ class GetExpenseDetailImpl implements GetExpenseDetailRepo {
   }
 
   @override
-  Future<SuccessModel?> putExpensiveDetails( Map<String, dynamic> data) async {
-    return await remoteDataSource.updateExpensedata(data);
+  Future<SuccessModel?> putExpensiveDetails( Map<String, dynamic> data,String Id) async {
+    return await remoteDataSource.updateExpensedata(data,Id);
   }
 
   @override

@@ -36,39 +36,35 @@ class _UpdateExpenseState extends State<UpdateExpense> {
   String? selectedCategory;
   String paymentMode = "Online";
   String? selectedCategoryId;
-  TextEditingController amountController = TextEditingController();
-  TextEditingController dateController = TextEditingController();
-  TextEditingController remarksController = TextEditingController();
+  final TextEditingController amountController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+  final TextEditingController remarksController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    print("TRipId:${widget.id}");
+
     context.read<Categorycubit>().GetCategory();
-    // Debug CategoryCubit state changes
+
     context.read<Categorycubit>().stream.listen((state) {
-      print('CategoryCubit State: $state');
-      if (state is CategoryLoaded &&
-          state.categoryresponsemodel.data != null &&
-          selectedCategoryId == null) {
-        setState(() {
-          // Set default category if none selected
-          selectedCategoryId = state.categoryresponsemodel.data!.first.id;
-          selectedCategory =
-              state.categoryresponsemodel.data!.first.categoryName;
-        });
+      if (state is CategoryLoaded && state.categoryresponsemodel.data != null) {
+        if (selectedCategoryId == null) {
+          setState(() {
+            selectedCategoryId = state.categoryresponsemodel.data!.first.id;
+            selectedCategory =
+                state.categoryresponsemodel.data!.first.categoryName;
+          });
+        }
       }
     });
-    // Fetch expense details if expenseId is provided
     if (widget.expenseId.isNotEmpty) {
       context.read<GetExpenseDetailCubit>().GetExpenseDetails(widget.expenseId);
     }
-    // Debug GetExpenseDetailCubit state changes
+
+    // Listen to GetExpenseDetailCubit state changes
     context.read<GetExpenseDetailCubit>().stream.listen((state) {
-      print('GetExpenseDetailCubit State: $state');
       if (state is GetExpenseDetailLoaded) {
         final expenseData = state.expenseDetailModel.data;
-        print('Expense Data: $expenseData');
         setState(() {
           selectedCategoryId = expenseData?.category ?? "";
           selectedCategory = expenseData?.categoryName ?? "";
@@ -99,31 +95,58 @@ class _UpdateExpenseState extends State<UpdateExpense> {
     return Scaffold(
       backgroundColor: const Color(0xff102A2C),
       appBar: CustomAppBar(title: 'Vacation', actions: []),
-      body: BlocBuilder<GetExpenseDetailCubit, GetExpenseDetailsState>(
+      body: BlocConsumer<GetExpenseDetailCubit, GetExpenseDetailsState>(
+        listener: (context, state) {
+          if (state is ExpenceDetailSuccess) {
+            CustomSnackBar.show(
+              context,
+              widget.expenseId.isEmpty
+                  ? 'Expense added successfully!'
+                  : 'Expense updated successfully!',
+            );
+            Future.microtask(() {
+              context.pushReplacement(
+                '/vacation?budget=${widget.budget}&place=${widget.place}',
+              );
+              context.read<PiechartCubit>().fetchPieChartData("");
+              context.read<HomeCubit>().fetchHomeData();
+            });
+          } else if (state is GetExpenseDetailError) {
+            CustomSnackBar.show(context, state.message);
+          }
+        },
         builder: (context, expenseState) {
-          // Handle initial state for new expense
-          if (widget.expenseId.isEmpty &&
-              expenseState is! GetExpenseDetailLoading) {
-            return _buildForm(context);
-          }
-          // Handle loading state
-          if (expenseState is GetExpenseDetailLoading) {
+          if (expenseState is GetExpenseDetailLoading ||
+              expenseState is SaveExpenseDetailLoading) {
             return const Center(child: CircularProgressIndicator());
-          }
-          // Handle loaded state
-          else if (expenseState is GetExpenseDetailLoaded) {
+          } else if (expenseState is GetExpenseDetailLoaded ||
+              expenseState is ExpenceDetailSuccess ||
+              widget.expenseId.isEmpty) {
             return _buildForm(context);
-          }
-          // Handle error state
-          else if (expenseState is GetExpenseDetailError) {
+          } else if (expenseState is GetExpenseDetailError) {
             return Center(
-              child: Text(
-                expenseState.message,
-                style: const TextStyle(color: Colors.white),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    expenseState.message,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (widget.expenseId.isNotEmpty) {
+                        context.read<GetExpenseDetailCubit>().GetExpenseDetails(
+                          widget.expenseId,
+                        );
+                      }
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
               ),
             );
           }
-          // Handle initial or unexpected state
           return const Center(
             child: Text(
               "Loading data...",
@@ -141,273 +164,262 @@ class _UpdateExpenseState extends State<UpdateExpense> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Travel Plan',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontFamily: 'Poppins',
-            ),
-          ),
+          _buildSectionTitle('Travel Plan'),
           const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xff1D3A3C),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.place, color: Colors.white),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Place : ',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    Text(
-                      widget.place,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Mullish",
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const Divider(color: Colors.grey, height: 24),
-                Row(
-                  children: [
-                    const Icon(Icons.currency_rupee, color: Colors.white),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Budget : ',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    Text(
-                      widget.budget,
-                      style: const TextStyle(
-                        color: Colors.greenAccent,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          _buildTravelPlanCard(),
           const SizedBox(height: 24),
-          const Text(
-            'Travel Expenses',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontFamily: 'Poppins',
-            ),
-          ),
+          _buildSectionTitle('Travel Expenses'),
           const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xff1D3A3C),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: [
-                BlocBuilder<Categorycubit, Categorystate>(
-                  builder: (context, categoryState) {
-                    if (categoryState is CategoryLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (categoryState is CategoryLoaded &&
-                        categoryState.categoryresponsemodel.data != null) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade600),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            dropdownColor: const Color(0xff1D3A3C),
-                            value: selectedCategoryId,
-                            isExpanded: true,
-                            hint: const Text(
-                              'Select Category',
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                            icon: const Icon(
-                              Icons.arrow_drop_down,
-                              color: Colors.white,
-                            ),
-                            items:
-                                categoryState.categoryresponsemodel.data!.map((
-                                  category,
-                                ) {
-                                  return DropdownMenuItem<String>(
-                                    value: category.id,
-                                    child: Text(
-                                      category.categoryName ?? "",
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                            onChanged: (val) {
-                              if (val != null) {
-                                setState(() {
-                                  selectedCategoryId = val;
-                                  final catName = categoryState
-                                      .categoryresponsemodel
-                                      .data!
-                                      .firstWhere(
-                                        (element) => element.id == val,
-                                      );
-                                  selectedCategory = catName.categoryName ?? "";
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                      );
-                    } else if (categoryState is CategoryError) {
-                      return Center(
-                        child: Text(
-                          categoryState.message,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      );
-                    }
-                    return const Center(
-                      child: Text(
-                        "No Categories Available",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: amountController,
-                  hint: 'Amount',
-                  icon: Icons.currency_rupee,
-                  inputType: TextInputType.number,
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: dateController,
-                  hint: 'When you Spent',
-                  icon: Icons.calendar_today,
-                  readOnly: true,
-                  onTap: () => _selectDate(context),
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: remarksController,
-                  hint: 'Remarks',
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 24),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Payment Mode',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ),
-                Row(
-                  children: [
-                    Radio<String>(
-                      value: "Online",
-                      groupValue: paymentMode,
-                      activeColor: Colors.orangeAccent,
-                      onChanged: (val) {
-                        if (val != null) {
-                          setState(() {
-                            paymentMode = val;
-                          });
-                        }
-                      },
-                    ),
-                    const Text('Online', style: TextStyle(color: Colors.white)),
-                    Radio<String>(
-                      value: "Cash",
-                      groupValue: paymentMode,
-                      activeColor: Colors.orangeAccent,
-                      onChanged: (val) {
-                        if (val != null) {
-                          setState(() {
-                            paymentMode = val;
-                          });
-                        }
-                      },
-                    ),
-                    const Text('Cash', style: TextStyle(color: Colors.white)),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          _buildExpenseForm(),
           const SizedBox(height: 32),
-          BlocConsumer<GetExpenseDetailCubit, GetExpenseDetailsState>(
-            listener: (context, state) {
-              if (state is ExpenceDetailSuccess) {
-                context.pushReplacement(
-                  '/vacation?budget=${widget.budget}&place=${widget.place}',
-                );
-                context.read<PiechartCubit>().fetchPieChartData();
-                context.read<HomeCubit>().fetchHomeData();
+          _buildSubmitButton(context),
+        ],
+      ),
+    );
+  }
 
-              } else if (state is GetExpenseDetailError) {
-                CustomSnackBar.show(context, state.message);
-              }
-            },
-            builder: (context, state) {
-              return SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: CustomAppButton1(
-                  text: 'Done',
-                  isLoading: state is SaveExpenseDetailLoading,
-                  onPlusTap: () {
-                    if (selectedCategoryId == null ||
-                        amountController.text.isEmpty ||
-                        dateController.text.isEmpty) {
-                      CustomSnackBar.show(
-                        context,
-                        'Please fill all required fields',
-                      );
-                      return;
-                    }
-                    final Map<String, dynamic> data = {
-                      'expense': amountController.text,
-                      'category': selectedCategoryId,
-                      'date': dateController.text,
-                      'remarks': remarksController.text,
-                      'payment_mode': paymentMode,
-                      'trip':
-                          widget.expenseId.isNotEmpty
-                              ? widget.expenseId
-                              : widget.id,
-                    };
-                    if (widget.expenseId.isNotEmpty) {
-                      context
-                          .read<GetExpenseDetailCubit>()
-                          .updateExpenseDetails(data);
-                    } else {
-                      context.read<GetExpenseDetailCubit>().addExpense(data);
-                    }
-                  },
-                ),
-              );
-            },
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 18,
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Widget _buildTravelPlanCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xff1D3A3C),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          _buildInfoRow(Icons.place, 'Place: ', widget.place),
+          const Divider(color: Colors.grey, height: 24),
+          _buildInfoRow(
+            Icons.currency_rupee,
+            'Budget: ',
+            widget.budget,
+            textColor: Colors.greenAccent,
+            fontWeight: FontWeight.w600,
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildInfoRow(
+    IconData icon,
+    String label,
+    String value, {
+    Color? textColor,
+    FontWeight? fontWeight,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white),
+        const SizedBox(width: 8),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+        Text(
+          value,
+          style: TextStyle(
+            color: textColor ?? Colors.white,
+            fontFamily: "Mullish",
+            fontSize: 16,
+            fontWeight: fontWeight ?? FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExpenseForm() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xff1D3A3C),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          _buildCategoryDropdown(),
+          const SizedBox(height: 16),
+          _buildTextField(
+            controller: amountController,
+            hint: 'Amount',
+            icon: Icons.currency_rupee,
+            inputType: TextInputType.number,
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            controller: dateController,
+            hint: 'When you Spent',
+            icon: Icons.calendar_today,
+            readOnly: true,
+            onTap: () => _selectDate(context),
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            controller: remarksController,
+            hint: 'Remarks',
+            maxLines: 3,
+          ),
+          const SizedBox(height: 24),
+          _buildPaymentModeSelector(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryDropdown() {
+    return BlocBuilder<Categorycubit, Categorystate>(
+      builder: (context, categoryState) {
+        if (categoryState is CategoryLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (categoryState is CategoryLoaded &&
+            categoryState.categoryresponsemodel.data != null) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade600),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                dropdownColor: const Color(0xff1D3A3C),
+                value: selectedCategoryId,
+                isExpanded: true,
+                hint: const Text(
+                  'Select Category',
+                  style: TextStyle(color: Colors.white70),
+                ),
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                items:
+                    categoryState.categoryresponsemodel.data!.map((category) {
+                      return DropdownMenuItem<String>(
+                        value: category.id,
+                        child: Text(
+                          category.categoryName ?? "",
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }).toList(),
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      selectedCategoryId = val;
+                      final catName = categoryState.categoryresponsemodel.data!
+                          .firstWhere((element) => element.id == val);
+                      selectedCategory = catName.categoryName ?? "";
+                    });
+                  }
+                },
+              ),
+            ),
+          );
+        } else if (categoryState is CategoryError) {
+          return Center(
+            child: Text(
+              categoryState.message,
+              style: const TextStyle(color: Colors.white),
+            ),
+          );
+        }
+        return const Center(
+          child: Text(
+            "No Categories Available",
+            style: TextStyle(color: Colors.white),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPaymentModeSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Payment Mode',
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+        Row(
+          children: [
+            Radio<String>(
+              value: "Online",
+              groupValue: paymentMode,
+              activeColor: Colors.orangeAccent,
+              onChanged: (val) {
+                if (val != null) {
+                  setState(() => paymentMode = val);
+                }
+              },
+            ),
+            const Text('Online', style: TextStyle(color: Colors.white)),
+            Radio<String>(
+              value: "Cash",
+              groupValue: paymentMode,
+              activeColor: Colors.orangeAccent,
+              onChanged: (val) {
+                if (val != null) {
+                  setState(() => paymentMode = val);
+                }
+              },
+            ),
+            const Text('Cash', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSubmitButton(BuildContext context) {
+    return BlocBuilder<GetExpenseDetailCubit, GetExpenseDetailsState>(
+      builder: (context, state) {
+        return SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: CustomAppButton1(
+            text: widget.expenseId.isEmpty ? 'Add Expense' : 'Update Expense',
+            isLoading: state is SaveExpenseDetailLoading,
+            onPlusTap: () {
+              if (!_validateForm()) {
+                CustomSnackBar.show(context, 'Please fill all required fields');
+                return;
+              }
+              final Map<String, dynamic> data = {
+                'expense': amountController.text,
+                'category': selectedCategoryId,
+                'date': dateController.text,
+                'remarks': remarksController.text,
+                'payment_mode': paymentMode,
+                'trip': widget.id,
+              };
+              if (widget.expenseId.isNotEmpty) {
+                context.read<GetExpenseDetailCubit>().updateExpenseDetails(
+                  data,
+                  widget.expenseId,
+                );
+              } else {
+                context.read<GetExpenseDetailCubit>().addExpense(data);
+              }
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  bool _validateForm() {
+    return selectedCategoryId != null &&
+        amountController.text.isNotEmpty &&
+        dateController.text.isNotEmpty &&
+        double.tryParse(amountController.text) != null;
   }
 
   Widget _buildTextField({
@@ -435,7 +447,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
           borderRadius: BorderRadius.circular(30),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.orangeAccent),
+          borderSide: BorderSide(color: Colors.orangeAccent),
           borderRadius: BorderRadius.circular(30),
         ),
         contentPadding: const EdgeInsets.symmetric(
