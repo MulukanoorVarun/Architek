@@ -164,10 +164,32 @@ class _UpdateExpenseState extends State<UpdateExpense> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('Travel Plan'),
-          const SizedBox(height: 12),
-          _buildTravelPlanCard(),
-          const SizedBox(height: 24),
+          if (widget.expenseId.isEmpty) ...[
+            _buildSectionTitle('Travel Plan'),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xff1D3A3C),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  _buildInfoRow(Icons.place, 'Place: ', widget.place),
+                  const Divider(color: Colors.grey, height: 24),
+                  _buildInfoRow(
+                    Icons.currency_rupee,
+                    'Budget: ',
+                    widget.budget,
+                    textColor: Colors.greenAccent,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+
           _buildSectionTitle('Travel Expenses'),
           const SizedBox(height: 12),
           _buildExpenseForm(),
@@ -186,29 +208,6 @@ class _UpdateExpenseState extends State<UpdateExpense> {
         fontSize: 18,
         fontFamily: 'Poppins',
         fontWeight: FontWeight.w600,
-      ),
-    );
-  }
-
-  Widget _buildTravelPlanCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xff1D3A3C),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          _buildInfoRow(Icons.place, 'Place: ', widget.place),
-          const Divider(color: Colors.grey, height: 24),
-          _buildInfoRow(
-            Icons.currency_rupee,
-            'Budget: ',
-            widget.budget,
-            textColor: Colors.greenAccent,
-            fontWeight: FontWeight.w600,
-          ),
-        ],
       ),
     );
   }

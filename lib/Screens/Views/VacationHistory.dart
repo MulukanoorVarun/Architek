@@ -9,15 +9,19 @@ import 'package:tripfin/Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
 import 'package:tripfin/Block/Logic/TripFinish/TripFinishCubit.dart';
 import 'package:tripfin/Block/Logic/TripFinish/TripFinishState.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
-
 import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import '../../Block/Logic/PiechartdataScreen/PiechartState.dart';
 import '../../utils/color_constants.dart';
 
 class VacationHistory extends StatefulWidget {
   final String tripId;
+  final String budget;
 
-  const VacationHistory({super.key, required this.tripId});
+  const VacationHistory({
+    super.key,
+    required this.tripId,
+    required this.budget,
+  });
 
   @override
   State<VacationHistory> createState() => _VacationHistoryState();
@@ -32,6 +36,7 @@ class _VacationHistoryState extends State<VacationHistory> {
 
   String? tripId;
   String? finishTripText;
+
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -108,7 +113,6 @@ class _VacationHistoryState extends State<VacationHistory> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: const Text("Vacation"),
-
           actions:
               widget.tripId.isNotEmpty
                   ? []
@@ -306,8 +310,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                                 style: TextStyle(color: Colors.white70),
                               ),
                               Text(
-                                state.response.data?.totalExpense.toString() ??
-                                    "",
+                                widget.budget,
                                 style: const TextStyle(
                                   color: Colors.greenAccent,
                                 ),
@@ -415,7 +418,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                           ),
                           onPressed: () {
                             context.push(
-                              '/update_expensive?id=${state.response.data?.tripId ?? ''}',
+                              '/update_expensive?id=${state.response.data?.tripId ?? ''}&budget=${widget.budget}&place=${state.response.data?.destination ?? ""}',
                             );
                           },
                           child: Row(
@@ -498,8 +501,21 @@ class _VacationHistoryState extends State<VacationHistory> {
     final List<Widget> expenseWidgets = [];
     final dateFormat = DateFormat('dd.MM.yyyy');
 
+    Color hexToColor(String hexColor) {
+      try {
+        hexColor = hexColor.replaceAll('#', '');
+        if (hexColor.length == 6) {
+          hexColor = 'FF$hexColor';
+        }
+        return Color(int.parse(hexColor, radix: 16));
+      } catch (e) {
+        return const Color(0xFF1C3132); // Fallback color
+      }
+    }
+
     final Map<String, List<dynamic>> groupedExpenses = {};
     for (var expense in expenses) {
+      print('Expense object: $expense'); // Debug print
       final date =
           expense.date != null
               ? dateFormat.format(DateTime.parse(expense.date))
@@ -516,7 +532,8 @@ class _VacationHistoryState extends State<VacationHistory> {
       expenseWidgets.add(
         Row(
           children: [
-            Container(margin: EdgeInsets.only(top: 10),
+            Container(
+              margin: EdgeInsets.only(top: 10),
               padding: EdgeInsets.only(bottom: 15),
               width: 120,
               height: 65,
@@ -529,7 +546,7 @@ class _VacationHistoryState extends State<VacationHistory> {
               child: Center(
                 child: Text(
                   date,
-                  style:  TextStyle(
+                  style: TextStyle(
                     color: Colors.black,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -537,7 +554,6 @@ class _VacationHistoryState extends State<VacationHistory> {
                 ),
               ),
             ),
-
           ],
         ),
       );
@@ -548,14 +564,14 @@ class _VacationHistoryState extends State<VacationHistory> {
         final colorCode = expense.colorCode ?? '';
         final expenseId = expense.expenseId ?? '';
         final amount = expense.totalExpense?.toDouble() ?? 0.0;
-        final remarks =
-            expense.remarks; // No need for ??"" since we handle null in the UI
+        final remarks = expense.remarks;
+        print('Remarks for $category: $remarks'); // Debug print
 
         expenseWidgets.add(
           Dismissible(
             key: ValueKey(
-              expenseId ?? 'fallback_${UniqueKey()}',
-            ), // Fallback key if expenseId is null
+              expenseId.isNotEmpty ? expenseId : 'fallback_${UniqueKey()}',
+            ),
             background: Container(
               color: Colors.blue,
               alignment: Alignment.centerLeft,
@@ -659,15 +675,17 @@ class _VacationHistoryState extends State<VacationHistory> {
               margin: const EdgeInsets.symmetric(vertical: 4),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               decoration: BoxDecoration(
-                color: primary, // Matches the dark background in the image
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                color: Color(0xff304546),
+                border: Border(
+                  left: BorderSide(
+                    color:
+                        colorCode.isNotEmpty
+                            ? hexToColor(colorCode)
+                            : const Color(0xFF1C3132),
+                    width: 12,
                   ),
-                ],
+                ),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -678,7 +696,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          category ?? 'Unknown',
+                          category,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -707,7 +725,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                   ),
                   const Spacer(),
                   Text(
-                    "-${amount?.toStringAsFixed(0) ?? '0'}", // Matches the red amount in the image
+                    "-${amount.toStringAsFixed(0)}",
                     style: const TextStyle(
                       color: Colors.redAccent,
                       fontSize: 16,
@@ -719,170 +737,20 @@ class _VacationHistoryState extends State<VacationHistory> {
             ),
           ),
         );
-        // expenseWidgets.add(
-        //   Dismissible(
-        //     key: ValueKey(expenseId),
-        //     background: Container(
-        //       color: Colors.blue,
-        //       alignment: Alignment.centerLeft,
-        //       padding: const EdgeInsets.only(left: 20),
-        //       child: const Row(
-        //         children: [
-        //           Icon(Icons.edit, color: Colors.white, size: 30),
-        //           SizedBox(width: 10),
-        //           Text(
-        //             'Edit',
-        //             style: TextStyle(
-        //               color: Colors.white,
-        //               fontSize: 16,
-        //               fontWeight: FontWeight.w500,
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //     secondaryBackground: Container(
-        //       color: Colors.red,
-        //       alignment: Alignment.centerRight,
-        //       padding: const EdgeInsets.only(right: 20),
-        //       child: const Row(
-        //         mainAxisAlignment: MainAxisAlignment.end,
-        //         children: [
-        //           Text(
-        //             'Delete',
-        //             style: TextStyle(
-        //               color: Colors.white,
-        //               fontSize: 16,
-        //               fontWeight: FontWeight.w500,
-        //             ),
-        //           ),
-        //           SizedBox(width: 10),
-        //           Icon(Icons.delete, color: Colors.white, size: 30),
-        //         ],
-        //       ),
-        //     ),
-        //     confirmDismiss: (direction) async {
-        //       if (direction == DismissDirection.endToStart) {
-        //         HapticFeedback.mediumImpact();
-        //         return await showDialog<bool>(
-        //           context: context,
-        //           builder:
-        //               (context) => AlertDialog(
-        //                 title: const Text('Confirm Delete'),
-        //                 content: const Text(
-        //                   'Are you sure you want to delete this expense?',
-        //                 ),
-        //                 actions: [
-        //                   TextButton(
-        //                     onPressed: () => Navigator.of(context).pop(false),
-        //                     child: const Text('Cancel'),
-        //                   ),
-        //                   TextButton(
-        //                     onPressed: () async {
-        //                       try {
-        //                         await context
-        //                             .read<GetExpenseDetailCubit>()
-        //                             .deleteExpenseDetails(expenseId);
-        //                         CustomSnackBar.show(
-        //                           context,
-        //                           'Expense deleted successfully',
-        //                         );
-        //                         context.read<PiechartCubit>().fetchPieChartData(
-        //                           widget.tripId,
-        //                         );
-        //                         context.pop();
-        //                       } catch (e) {
-        //                         ScaffoldMessenger.of(context).showSnackBar(
-        //                           SnackBar(
-        //                             content: Text(
-        //                               'Failed to delete expense: $e',
-        //                             ),
-        //                             backgroundColor: Colors.red,
-        //                             duration: const Duration(seconds: 3),
-        //                           ),
-        //                         );
-        //                         Navigator.of(context).pop(false);
-        //                       }
-        //                     },
-        //                     child: const Text(
-        //                       'Delete',
-        //                       style: TextStyle(color: Colors.red),
-        //                     ),
-        //                   ),
-        //                 ],
-        //               ),
-        //         );
-        //       } else if (direction == DismissDirection.startToEnd) {
-        //         HapticFeedback.lightImpact();
-        //         context.push(
-        //           '/update_expensive?id=${tripId}&expenseId=$expenseId',
-        //         );
-        //         return false;
-        //       }
-        //       return false;
-        //     },
-        //     child: Container(
-        //       margin: EdgeInsets.symmetric(vertical: 4),
-        //       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        //       decoration: BoxDecoration(
-        //         color: Color(0xFF223436),
-        //         borderRadius: BorderRadius.circular(12),
-        //         boxShadow: [
-        //           BoxShadow(
-        //             color: Colors.black.withOpacity(0.1),
-        //             blurRadius: 8,
-        //             offset: const Offset(0, 2),
-        //           ),
-        //         ],
-        //       ),
-        //       child: Row(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           SizedBox(
-        //             width: w * 0.65,
-        //             child: Column(
-        //               crossAxisAlignment: CrossAxisAlignment.start,
-        //               children: [
-        //                 Text(
-        //                   category,
-        //                   style: const TextStyle(
-        //                     color: Colors.white,
-        //                     fontSize: 16,
-        //                     fontWeight: FontWeight.w500,
-        //                     fontFamily: 'Mullish',
-        //                   ),
-        //                 ),
-        //                 const SizedBox(height: 5),
-        //                 Text(
-        //                   remarks,
-        //                   style: const TextStyle(
-        //                     color: Color(0xffDBDBDB),
-        //                     fontSize: 12,
-        //                     fontWeight: FontWeight.w300,
-        //                     fontFamily: 'Mullish',
-        //                   ),
-        //                   maxLines: 2,
-        //                   overflow: TextOverflow.ellipsis,
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //           Spacer(),
-        //           Text(
-        //             "-${amount.toStringAsFixed(0)}",
-        //             style: const TextStyle(
-        //               color: Colors.redAccent,
-        //               fontSize: 16,
-        //               fontWeight: FontWeight.w500,
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // );
       }
     }
     return expenseWidgets;
+  }
+
+  Color hexToColor(String hexColor) {
+    try {
+      hexColor = hexColor.replaceAll('#', '');
+      if (hexColor.length == 6) {
+        hexColor = 'FF$hexColor';
+      }
+      return Color(int.parse(hexColor, radix: 16));
+    } catch (e) {
+      return const Color(0xFF1C3132); // Fallback color
+    }
   }
 }

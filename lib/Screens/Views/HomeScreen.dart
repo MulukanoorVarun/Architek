@@ -380,7 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () {
                             if (state.getTripModel.totalExpense > 0) {
                               context.push(
-                                '/vacation?budget=${state.getTripModel.data?.budget?.toString() ?? "0.00"}&place=${state.getTripModel.data?.destination ?? "Unknown"}',
+                                '/vacation?budget=${state.getTripModel.data?.budget?.toString() ?? "0.00"}',
                               );
                             } else {
                               context.push(
@@ -475,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 50,),
+                                SizedBox(height: 50),
                                 ElevatedButton.icon(
                                   onPressed: () {
                                     context.push(
@@ -509,7 +509,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
-
                           ),
                         ),
                       SizedBox(height: height * 0.03),
@@ -572,7 +571,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 .previousTrips?[index];
                                         if (trip != null) {
                                           context.push(
-                                            '/vacation?budget=${state.getTripModel.data?.budget?.toString() ?? "0.00"}&place=${state.getTripModel.data?.destination ?? "Unknown"}&tripId=${trip.tripId??""}',
+                                            '/vacation?budget=${trip.budget.toString() ?? "0.00"}&tripId=${trip.tripId ?? ""}',
                                           );
                                         }
                                       },
