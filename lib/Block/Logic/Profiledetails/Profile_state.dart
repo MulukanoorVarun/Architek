@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:tripfin/Model/GetProfileModel.dart';
 
 
-
 abstract class GetProfileState extends Equatable {
   @override
   List<Object?> get props => [];

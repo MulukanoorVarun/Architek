@@ -1,107 +1,128 @@
 import 'package:flutter/material.dart';
 
-class OutOfBudgetScreen extends StatelessWidget {
-  const OutOfBudgetScreen({super.key});
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../Components/CustomAppButton.dart';
+
+class Outofbudgetscreen extends StatelessWidget {
+  final int savings;
+
+  const Outofbudgetscreen({Key? key, this.savings = 48000}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A2323),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
+      backgroundColor: const Color(
+        0xff1C3132,
+      ), // Dark teal background (matches image)
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment:
+          CrossAxisAlignment.start, // Align content to the left
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Text(
-              'Hey Budget Boss',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text.rich(
-              TextSpan(
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 15.0,
+              ), // Left padding for "Wow!" and subtitle
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextSpan(
-                    text: 'Your are ',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  const Text(
+                    'Hey Budget Boss',
+                    style: TextStyle(
+                      fontFamily: 'Mullish',
+                      color: Color(0xFFffffff), // Orange color (matches image)
+                      fontSize: 18, // Matches the size in the image
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  TextSpan(
-                    text: 'out of budget',
-                    style: TextStyle(color: Colors.red, fontSize: 18),
+                  const SizedBox(height: 4), // Exact spacing as in the image
+                  // Subtitle: "You are with in the budget boss."
+                  Padding(
+                    padding: const EdgeInsets.all(1.0),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Your are',
+                            style: TextStyle(
+                              color: Colors.white,
+                              // White color for "You saved"
+                              fontSize: 18,
+                              fontFamily: 'Mullish',
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'out of budget',
+                            style: TextStyle(
+                              color: Color(0xffFF3B3B),
+                              // White color for "You saved"
+                              fontSize: 18,
+                              fontFamily: 'Mullish',
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 30),
-            Image.asset('assets/screen2backImage.png'), // Replace with your image path
-            const SizedBox(height: 30),
-            const Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'You spent more ',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  TextSpan(
-                    text: '2,000 extra\n',
-                    style: TextStyle(color: Colors.red, fontSize: 18),
-                  ),
-                  TextSpan(
-                    text: 'Your expensive can’t be add',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                ],
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 40),
-
-            SizedBox(
-              height: 56,
-              width: 361,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF6A85A),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                onPressed: () {
-                  // Add your navigation logic here
-                },
-                child: const Text(
-                  'Done',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                  ),
-                ),
+            const SizedBox(height: 20), // Exact spacing as in the image
+            // Illustration (centered)
+            Center(
+              child: Image.asset(
+                'assets/screen2backImage.png', // Your image asset
+                height: 300, // Matches the size in the image
               ),
             ),
-            const SizedBox(height: 15),
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Color(0xFFF6A85A)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+            const SizedBox(height: 10), // Exact spacing as in the image
+            // Savings: "You saved 48,000" with split colors
+            Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'You spent more ',
+                      style: TextStyle(
+                        color: Colors.white, // White color for "You saved"
+                        fontSize: 20,
+                        fontFamily: 'Mullish',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: '2,000 extra  ',
+                      style: TextStyle(
+                        color: Color(0xffFF4545), // White color for "You saved"
+                        fontSize: 20,
+                        fontFamily: 'Mullish',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 80),
-              ),
-              onPressed: () {
-
-              },
-              child: const Text(
-                'Add Budget',
-                style: TextStyle(fontSize: 18, color: Color(0xFFF6A85A)),
               ),
             ),
           ],
         ),
       ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.symmetric(vertical: 80, horizontal: 16),
+        child: CustomAppButton1(
+          text: 'Done',
+          onPlusTap: () {
+            context.go("/home");
+          },
+        ),
+      ),
+
     );
   }
 }
+
