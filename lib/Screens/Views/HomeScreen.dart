@@ -217,13 +217,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         SizedBox(height: height * 0.02),
                         _buildTextField(
                           controller: destinationController,
-                          hint: 'Where you travel',
+                          hint: 'Enter destination',
                           errorText: destinationError,
                         ),
                         SizedBox(height: height * 0.015),
                         _buildTextField(
                           controller: dateController,
-                          hint: 'Select date',
+                          hint: 'Start date',
                           icon: Icons.calendar_today,
                           readOnly: true,
                           onTap: () => _selectDate(context),
@@ -446,17 +446,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  padding: EdgeInsets.all(4),
-                                  color: Color(0xff53676833),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(14),
-                                    child: Image.asset(
-                                      "assets/figmaimages.png",
-                                      width: width * 0.15,
-                                      height: width * 0.15,
-                                      fit: BoxFit.cover,
-                                    ),
+                                ClipRRect(
+                                  borderRadius:
+                                  BorderRadius.circular(14),
+                                  child: Image.asset(
+                                    "assets/figmaimages.png",
+                                    width: width * 0.18,
+                                    height: width * 0.18,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                                 SizedBox(width: width * 0.035),
@@ -537,7 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     size: width * 0.045,
                                   ),
                                   label: Text(
-                                    "Spends",
+                                    "Spend",
                                     style: TextStyle(
                                       color: Colors.black87,
                                       fontSize: width * 0.04,

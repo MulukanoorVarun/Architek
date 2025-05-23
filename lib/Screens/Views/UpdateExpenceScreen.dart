@@ -61,7 +61,6 @@ class _UpdateExpenseState extends State<UpdateExpense> {
       context.read<GetExpenseDetailCubit>().GetExpenseDetails(widget.expenseId);
     }
 
-    // Listen to GetExpenseDetailCubit state changes
     context.read<GetExpenseDetailCubit>().stream.listen((state) {
       if (state is GetExpenseDetailLoaded) {
         final expenseData = state.expenseDetailModel.data;
@@ -89,6 +88,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
       dateController.text = formattedDate;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

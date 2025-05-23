@@ -13,6 +13,7 @@ import '../../Block/Logic/Home/HomeCubit.dart';
 import '../../Block/Logic/Profiledetails/Profile_cubit.dart';
 import '../../Block/Logic/Profiledetails/Profile_state.dart';
 import '../../Block/Logic/UpdateProfile/UpdateProfileCubit.dart';
+import '../../utils/color_constants.dart';
 import '../Components/CustomAppButton.dart';
 import '../Components/CutomAppBar.dart';
 
@@ -107,9 +108,8 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
 
           final String? profileImageUrl =
               profileState.getprofileModel.data?.image;
-
           return Scaffold(
-            backgroundColor: const Color(0xff304546),
+            backgroundColor: primary,
             appBar: CustomAppBar(title: 'Edit Profile', actions: []),
             body: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -135,7 +135,7 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                               imageBuilder: (context, imageProvider) => CircleAvatar(
                                 radius: width * 15, // Matches width/height for circular shape
                                 backgroundImage: imageProvider,
-                                backgroundColor: Colors.white, // From old code
+                                backgroundColor: Colors.white,
                               ),
                               placeholder: (context, url) => CircleAvatar(
                                 radius: width * 0.15,
@@ -143,11 +143,6 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                                 child: const Center(
                                   child: CircularProgressIndicator(), // From old code
                                 ),
-                              ),
-                              errorWidget: (context, url, error) => CircleAvatar(
-                                radius: width * 0.15,
-                                backgroundColor: Colors.white,
-                                backgroundImage: const AssetImage('assets/nodata_image.png'), // From old code
                               ),
                             ),
                           ),

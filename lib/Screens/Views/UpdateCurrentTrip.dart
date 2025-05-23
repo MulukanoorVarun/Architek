@@ -7,10 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
+import 'package:tripfin/Block/Logic/GetTrip/GetTripState.dart';
 import 'package:tripfin/Screens/Components/CutomAppBar.dart';
 import 'package:tripfin/utils/color_constants.dart';
 
 import '../../Block/Logic/Home/HomeCubit.dart';
+import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import '../../Block/Logic/PostTrip/postTrip_cubit.dart';
 import '../../Block/Logic/PostTrip/potTrip_state.dart';
 import '../Components/CustomAppButton.dart';
@@ -36,6 +38,16 @@ class _UpdateCurrentTripState extends State<UpdateCurrentTrip> {
   @override
   void initState() {
     context.read<GetTripCubit>().GetTrip();
+    context.read<GetTripCubit>().stream.listen((state) {
+      if (state is GetTripLoaded) {
+        final getTripData = state.getTripModel.data;
+        setState(() {
+          dateController.text = getTripData?.startDate ?? '';
+          destinationController.text = getTripData?.destination ?? '';
+          budgetController.text = getTripData?.budget ?? '';
+        });
+      }
+    });
     super.initState();
   }
 
@@ -119,201 +131,231 @@ class _UpdateCurrentTripState extends State<UpdateCurrentTrip> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: Column(
-          children: [
-            Text(
-              "Travel Details",
+      body: BlocBuilder<GetTripCubit, GetTripState>(
+        builder: (context, state) {
+          if (state is GetTripLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is GetTripLoaded) {
+            return Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Travel Details",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: width * 0.055,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Mulish',
+                    ),
+                  ),
+                  SizedBox(height: height * 0.02),
+                  _buildTextField(
+                    controller: destinationController,
+                    hint: 'Enter destination',
+                    errorText: destinationError,
+                  ),
+                  SizedBox(height: height * 0.015),
+                  _buildTextField(
+                    controller: dateController,
+                    hint: 'Start date',
+                    icon: Icons.calendar_today,
+                    readOnly: true,
+                    onTap: () => _selectDate(context),
+                    errorText: dateError,
+                  ),
+                  SizedBox(height: height * 0.015),
+                  _buildTextField(
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: false,
+                      signed: false,
+                    ),
+
+                    controller: budgetController,
+                    hint: 'Enter spend amount',
+                    errorText: budgetError,
+                  ),
+
+                  // SizedBox(height: height * 0.015),
+                  // _selectedImage == null
+                  //     ? InkWell(
+                  //       onTap: () {
+                  //         showModalBottomSheet(
+                  //           backgroundColor: primary,
+                  //           context: context,
+                  //           builder: (BuildContext context) {
+                  //             return SafeArea(
+                  //               child: Wrap(
+                  //                 children: <Widget>[
+                  //                   ListTile(
+                  //                     leading: Icon(
+                  //                       Icons.camera_alt,
+                  //                       color: Colors.white,
+                  //                     ),
+                  //                     title: Text(
+                  //                       'Upload Image for Trip',
+                  //                       style: TextStyle(
+                  //                         color: Colors.white,
+                  //                         fontFamily: 'Mullish',
+                  //                         fontWeight: FontWeight.w400,
+                  //                         fontSize: 15,
+                  //                       ),
+                  //                     ),
+                  //                     onTap: () {
+                  //                       _pickImage(ImageSource.camera);
+                  //                       context.pop();
+                  //                     },
+                  //                   ),
+                  //                   ListTile(
+                  //                     leading: Icon(
+                  //                       Icons.photo_library,
+                  //                       color: Colors.white,
+                  //                     ),
+                  //                     title: Text(
+                  //                       'Choose from gallery',
+                  //                       style: TextStyle(
+                  //                         color: Colors.white,
+                  //                         fontFamily: 'Mullish',
+                  //                         fontWeight: FontWeight.w400,
+                  //                         fontSize: 15,
+                  //                       ),
+                  //                     ),
+                  //                     onTap: () {
+                  //                       _pickImage(ImageSource.gallery);
+                  //                       context.pop();
+                  //                     },
+                  //                   ),
+                  //                 ],
+                  //               ),
+                  //             );
+                  //           },
+                  //         );
+                  //       },
+                  //       child: Container(
+                  //         width: width,
+                  //         padding: EdgeInsets.symmetric(
+                  //           horizontal: 12.0,
+                  //           vertical: 14,
+                  //         ),
+                  //         decoration: BoxDecoration(
+                  //           border: Border.all(
+                  //             color: Colors.grey.shade600,
+                  //             width: 1.0,
+                  //           ),
+                  //           borderRadius: BorderRadius.circular(30),
+                  //         ),
+                  //         child: Text(
+                  //           'Upload File',
+                  //           style: TextStyle(
+                  //             color: Colors.white70,
+                  //             fontSize: 16.0,
+                  //             fontWeight: FontWeight.w500,
+                  //             fontFamily: 'Mullish',
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     )
+                  //     : Stack(
+                  //       children: [
+                  //         ClipRRect(
+                  //           borderRadius: BorderRadius.circular(8),
+                  //           child: Image.file(
+                  //             _selectedImage!,
+                  //             height: 80,
+                  //             width: 80,
+                  //             fit: BoxFit.cover,
+                  //           ),
+                  //         ),
+                  //         Positioned(
+                  //           top: 0,
+                  //           right: 0,
+                  //           child: GestureDetector(
+                  //             onTap: () {
+                  //               setState(() {
+                  //                 _selectedImage = null;
+                  //               });
+                  //             },
+                  //             child: Container(
+                  //               decoration: BoxDecoration(
+                  //                 color: Colors.black.withOpacity(0.6),
+                  //                 shape: BoxShape.circle,
+                  //               ),
+                  //               child: Icon(
+                  //                 Icons.close,
+                  //                 color: Colors.white,
+                  //                 size: 18,
+                  //               ),
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                ],
+              ),
+            );
+          }else if (state is GetTripError) {
+            return Center(
+              child: Text(
+                state.message,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: width * 0.05,
+                  fontFamily: 'Mulish',
+                ),
+              ),
+            );
+          } return Center(
+            child: Text(
+              "No Data",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: width * 0.055,
-                fontWeight: FontWeight.bold,
+                fontSize: width * 0.05,
                 fontFamily: 'Mulish',
               ),
             ),
-            SizedBox(height: height * 0.02),
-            _buildTextField(
-              controller: destinationController,
-              hint: 'Where you travel',
-              errorText: destinationError,
-            ),
-            SizedBox(height: height * 0.015),
-            _buildTextField(
-              controller: dateController,
-              hint: 'Select date',
-              icon: Icons.calendar_today,
-              readOnly: true,
-              onTap: () => _selectDate(context),
-              errorText: dateError,
-            ),
-            SizedBox(height: height * 0.015),
-            _buildTextField(
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              keyboardType: TextInputType.numberWithOptions(
-                decimal: false,
-                signed: false,
-              ),
-
-              controller: budgetController,
-              hint: 'Enter spend amount',
-              errorText: budgetError,
-            ),
-            // SizedBox(height: height * 0.015),
-            // _selectedImage == null
-            //     ? InkWell(
-            //       onTap: () {
-            //         showModalBottomSheet(
-            //           backgroundColor: primary,
-            //           context: context,
-            //           builder: (BuildContext context) {
-            //             return SafeArea(
-            //               child: Wrap(
-            //                 children: <Widget>[
-            //                   ListTile(
-            //                     leading: Icon(
-            //                       Icons.camera_alt,
-            //                       color: Colors.white,
-            //                     ),
-            //                     title: Text(
-            //                       'Upload Image for Trip',
-            //                       style: TextStyle(
-            //                         color: Colors.white,
-            //                         fontFamily: 'Mullish',
-            //                         fontWeight: FontWeight.w400,
-            //                         fontSize: 15,
-            //                       ),
-            //                     ),
-            //                     onTap: () {
-            //                       _pickImage(ImageSource.camera);
-            //                       context.pop();
-            //                     },
-            //                   ),
-            //                   ListTile(
-            //                     leading: Icon(
-            //                       Icons.photo_library,
-            //                       color: Colors.white,
-            //                     ),
-            //                     title: Text(
-            //                       'Choose from gallery',
-            //                       style: TextStyle(
-            //                         color: Colors.white,
-            //                         fontFamily: 'Mullish',
-            //                         fontWeight: FontWeight.w400,
-            //                         fontSize: 15,
-            //                       ),
-            //                     ),
-            //                     onTap: () {
-            //                       _pickImage(ImageSource.gallery);
-            //                       context.pop();
-            //                     },
-            //                   ),
-            //                 ],
-            //               ),
-            //             );
-            //           },
-            //         );
-            //       },
-            //       child: Container(
-            //         width: width,
-            //         padding: EdgeInsets.symmetric(
-            //           horizontal: 12.0,
-            //           vertical: 14,
-            //         ),
-            //         decoration: BoxDecoration(
-            //           border: Border.all(
-            //             color: Colors.grey.shade600,
-            //             width: 1.0,
-            //           ),
-            //           borderRadius: BorderRadius.circular(30),
-            //         ),
-            //         child: Text(
-            //           'Upload File',
-            //           style: TextStyle(
-            //             color: Colors.white70,
-            //             fontSize: 16.0,
-            //             fontWeight: FontWeight.w500,
-            //             fontFamily: 'Mullish',
-            //           ),
-            //         ),
-            //       ),
-            //     )
-            //     : Stack(
-            //       children: [
-            //         ClipRRect(
-            //           borderRadius: BorderRadius.circular(8),
-            //           child: Image.file(
-            //             _selectedImage!,
-            //             height: 80,
-            //             width: 80,
-            //             fit: BoxFit.cover,
-            //           ),
-            //         ),
-            //         Positioned(
-            //           top: 0,
-            //           right: 0,
-            //           child: GestureDetector(
-            //             onTap: () {
-            //               setState(() {
-            //                 _selectedImage = null;
-            //               });
-            //             },
-            //             child: Container(
-            //               decoration: BoxDecoration(
-            //                 color: Colors.black.withOpacity(0.6),
-            //                 shape: BoxShape.circle,
-            //               ),
-            //               child: Icon(
-            //                 Icons.close,
-            //                 color: Colors.white,
-            //                 size: 18,
-            //               ),
-            //             ),
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            SizedBox(height: height * 0.025),
-            BlocConsumer<postTripCubit, postTripState>(
-              listener: (context, state) {
-                if (state is PostTripSuccessState) {
-                  destinationController.clear();
-                  dateController.clear();
-                  budgetController.clear();
-                  context.read<HomeCubit>().fetchHomeData();
+          );
+        },
+      ),
+      bottomNavigationBar: BlocConsumer<postTripCubit, postTripState>(
+        listener: (context, state) {
+          if (state is PostTripSuccessState) {
+            destinationController.clear();
+            dateController.clear();
+            budgetController.clear();
+            context.read<HomeCubit>().fetchHomeData();
+            context.read<PiechartCubit>().fetchPieChartData("");
+            context.go('/home');
+          }
+        },
+        builder: (context, state) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+            child: CustomAppButton1(
+              isLoading: state is PostTripLoading,
+              text: "Start Your Tour",
+              onPlusTap: () {
+                if (_validateInputs()) {
+                  final Map<String, dynamic> data = {
+                    'destination': destinationController.text,
+                    'start_date': dateController.text,
+                    'budget': budgetController.text,
+                  };
+                  if (_selectedImage != null) {
+                    data['image'] = _selectedImage;
+                  }
+                  context.read<postTripCubit>().putTrip(data, widget.tripId);
+                } else {
+                  CustomSnackBar.show(
+                    context,
+                    'Please fix the errors in the form',
+                  );
                 }
               },
-              builder: (context, state) {
-                return CustomAppButton1(
-                  isLoading: state is PostTripLoading,
-                  text: "Start Your Tour",
-                  onPlusTap: () {
-                    if (_validateInputs()) {
-                      final Map<String, dynamic> data = {
-                        'destination': destinationController.text,
-                        'start_date': dateController.text,
-                        'budget': budgetController.text,
-                      };
-                      if (_selectedImage != null) {
-                        data['image'] = _selectedImage;
-                      }
-                      context.read<postTripCubit>().putTrip(
-                        data,
-                        widget.tripId,
-                      );
-                    } else {
-                      CustomSnackBar.show(
-                        context,
-                        'Please fix the errors in the form',
-                      );
-                    }
-                  },
-                );
-              },
             ),
-            SizedBox(height: height * 0.035),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

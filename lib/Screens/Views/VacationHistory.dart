@@ -5,6 +5,8 @@ import 'package:pie_chart/pie_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tripfin/Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
+import 'package:tripfin/Block/Logic/PostTrip/postTrip_cubit.dart';
+import 'package:tripfin/Block/Logic/PostTrip/potTrip_state.dart';
 import 'package:tripfin/Block/Logic/TripFinish/TripFinishCubit.dart';
 import 'package:tripfin/Block/Logic/TripFinish/TripFinishState.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
@@ -36,6 +38,7 @@ class _VacationHistoryState extends State<VacationHistory> {
 
   String? tripId;
   String? finishTripText;
+  String?Place;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +115,7 @@ class _VacationHistoryState extends State<VacationHistory> {
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          title: const Text("Vacation"),
+          title: Text("Vacation"),
           actions:
               widget.tripId.isNotEmpty
                   ? []
@@ -122,8 +125,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                         if (state is FinishTripSuccessState) {
                           context.read<HomeCubit>().fetchHomeData();
                           final budgetStr = state.finishTripModel.data?.budget;
-                          final totalExpenseStr =
-                              state.finishTripModel.data?.totalExpense;
+                          final totalExpenseStr = state.finishTripModel.data?.totalExpense;
                           if (budgetStr != null && totalExpenseStr != null) {
                             final budget = double.tryParse(budgetStr);
                             final totalExpense = double.tryParse(
@@ -203,6 +205,7 @@ class _VacationHistoryState extends State<VacationHistory> {
             } else if (state is PiechartSuccess) {
               tripId = state.response.data?.tripId ?? '';
               finishTripText = state.message ?? "";
+              Place=state.response.data?.destination??"";
               final expenses = state.response.data?.expenseData ?? [];
               final totalExpense =
                   state.response.data?.totalExpense?.toDouble() ?? 0.0;
@@ -256,7 +259,6 @@ class _VacationHistoryState extends State<VacationHistory> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               "Travel Plan",
@@ -264,16 +266,67 @@ class _VacationHistoryState extends State<VacationHistory> {
                                 color: Colors.white,
                                 fontSize: 18,
                               ),
-                            ),
-                            if(widget.tripId.isEmpty)...[
+                            ),Spacer(),
+                            if (widget.tripId.isEmpty) ...[
                               IconButton(
                                 visualDensity: VisualDensity.compact,
                                 onPressed: () {
-                                  context.push('/UpdateCurrentTrip?tripId=${state.response.data?.tripId??""}');
+                                  context.push(
+                                    '/UpdateCurrentTrip?tripId=${state.response.data?.tripId ?? ""}',
+                                  );
                                 },
                                 icon: Icon(Icons.edit, color: Colors.white70),
+                              ),SizedBox(width: 8,),
+                              BlocListener<postTripCubit, postTripState>(
+                                listener: (context, state) {
+                                  if (state is PostTripSuccessState) {
+                                      context.read<HomeCubit>().fetchHomeData();
+                                      context.go('/home');
+                                  }
+                                },
+                                child: IconButton(
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder:
+                                          (context) => AlertDialog(
+                                        title: const Text("Delete Trip"),
+                                        content: const Text(
+                                          "Are you sure you want to delete this trip?",
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              context.pop();
+                                            },
+                                            child: const Text("Cancel"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              context.read<postTripCubit>().deleteTrip(
+                                                state.response.data?.tripId ?? "",
+                                              );
+                                            },
+                                            child: const Text(
+                                              "Confirm",
+                                              style: TextStyle(
+                                                color: Colors.redAccent,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+
+                                  },
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                ),
                               ),
-                            ]
+                            ],
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -310,9 +363,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                             ),
                             Text(
                               widget.budget,
-                              style: const TextStyle(
-                                color: Colors.greenAccent,
-                              ),
+                              style: const TextStyle(color: Colors.greenAccent),
                             ),
                           ],
                         ),
