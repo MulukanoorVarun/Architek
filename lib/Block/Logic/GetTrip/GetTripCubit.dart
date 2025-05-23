@@ -21,4 +21,6 @@ class GetTripCubit extends Cubit<GetTripState> {
       emit(GetTripError(message: "An Error Occured: $e"));
     }
   }
+
+
 }

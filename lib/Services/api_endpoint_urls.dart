@@ -20,7 +20,9 @@ class APIEndpointUrls {
   static const String piechartdata = '${apiUrl}expense-pie-chart-view';
   static const String editexpense = '${apiUrl}expense-detail';
   static const String updateprofile = '${authUrl}user-detail';
+  static const String updatecurrenttrip = '${authUrl}trip-details';
   static const String finishtrip = '${apiUrl}finshed-trip';
+  static const String deleteCurrentTrip = '${apiUrl}trip-details';
 
 
 

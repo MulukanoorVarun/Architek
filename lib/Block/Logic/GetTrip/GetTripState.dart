@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:tripfin/Model/SuccessModel.dart';
 
 import '../../../Model/GetTripModel.dart';
 
@@ -15,6 +16,7 @@ class GetTripLoaded extends GetTripState {
   final GetTripModel getTripModel;
   GetTripLoaded({required this.getTripModel});
 }
+
 
 class GetTripError extends GetTripState {
   final String message;

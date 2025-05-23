@@ -25,4 +25,36 @@ class postTripCubit extends Cubit<postTripState> {
       emit(PostTripError(message: e.toString()));
     }
   }
+
+  Future<void> putTrip(Map<String, dynamic> data, String Id) async {
+    emit(PostTripLoading());
+    try {
+      final res = await postTripRepository.putTrip(data, Id);
+      if (res != null) {
+        if (res.settings?.success == 1) {
+          emit(PostTripSuccessState(successModel: res));
+        }
+      } else {
+        emit(PostTripError(message: res?.settings?.message ?? ""));
+      }
+    } catch (e) {
+      emit(PostTripError(message: "An Error Occured: $e"));
+    }
+  }
+
+  Future<void> deleteTrip(String Id) async {
+    emit(PostTripLoading());
+    try {
+      final res = await postTripRepository.deleteTrip(Id);
+      if (res != null) {
+        if (res.settings?.success == 1) {
+          emit(PostTripSuccessState(successModel: res));
+        }
+      } else {
+        emit(PostTripError(message: res?.settings?.message ?? ""));
+      }
+    } catch (e) {
+      emit(PostTripError(message: "An Error Occured: $e"));
+    }
+  }
 }

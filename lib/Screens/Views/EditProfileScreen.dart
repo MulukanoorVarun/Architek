@@ -19,9 +19,10 @@ import '../Components/CutomAppBar.dart';
 class Editprofilescreen extends StatefulWidget {
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
-}
 
+   }
 class _EditProfileScreenState extends State<Editprofilescreen> {
+
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -157,10 +158,12 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                               onTap: () {
                                 showModalBottomSheet(
                                   context: context,
+
                                   builder: (_) {
                                     return Container(
                                       color: Colors.white,
                                       height: 120,
+
                                       child: Column(
                                         children: [
                                           ListTile(
@@ -173,6 +176,8 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                                               _pickImageFromGallery();
                                             },
                                           ),
+
+
                                           ListTile(
                                             leading: const Icon(
                                               Icons.camera_alt,
@@ -265,4 +270,5 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
       ),
     );
   }
+
 }

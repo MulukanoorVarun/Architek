@@ -243,215 +243,211 @@ class _VacationHistoryState extends State<VacationHistory> {
                   ];
                 }
               }
-
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<PiechartCubit>().fetchPieChartData(
-                    widget.tripId,
-                  );
-                },
-                child: ListView(
-                  padding: EdgeInsets.all(16),
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF223436),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Travel Plan",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              IconButton(
-                                visualDensity: VisualDensity.compact,
-                                onPressed: () {},
-                                icon: Icon(Icons.edit, color: Colors.white70),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.location_on,
-                                color: Colors.white70,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              const Text(
-                                "Place : ",
-                                style: TextStyle(color: Colors.white70),
-                              ),
-                              Text(
-                                state.response.data?.destination ?? "",
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.currency_rupee,
-                                color: Colors.white70,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              const Text(
-                                "Budget : ",
-                                style: TextStyle(color: Colors.white70),
-                              ),
-                              Text(
-                                widget.budget,
-                                style: const TextStyle(
-                                  color: Colors.greenAccent,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+              return ListView(
+                padding: EdgeInsets.all(16),
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF223436),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const SizedBox(height: 24),
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.1),
-                            blurRadius: 20,
-                            spreadRadius: 5,
-                          ),
-                        ],
-                      ),
-                      child: PieChart(
-                        dataMap:
-                            categoryTotals.isNotEmpty
-                                ? categoryTotals
-                                : {'No Expenses': 1.0},
-                        colorList:
-                            categoryTotals.isNotEmpty
-                                ? categoryTotals.keys
-                                    .map(
-                                      (key) =>
-                                          categoryColorMap[key] ?? Colors.grey,
-                                    )
-                                    .toList()
-                                : [Colors.grey],
-                        gradientList:
-                            categoryTotals.isNotEmpty
-                                ? categoryTotals.keys
-                                    .map(
-                                      (key) =>
-                                          categoryGradientMap[key] ??
-                                          [Colors.grey, Colors.grey],
-                                    )
-                                    .toList()
-                                : [
-                                  [Colors.grey, Colors.grey],
-                                ],
-                        animationDuration: const Duration(milliseconds: 1200),
-                        chartLegendSpacing: 32,
-                        chartRadius: MediaQuery.of(context).size.width / 1.8,
-                        initialAngleInDegree: 270,
-                        chartType: ChartType.ring,
-                        ringStrokeWidth: 30,
-                        centerWidget: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              "Expenses",
+                            Text(
+                              "Travel Plan",
                               style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 14,
+                                color: Colors.white,
+                                fontSize: 18,
                               ),
                             ),
+                            if(widget.tripId.isEmpty)...[
+                              IconButton(
+                                visualDensity: VisualDensity.compact,
+                                onPressed: () {
+                                  context.push('/UpdateCurrentTrip?tripId=${state.response.data?.tripId??""}');
+                                },
+                                icon: Icon(Icons.edit, color: Colors.white70),
+                              ),
+                            ]
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on,
+                              color: Colors.white70,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              "Place : ",
+                              style: TextStyle(color: Colors.white70),
+                            ),
                             Text(
-                              totalExpense.toStringAsFixed(0),
+                              state.response.data?.destination ?? "",
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.currency_rupee,
+                              color: Colors.white70,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              "Budget : ",
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                            Text(
+                              widget.budget,
                               style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 36,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.white24,
-                                    blurRadius: 10,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ],
+                                color: Colors.greenAccent,
                               ),
                             ),
                           ],
                         ),
-                        legendOptions: const LegendOptions(showLegends: false),
-                        chartValuesOptions: const ChartValuesOptions(
-                          showChartValues: false,
-                        ),
-                      ),
+                      ],
                     ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Travel Expenses",
-                          style: TextStyle(
-                            color: Color(0xffFBFBFB),
-                            fontSize: 20,
-                            fontFamily: 'Mullish',
-                            fontWeight: FontWeight.w500,
-                          ),
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.white.withOpacity(0.1),
+                          blurRadius: 20,
+                          spreadRadius: 5,
                         ),
-                        if (widget.tripId.isEmpty) ...[
-                          FilledButton(
-                            style: ButtonStyle(
-                              visualDensity: VisualDensity.compact,
-                              backgroundColor: MaterialStateProperty.all(
-                                buttonBgColor,
-                              ),
+                      ],
+                    ),
+                    child: PieChart(
+                      dataMap:
+                          categoryTotals.isNotEmpty
+                              ? categoryTotals
+                              : {'No Expenses': 1.0},
+                      colorList:
+                          categoryTotals.isNotEmpty
+                              ? categoryTotals.keys
+                                  .map(
+                                    (key) =>
+                                        categoryColorMap[key] ?? Colors.grey,
+                                  )
+                                  .toList()
+                              : [Colors.grey],
+                      gradientList:
+                          categoryTotals.isNotEmpty
+                              ? categoryTotals.keys
+                                  .map(
+                                    (key) =>
+                                        categoryGradientMap[key] ??
+                                        [Colors.grey, Colors.grey],
+                                  )
+                                  .toList()
+                              : [
+                                [Colors.grey, Colors.grey],
+                              ],
+                      animationDuration: const Duration(milliseconds: 1200),
+                      chartLegendSpacing: 32,
+                      chartRadius: MediaQuery.of(context).size.width / 1.8,
+                      initialAngleInDegree: 270,
+                      chartType: ChartType.ring,
+                      ringStrokeWidth: 30,
+                      centerWidget: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Expenses",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
                             ),
-                            onPressed: () {
-                              context.push(
-                                '/update_expensive?id=${state.response.data?.tripId ?? ''}&budget=${widget.budget}&place=${state.response.data?.destination ?? ""}',
-                              );
-                            },
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  'Add',
-                                  style: TextStyle(
-                                    color: Color(0xff1C3132),
-                                    fontSize: 14,
-                                    fontFamily: 'Lexend',
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(width: 2),
-                                Icon(
-                                  Icons.add,
-                                  color: const Color(0xff1C3132),
-                                  size: 16,
+                          ),
+                          Text(
+                            totalExpense.toStringAsFixed(0),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 36,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.white24,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 0),
                                 ),
                               ],
                             ),
                           ),
                         ],
-                      ],
+                      ),
+                      legendOptions: const LegendOptions(showLegends: false),
+                      chartValuesOptions: const ChartValuesOptions(
+                        showChartValues: false,
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    ..._buildExpenseList(expenses),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Travel Expenses",
+                        style: TextStyle(
+                          color: Color(0xffFBFBFB),
+                          fontSize: 20,
+                          fontFamily: 'Mullish',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      if (widget.tripId.isEmpty) ...[
+                        FilledButton(
+                          style: ButtonStyle(
+                            visualDensity: VisualDensity.compact,
+                            backgroundColor: MaterialStateProperty.all(
+                              buttonBgColor,
+                            ),
+                          ),
+                          onPressed: () {
+                            context.push(
+                              '/update_expensive?id=${state.response.data?.tripId ?? ''}&budget=${widget.budget}&place=${state.response.data?.destination ?? ""}',
+                            );
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'Add',
+                                style: TextStyle(
+                                  color: Color(0xff1C3132),
+                                  fontSize: 14,
+                                  fontFamily: 'Lexend',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(width: 2),
+                              Icon(
+                                Icons.add,
+                                color: const Color(0xff1C3132),
+                                size: 16,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ..._buildExpenseList(expenses),
+                ],
               );
             } else if (state is PiechartError) {
               return Center(

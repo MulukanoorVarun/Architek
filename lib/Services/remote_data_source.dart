@@ -15,7 +15,6 @@ import '../Model/SuccessModel.dart';
 import '../Model/TripsSummaryResponse.dart';
 import 'ApiClient.dart';
 import 'api_endpoint_urls.dart';
-import 'package:http/http.dart' as http;
 
 abstract class RemoteDataSource {
   Future<RegisterModel?> registerApi(Map<String, dynamic> data);
@@ -34,6 +33,8 @@ abstract class RemoteDataSource {
   Future<SuccessModel?> postTrip(Map<String, dynamic> data);
   Future<FinishTripModel?> finishtrip(Map<String, dynamic> data);
   Future<SuccessModel?> updateprofile(Map<String, dynamic> data);
+  Future<SuccessModel?> updateCurrentTrip(Map<String, dynamic> data, String Id);
+  Future<SuccessModel?> deletCurrentTrip(String id);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -345,6 +346,45 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       }
     } catch (e) {
       debugPrint('Error finishtrip: $e');
+      return null;
+    }
+  }
+
+  @override
+  Future<SuccessModel?> updateCurrentTrip(
+    Map<String, dynamic> data,
+    String Id,
+  ) async {
+    try {
+      final response = await ApiClient.put(
+        "${APIEndpointUrls.updatecurrenttrip}/${Id}",
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        debugPrint('Edit updateCurrentTrip data: ${response.data}');
+        return SuccessModel.fromJson(response.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error updateCurrentTrip data: $e');
+      return null;
+    }
+  }
+  @override
+  Future<SuccessModel?> deletCurrentTrip(String id) async {
+    try {
+      Response res = await ApiClient.delete(
+        "${APIEndpointUrls.deleteCurrentTrip}/${id}",
+      );
+      if (res.statusCode == 200) {
+        debugPrint('deletCurrentDetails:${res.data}');
+        return SuccessModel.fromJson(res.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error deletCurrentDetails::$e');
       return null;
     }
   }

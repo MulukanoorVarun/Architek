@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tripfin/Screens/Views/UpdateCurrentTrip.dart';
 import 'package:tripfin/Screens/Views/VacationHistory.dart';
 import 'package:tripfin/Screens/Views/HomeScreen.dart';
 import 'package:tripfin/Screens/Views/Splash.dart';
@@ -43,6 +44,16 @@ final GoRouter goRouter = GoRouter(
       path: '/home',
       pageBuilder:
           (context, state) => buildSlideTransitionPage(HomeScreen(), state),
+    ),
+    GoRoute(
+      path: '/UpdateCurrentTrip',
+      pageBuilder: (context, state) {
+        final id = state.uri.queryParameters['tripId'];
+        return buildSlideTransitionPage(
+          UpdateCurrentTrip(tripId: id ?? ""),
+          state,
+        );
+      },
     ),
     GoRoute(
       path: '/profile_screen',

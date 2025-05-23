@@ -141,27 +141,36 @@ class _HomeScreenState extends State<HomeScreen> {
                             onTap: () {
                               context.push('/profile_screen');
                             },
-                            borderRadius: BorderRadius.circular(width * 0.05), // Match CircleAvatar radius
+                            borderRadius: BorderRadius.circular(
+                              width * 0.05,
+                            ), // Match CircleAvatar radius
                             child: ClipOval(
                               child: CachedNetworkImage(
                                 imageUrl: state.profileModel.data?.image ?? '',
                                 width: width * 0.1, // Set consistent width
                                 height: width * 0.1, // Set consistent height
                                 fit: BoxFit.cover,
-                                imageBuilder: (context, imageProvider) => CircleAvatar(
-                                  radius: width * 0.05, // Consistent radius
-                                  backgroundImage: imageProvider,
-                                ),
-                                placeholder: (context, url) => CircleAvatar(
-                                  radius: width * 0.05,
-                                  child: Center(
-                                    child: spinkits.getSpinningLinespinkit(), // Ensure spinner fits
-                                  ),
-                                ),
-                                errorWidget: (context, url, error) => CircleAvatar(
-                                  radius: width * 0.05,
-                                  backgroundImage: const AssetImage('assets/placeholder.png'),
-                                ),
+                                imageBuilder:
+                                    (context, imageProvider) => CircleAvatar(
+                                      radius: width * 0.05, // Consistent radius
+                                      backgroundImage: imageProvider,
+                                    ),
+                                placeholder:
+                                    (context, url) => CircleAvatar(
+                                      radius: width * 0.05,
+                                      child: Center(
+                                        child:
+                                            spinkits
+                                                .getSpinningLinespinkit(), // Ensure spinner fits
+                                      ),
+                                    ),
+                                errorWidget:
+                                    (context, url, error) => CircleAvatar(
+                                      radius: width * 0.05,
+                                      backgroundImage: const AssetImage(
+                                        'assets/placeholder.png',
+                                      ),
+                                    ),
                               ),
                             ),
                           ),
@@ -175,7 +184,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Mulish',
                               ),
-                              overflow: TextOverflow.ellipsis, // Prevent text overflow
+                              overflow:
+                                  TextOverflow
+                                      .ellipsis, // Prevent text overflow
                             ),
                           ),
                         ],

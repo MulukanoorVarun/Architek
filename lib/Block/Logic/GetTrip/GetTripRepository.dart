@@ -1,9 +1,11 @@
 import 'package:tripfin/Services/remote_data_source.dart';
 
 import '../../../Model/GetTripModel.dart';
+import '../../../Model/SuccessModel.dart';
 
 abstract class GetTripRep {
   Future<GetTripModel?> getTrip();
+
 }
 
 class GetTripImpl implements GetTripRep {
@@ -13,4 +15,5 @@ class GetTripImpl implements GetTripRep {
   Future<GetTripModel?> getTrip() async {
     return await remoteDataSource.getTrip();
   }
+
 }
