@@ -50,7 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _selectedImage = File(pickedFile.path);
       });
-    } else {}
+    } else {
+    }
   }
 
   bool _validateInputs() {
@@ -182,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Colors.white,
                                 fontSize: width * 0.06,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Mullish',
                               ),
                               overflow:
                                   TextOverflow
@@ -211,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.white,
                             fontSize: width * 0.055,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Mullish',
                           ),
                         ),
                         SizedBox(height: height * 0.02),
@@ -400,7 +401,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.white,
                           fontSize: width * 0.053,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Mullish',
                         ),
                       ),
                       SizedBox(height: height * 0.02),
@@ -433,9 +434,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             } else {
                               context.push(
-                                '/update_expensive?id=${state.getTripModel.data?.id ?? ''}&place=${state.getTripModel.data?.destination ?? ''}&budget=${state.getTripModel.data?.budget ?? ''}',
+                                '/update_expensive?id=${state.getTripModel.data?.id ?? ''}&place= ${state.getTripModel.data?.destination ?? ''}&budget=${state.getTripModel.data?.budget ?? ''}',
                               );
                             }
+
                           },
                           child: Container(
                             padding: EdgeInsets.all(width * 0.035),
@@ -469,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: Colors.white,
                                           fontSize: width * 0.05,
                                           fontWeight: FontWeight.bold,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Mullish',
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
@@ -481,7 +483,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         style: TextStyle(
                                           color: Colors.white70,
                                           fontSize: width * 0.035,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Mullish',
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
@@ -495,22 +497,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                               style: TextStyle(
                                                 color: Colors.white60,
                                                 fontSize: width * 0.04,
-                                                fontFamily: 'Mulish',
+                                                fontFamily: 'Mullish',
                                               ),
                                             ),
                                             TextSpan(
                                               text:
-                                                  state
-                                                      .getTripModel
-                                                      .data
-                                                      ?.budget
-                                                      ?.toString() ??
-                                                  "0.00",
+                                              '₹ ' + (state.getTripModel.data?.budget?.toString() ?? "0.00"),
                                               style: TextStyle(
                                                 color: Colors.greenAccent,
                                                 fontSize: width * 0.04,
                                                 fontWeight: FontWeight.bold,
-                                                fontFamily: 'Mulish',
+                                                fontFamily: 'Mullish',
                                               ),
                                             ),
                                           ],
@@ -538,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: TextStyle(
                                       color: Colors.black87,
                                       fontSize: width * 0.04,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Mullish',
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -564,7 +561,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.white,
                           fontSize: width * 0.053,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Mullish',
                         ),
                       ),
                       SizedBox(height: height * 0.02),
@@ -589,7 +586,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   style: TextStyle(
                                     color: Colors.white70,
                                     fontSize: width * 0.04,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Mullish',
                                   ),
                                 ),
                               )
@@ -653,13 +650,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    trip.destination ?? "",
+                                                    "hdbxisbdibsdijhJNNPhBADFBNSA",
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize: width * 0.05,
                                                       fontWeight:
                                                           FontWeight.bold,
-                                                      fontFamily: 'Mulish',
+                                                      fontFamily: 'MulLish',
                                                     ),
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -671,7 +668,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     style: TextStyle(
                                                       color: Colors.white70,
                                                       fontSize: width * 0.035,
-                                                      fontFamily: 'Mulish',
+                                                      fontFamily: 'Mullish',
                                                     ),
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -689,12 +686,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             fontSize:
                                                                 width * 0.04,
                                                             fontFamily:
-                                                                'Mulish',
+                                                                'Mullish',
                                                           ),
                                                         ),
                                                         TextSpan(
                                                           text:
-                                                              trip.budget
+                                                          '₹ ' + trip.budget
                                                                   .toString() ??
                                                               "",
                                                           style: TextStyle(
@@ -706,7 +703,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                             fontFamily:
-                                                                'Mulish',
+                                                                'Mullish',
                                                           ),
                                                         ),
                                                       ],
@@ -720,21 +717,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                             SizedBox(width: width * 0.02),
                                             SizedBox(
-                                              width: width * 0.18,
+                                              width: width * 0.25,
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.end,
                                                 children: [
                                                   Text(
-                                                    trip.totalExpense
-                                                            .toString() ??
-                                                        "",
+                                                    '₹ '+trip.totalExpense
+                                                  .toString() ??
+                                                  "",
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize: width * 0.045,
                                                       fontWeight:
                                                           FontWeight.bold,
-                                                      fontFamily: 'Mulish',
+                                                      fontFamily: 'Mullish',
                                                     ),
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -745,7 +742,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     style: TextStyle(
                                                       color: Colors.white70,
                                                       fontSize: width * 0.035,
-                                                      fontFamily: 'Mulish',
+                                                      fontFamily: 'Mullish',
                                                     ),
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -777,7 +774,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: width * 0.05,
-                fontFamily: 'Mulish',
+                fontFamily: 'Mullish',
               ),
             ),
           );
@@ -788,7 +785,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               color: Colors.white,
               fontSize: width * 0.05,
-              fontFamily: 'Mulish',
+              fontFamily: 'Mullish',
             ),
           ),
         );
@@ -815,7 +812,7 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: onTap,
           keyboardType: keyboardType, // Apply keyboard type
           inputFormatters: inputFormatters, // Apply input formatters
-          style: TextStyle(color: Colors.white, fontFamily: 'Mulish'),
+          style: TextStyle(color: Colors.white, fontFamily: 'Mullish'),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(color: Colors.white70),
@@ -842,7 +839,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 color: Colors.redAccent,
                 fontSize: 12.0,
-                fontFamily: 'Mulish',
+                fontFamily: 'MullishMullish',
               ),
             ),
           ),

@@ -42,6 +42,9 @@ class _VacationHistoryState extends State<VacationHistory> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
     return Theme(
       data: ThemeData(
         textTheme: const TextTheme(
@@ -424,18 +427,13 @@ class _VacationHistoryState extends State<VacationHistory> {
                               fontSize: 14,
                             ),
                           ),
-                          Text(
-                            totalExpense.toStringAsFixed(0),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 36,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.white24,
-                                  blurRadius: 10,
-                                  offset: Offset(0, 0),
-                                ),
-                              ],
+                          SizedBox(width: width*0.45,
+                            child: Text(textAlign: TextAlign.center,
+                              "₹"+totalExpense.toStringAsFixed(0),
+                              style:  TextStyle(overflow: TextOverflow.ellipsis,
+                                color: Colors.white,
+                                fontSize: 36,
+                              ),
                             ),
                           ),
                         ],
@@ -676,13 +674,15 @@ class _VacationHistoryState extends State<VacationHistory> {
                     ),
                     const Spacer(),
                     Text(
-                      "-${amount.toStringAsFixed(0)}",
+                      "- ₹ ${amount.toStringAsFixed(0)}",
                       style: const TextStyle(
                         color: Colors.redAccent,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
+                        fontFamily: 'Roboto',
                       ),
-                    ),
+                    )
+
                   ],
                 ),
               )
