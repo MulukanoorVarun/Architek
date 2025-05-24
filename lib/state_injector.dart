@@ -21,6 +21,7 @@ import 'package:tripfin/Services/remote_data_source.dart';
 import 'Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
 import 'Block/Logic/ExpenseDetails/ExpenseDetailsRepository.dart';
 import 'Block/Logic/Home/HomeCubit.dart';
+import 'Block/Logic/Internet/internet_status_bloc.dart';
 import 'Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import 'Block/Logic/PostTrip/postTrip_repository.dart';
 import 'Block/Logic/Profiledetails/Profile_cubit.dart';
@@ -28,8 +29,6 @@ import 'Block/Logic/RegisterBloc/Register_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_repository.dart';
 import 'Block/Logic/TripCount/TripcountCubit.dart';
 import 'Block/Logic/TripCount/TripcountRepository.dart';
-
-
 
 class StateInjector {
   static final repositoryProviders = <RepositoryProvider>[
@@ -68,9 +67,8 @@ class StateInjector {
     ),
     RepositoryProvider<PostTripRepository>(
       create:
-          (context) => PostTripImpl(
-            remoteDataSource: context.read<RemoteDataSource>(),
-          ),
+          (context) =>
+              PostTripImpl(remoteDataSource: context.read<RemoteDataSource>()),
     ),
     RepositoryProvider<Tripcountrepository>(
       create:
@@ -100,24 +98,27 @@ class StateInjector {
 
     RepositoryProvider<GetExpenseDetailRepo>(
       create:
-          (context) =>
-              GetExpenseDetailImpl(remoteDataSource: context.read<RemoteDataSource>()),
+          (context) => GetExpenseDetailImpl(
+            remoteDataSource: context.read<RemoteDataSource>(),
+          ),
     ),
     RepositoryProvider<UpdateProfileRepository>(
       create:
-          (context) =>
-          UpdateProfileImpl(remoteDataSource: context.read<RemoteDataSource>()),
+          (context) => UpdateProfileImpl(
+            remoteDataSource: context.read<RemoteDataSource>(),
+          ),
     ),
 
     RepositoryProvider<TripFinishRepository>(
       create:
-          (context) =>
-          FinishTripImpl(remoteDataSource: context.read<RemoteDataSource>()),
+          (context) => FinishTripImpl(
+            remoteDataSource: context.read<RemoteDataSource>(),
+          ),
     ),
-
   ];
 
   static final blocProviders = <BlocProvider>[
+    BlocProvider<InternetStatusBloc>(create: (context) => InternetStatusBloc()),
     BlocProvider<RegisterCubit>(
       create: (context) => RegisterCubit(context.read<RegisterRepository>()),
     ),
@@ -166,26 +167,23 @@ class StateInjector {
 
     BlocProvider<PiechartCubit>(
       create: (context) => PiechartCubit(context.read<Piechartrepository>()),
-
     ),
     BlocProvider<GetExpenseDetailCubit>(
       create:
           (context) =>
               GetExpenseDetailCubit(context.read<GetExpenseDetailRepo>()),
-    ),  BlocProvider<postTripCubit>(
-      create:
-          (context) =>
-              postTripCubit(context.read<PostTripRepository>()),
+    ),
+    BlocProvider<postTripCubit>(
+      create: (context) => postTripCubit(context.read<PostTripRepository>()),
     ),
     BlocProvider<UpdateProfileCubit>(
       create:
           (context) =>
-          UpdateProfileCubit(context.read<UpdateProfileRepository>()),
+              UpdateProfileCubit(context.read<UpdateProfileRepository>()),
     ),
     BlocProvider<TripFinishCubit>(
       create:
-          (context) =>
-              TripFinishCubit(context.read<TripFinishRepository>()),
+          (context) => TripFinishCubit(context.read<TripFinishRepository>()),
     ),
   ];
 }

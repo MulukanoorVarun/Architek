@@ -8,6 +8,7 @@ import 'package:tripfin/Screens/Views/Splash.dart';
 import 'package:tripfin/Screens/Views/profile_screen.dart';
 import 'Screens/Authentication/Login_Screen.dart';
 import 'Screens/Authentication/RegisterScreen.dart';
+import 'Screens/Components/NoInternet.dart';
 import 'Screens/Views/BelowBudget.dart';
 import 'Screens/Views/EditProfileScreen.dart';
 import 'Screens/Views/Onboardscreen.dart';
@@ -54,6 +55,11 @@ final GoRouter goRouter = GoRouter(
           state,
         );
       },
+    ),
+    GoRoute(
+      path: '/no_internet',
+      pageBuilder:
+          (context, state) => buildSlideTransitionPage(Nointernet(), state),
     ),
     GoRoute(
       path: '/profile_screen',
@@ -120,8 +126,9 @@ final GoRouter goRouter = GoRouter(
       pageBuilder: (context, state) {
         final tripID = state.uri.queryParameters['tripId'];
         final budget = state.uri.queryParameters['budget'];
+
         return buildSlideTransitionPage(
-          VacationHistory(tripId: tripID ?? "", budget: budget ?? ""),
+          VacationHistory(tripId: tripID ?? "", budget: budget ?? "",),
           state,
         );
       },

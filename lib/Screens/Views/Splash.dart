@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../Block/Logic/Internet/internet_status_bloc.dart';
+import '../../Block/Logic/Internet/internet_status_state.dart';
 import '../../Services/AuthService.dart';
 import '../../utils/Preferances.dart';
 
@@ -80,11 +83,11 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
     if (!mounted) return;
 
     if (onboarding == null || onboarding.isEmpty) {
-      context.pushReplacement('/on_board');
+      context.go('/on_board');
     } else if (token == null || token.isEmpty) {
-      context.pushReplacement('/login_mobile');
+      context.go('/login_mobile');
     } else {
-      context.pushReplacement('/home'); // Or your default route
+      context.go('/home'); // Or your default route
     }
   }
 
@@ -103,30 +106,39 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xff1C3132),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SlideTransition(
-              position: _offsetAnimation,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 400),
-                child: _showSecondImage
-                    ? Image.asset('assets/MapPinWithCircle.png',
-                    key: const ValueKey('MapPinWithCircle'), height: 100)
-                    : Image.asset('assets/MapPin.png',
-                    key: const ValueKey('MapPin'), height: 100),
+    return BlocListener<InternetStatusBloc, InternetStatusState>(
+      listener: (context, state) {
+        if (state is InternetStatusLostState) {
+          context.push('/no_internet');
+        }else {
+          context.pop();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xff1C3132),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SlideTransition(
+                position: _offsetAnimation,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 400),
+                  child: _showSecondImage
+                      ? Image.asset('assets/MapPinWithCircle.png',
+                      key: const ValueKey('MapPinWithCircle'), height: 100)
+                      : Image.asset('assets/MapPin.png',
+                      key: const ValueKey('MapPin'), height: 100),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            AnimatedOpacity(
-              opacity: _showFinalImage ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 500),
-              child: Image.asset('assets/TripFin_Text.png', height: 60),
-            ),
-          ],
+              const SizedBox(height: 20),
+              AnimatedOpacity(
+                opacity: _showFinalImage ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 500),
+                child: Image.asset('assets/TripFin_Text.png', height: 60),
+              ),
+            ],
+          ),
         ),
       ),
     );

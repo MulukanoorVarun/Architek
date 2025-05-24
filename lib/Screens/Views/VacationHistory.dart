@@ -11,9 +11,12 @@ import 'package:tripfin/Block/Logic/TripFinish/TripFinishCubit.dart';
 import 'package:tripfin/Block/Logic/TripFinish/TripFinishState.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 import '../../Block/Logic/Home/HomeCubit.dart';
+import '../../Block/Logic/Internet/internet_status_bloc.dart';
+import '../../Block/Logic/Internet/internet_status_state.dart';
 import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import '../../Block/Logic/PiechartdataScreen/PiechartState.dart';
 import '../../utils/color_constants.dart';
+import '../Components/CutomAppBar.dart';
 
 class VacationHistory extends StatefulWidget {
   final String tripId;
@@ -38,13 +41,11 @@ class _VacationHistoryState extends State<VacationHistory> {
 
   String? tripId;
   String? finishTripText;
-  String?Place;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final width = size.width;
-    final height = size.height;
     return Theme(
       data: ThemeData(
         textTheme: const TextTheme(
@@ -109,106 +110,21 @@ class _VacationHistoryState extends State<VacationHistory> {
           ),
         ),
       ),
-      child: Scaffold(
-        backgroundColor: const Color(0xFF1C3132),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF1C3132),
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          title: Text("Vacation"),
-          actions:
-              widget.tripId.isNotEmpty
-                  ? []
-                  : [
-                    BlocListener<TripFinishCubit, TripFinishState>(
-                      listener: (context, state) {
-                        if (state is FinishTripSuccessState) {
-                          context.read<HomeCubit>().fetchHomeData();
-                          final budgetStr = state.finishTripModel.data?.budget;
-                          final totalExpenseStr = state.finishTripModel.data?.totalExpense;
-                          if (budgetStr != null && totalExpenseStr != null) {
-                            final budget = double.tryParse(budgetStr);
-                            final totalExpense = double.tryParse(
-                              totalExpenseStr,
-                            );
-
-                            if (budget != null && totalExpense != null) {
-                              if (budget == totalExpense) {
-                                context.pushReplacement(
-                                  "/perfect_budget?message=${state.finishTripModel.settings?.message ?? ''}",
-                                );
-                              } else if (budget < totalExpense) {
-                                context.pushReplacement(
-                                  "/out_of_theBudget?message=${state.finishTripModel.settings?.message ?? ''}",
-                                );
-                              } else if (budget > totalExpense) {
-                                context.pushReplacement(
-                                  "/below_of_theBudget?message=${state.finishTripModel.settings?.message ?? ''}",
-                                );
-                              }
-                            }
-                          }
-                        }
-                      },
-                      child: TextButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: const Text("Finish Trip"),
-                                  content: const Text(
-                                    "Are you sure you want to end this trip?",
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        context.pop();
-                                      },
-                                      child: const Text("Cancel"),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        final Map<String, dynamic> data = {
-                                          "is_completed": "true",
-                                        };
-                                        context
-                                            .read<TripFinishCubit>()
-                                            .finishTrip(data);
-                                      },
-                                      child: const Text(
-                                        "Confirm",
-                                        style: TextStyle(
-                                          color: Colors.redAccent,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                          );
-                        },
-                        child: Text(
-                          "Finish Trip",
-                          style: TextStyle(
-                            color: Color(0xFFFFA726),
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-        ),
-        body: BlocBuilder<PiechartCubit, PiechartState>(
+      child: BlocListener<InternetStatusBloc, InternetStatusState>(
+        listener: (context, state) {
+          if (state is InternetStatusLostState) {
+            context.push('/no_internet');
+          } else {
+            context.pop();
+          }
+        },
+        child: BlocBuilder<PiechartCubit, PiechartState>(
           builder: (context, state) {
             if (state is PiechartLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is PiechartSuccess) {
               tripId = state.response.data?.tripId ?? '';
               finishTripText = state.message ?? "";
-              Place=state.response.data?.destination??"";
               final expenses = state.response.data?.expenseData ?? [];
               final totalExpense =
                   state.response.data?.totalExpense?.toDouble() ?? 0.0;
@@ -249,254 +165,353 @@ class _VacationHistoryState extends State<VacationHistory> {
                   ];
                 }
               }
-              return ListView(
-                padding: EdgeInsets.all(16),
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF223436),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              "Travel Plan",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
-                            ),Spacer(),
-                            if (widget.tripId.isEmpty) ...[
-                              IconButton(
-                                visualDensity: VisualDensity.compact,
-                                onPressed: () {
-                                  context.push(
-                                    '/UpdateCurrentTrip?tripId=${state.response.data?.tripId ?? ""}',
-                                  );
-                                },
-                                icon: Icon(Icons.edit, color: Colors.white70),
-                              ),SizedBox(width: 8,),
-                              BlocListener<postTripCubit, postTripState>(
-                                listener: (context, state) {
-                                  if (state is PostTripSuccessState) {
-                                      context.read<HomeCubit>().fetchHomeData();
-                                      context.go('/home');
-                                  }
-                                },
-                                child: IconButton(
-                                  visualDensity: VisualDensity.compact,
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder:
-                                          (context) => AlertDialog(
-                                        title: const Text("Delete Trip"),
-                                        content: const Text(
-                                          "Are you sure you want to delete this trip?",
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              context.pop();
-                                            },
-                                            child: const Text("Cancel"),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              context.read<postTripCubit>().deleteTrip(
-                                                state.response.data?.tripId ?? "",
-                                              );
-                                            },
-                                            child: const Text(
-                                              "Confirm",
-                                              style: TextStyle(
-                                                color: Colors.redAccent,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+              return Scaffold(
+                backgroundColor: const Color(0xFF1C3132),
+                appBar: CustomAppBar(
+                  title: state.response.data?.destination ?? "",
+                  actions:
+                      widget.tripId.isNotEmpty
+                          ? []
+                          : [
+                            BlocListener<TripFinishCubit, TripFinishState>(
+                              listener: (context, state) {
+                                if (state is FinishTripSuccessState) {
+                                  context.read<HomeCubit>().fetchHomeData();
+                                  final budgetStr =
+                                      state.finishTripModel.data?.budget;
+                                  final totalExpenseStr =
+                                      state.finishTripModel.data?.totalExpense;
+                                  if (budgetStr != null &&
+                                      totalExpenseStr != null) {
+                                    final budget = double.tryParse(budgetStr);
+                                    final totalExpense = double.tryParse(
+                                      totalExpenseStr,
                                     );
 
-                                  },
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                                    if (budget != null &&
+                                        totalExpense != null) {
+                                      if (budget == totalExpense) {
+                                        context.pushReplacement(
+                                          "/perfect_budget?message=${state.finishTripModel.settings?.message ?? ''}",
+                                        );
+                                      } else if (budget < totalExpense) {
+                                        context.pushReplacement(
+                                          "/out_of_theBudget?message=${state.finishTripModel.settings?.message ?? ''}",
+                                        );
+                                      } else if (budget > totalExpense) {
+                                        context.pushReplacement(
+                                          "/below_of_theBudget?message=${state.finishTripModel.settings?.message ?? ''}",
+                                        );
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              child: TextButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder:
+                                        (context) => AlertDialog(
+                                          title: const Text("Finish Trip"),
+                                          content: const Text(
+                                            "Are you sure you want to end this trip?",
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                context.pop();
+                                              },
+                                              child: const Text("Cancel"),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                final Map<String, dynamic>
+                                                data = {"is_completed": "true"};
+                                                context
+                                                    .read<TripFinishCubit>()
+                                                    .finishTrip(data);
+                                              },
+                                              child: const Text(
+                                                "Confirm",
+                                                style: TextStyle(
+                                                  color: Colors.redAccent,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                  );
+                                },
+                                child: Text(
+                                  "Finish Trip",
+                                  style: TextStyle(
+                                    color: Color(0xFFFFA726),
+                                    fontSize: 16,
                                   ),
                                 ),
                               ),
-                            ],
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.location_on,
-                              color: Colors.white70,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              "Place : ",
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                            Text(
-                              state.response.data?.destination ?? "",
-                              style: const TextStyle(color: Colors.white),
                             ),
                           ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.currency_rupee,
-                              color: Colors.white70,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              "Budget : ",
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                            Text(
-                              widget.budget,
-                              style: const TextStyle(color: Colors.greenAccent),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.white.withOpacity(0.1),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: PieChart(
-                      dataMap:
-                          categoryTotals.isNotEmpty
-                              ? categoryTotals
-                              : {'No Expenses': 1.0},
-                      colorList:
-                          categoryTotals.isNotEmpty
-                              ? categoryTotals.keys
-                                  .map(
-                                    (key) =>
-                                        categoryColorMap[key] ?? Colors.grey,
-                                  )
-                                  .toList()
-                              : [Colors.grey],
-                      gradientList:
-                          categoryTotals.isNotEmpty
-                              ? categoryTotals.keys
-                                  .map(
-                                    (key) =>
-                                        categoryGradientMap[key] ??
-                                        [Colors.grey, Colors.grey],
-                                  )
-                                  .toList()
-                              : [
-                                [Colors.grey, Colors.grey],
-                              ],
-                      animationDuration: const Duration(milliseconds: 1200),
-                      chartLegendSpacing: 32,
-                      chartRadius: MediaQuery.of(context).size.width / 1.8,
-                      initialAngleInDegree: 270,
-                      chartType: ChartType.ring,
-                      ringStrokeWidth: 30,
-                      centerWidget: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                ),
+                body: ListView(
+                  padding: EdgeInsets.all(16),
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF223436),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Expenses",
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(width: width*0.45,
-                            child: Text(textAlign: TextAlign.center,
-                              "₹"+totalExpense.toStringAsFixed(0),
-                              style:  TextStyle(overflow: TextOverflow.ellipsis,
-                                color: Colors.white,
-                                fontSize: 36,
+                          Row(
+                            children: [
+                              Text(
+                                "Travel Plan",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                ),
                               ),
-                            ),
+                              Spacer(),
+                              if (widget.tripId.isEmpty) ...[
+                                IconButton(
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: () {
+                                    context.push(
+                                      '/UpdateCurrentTrip?tripId=${state.response.data?.tripId ?? ""}',
+                                    );
+                                  },
+                                  icon: Icon(Icons.edit, color: Colors.white70),
+                                ),
+                                SizedBox(width: 8),
+                                BlocListener<postTripCubit, postTripState>(
+                                  listener: (context, state) {
+                                    if (state is PostTripSuccessState) {
+                                      context.read<HomeCubit>().fetchHomeData();
+                                      context.go('/home');
+                                    }
+                                  },
+                                  child: IconButton(
+                                    visualDensity: VisualDensity.compact,
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder:
+                                            (context) => AlertDialog(
+                                              title: const Text("Delete Trip"),
+                                              content: const Text(
+                                                "Are you sure you want to delete this trip?",
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    context.pop();
+                                                  },
+                                                  child: const Text("Cancel"),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    context
+                                                        .read<postTripCubit>()
+                                                        .deleteTrip(
+                                                          state
+                                                                  .response
+                                                                  .data
+                                                                  ?.tripId ??
+                                                              "",
+                                                        );
+                                                  },
+                                                  child: const Text(
+                                                    "Confirm",
+                                                    style: TextStyle(
+                                                      color: Colors.redAccent,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                      );
+                                    },
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                color: Colors.white70,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                "Place : ",
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                              Text(
+                                state.response.data?.destination ?? "",
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.currency_rupee,
+                                color: Colors.white70,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                "Budget : ",
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                              Text(
+                                widget.budget,
+                                style: const TextStyle(
+                                  color: Colors.greenAccent,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      legendOptions: const LegendOptions(showLegends: false),
-                      chartValuesOptions: const ChartValuesOptions(
-                        showChartValues: false,
-                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Travel Expenses",
-                        style: TextStyle(
-                          color: Color(0xffFBFBFB),
-                          fontSize: 20,
-                          fontFamily: 'Mullish',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      if (widget.tripId.isEmpty) ...[
-                        FilledButton(
-                          style: ButtonStyle(
-                            visualDensity: VisualDensity.compact,
-                            backgroundColor: MaterialStateProperty.all(
-                              buttonBgColor,
-                            ),
+                    const SizedBox(height: 24),
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.white.withOpacity(0.1),
+                            blurRadius: 20,
+                            spreadRadius: 5,
                           ),
-                          onPressed: () {
-                            context.push(
-                              '/update_expensive?id=${state.response.data?.tripId ?? ''}&budget=${widget.budget}&place=${state.response.data?.destination ?? ""}',
-                            );
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                'Add',
+                        ],
+                      ),
+                      child: PieChart(
+                        dataMap:
+                            categoryTotals.isNotEmpty
+                                ? categoryTotals
+                                : {'No Expenses': 1.0},
+                        colorList:
+                            categoryTotals.isNotEmpty
+                                ? categoryTotals.keys
+                                    .map(
+                                      (key) =>
+                                          categoryColorMap[key] ?? Colors.grey,
+                                    )
+                                    .toList()
+                                : [Colors.grey],
+                        gradientList:
+                            categoryTotals.isNotEmpty
+                                ? categoryTotals.keys
+                                    .map(
+                                      (key) =>
+                                          categoryGradientMap[key] ??
+                                          [Colors.grey, Colors.grey],
+                                    )
+                                    .toList()
+                                : [
+                                  [Colors.grey, Colors.grey],
+                                ],
+                        animationDuration: const Duration(milliseconds: 1200),
+                        chartLegendSpacing: 32,
+                        chartRadius: MediaQuery.of(context).size.width / 1.8,
+                        initialAngleInDegree: 270,
+                        chartType: ChartType.ring,
+                        ringStrokeWidth: 30,
+                        centerWidget: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Expenses",
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(
+                              width: width * 0.45,
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                "₹" + totalExpense.toStringAsFixed(0),
                                 style: TextStyle(
-                                  color: Color(0xff1C3132),
-                                  fontSize: 14,
-                                  fontFamily: 'Lexend',
-                                  fontWeight: FontWeight.w500,
+                                  overflow: TextOverflow.ellipsis,
+                                  color: Colors.white,
+                                  fontSize: 36,
                                 ),
                               ),
-                              const SizedBox(width: 2),
-                              Icon(
-                                Icons.add,
-                                color: const Color(0xff1C3132),
-                                size: 16,
-                              ),
-                            ],
+                            ),
+                          ],
+                        ),
+                        legendOptions: const LegendOptions(showLegends: false),
+                        chartValuesOptions: const ChartValuesOptions(
+                          showChartValues: false,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Travel Expenses",
+                          style: TextStyle(
+                            color: Color(0xffFBFBFB),
+                            fontSize: 20,
+                            fontFamily: 'Mullish',
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
+                        if (widget.tripId.isEmpty) ...[
+                          FilledButton(
+                            style: ButtonStyle(
+                              visualDensity: VisualDensity.compact,
+                              backgroundColor: MaterialStateProperty.all(
+                                buttonBgColor,
+                              ),
+                            ),
+                            onPressed: () {
+                              context.push(
+                                '/update_expensive?id=${state.response.data?.tripId ?? ''}&budget=${widget.budget}&place=${state.response.data?.destination ?? ""}',
+                              );
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  'Add',
+                                  style: TextStyle(
+                                    color: Color(0xff1C3132),
+                                    fontSize: 14,
+                                    fontFamily: 'Lexend',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(width: 2),
+                                Icon(
+                                  Icons.add,
+                                  color: const Color(0xff1C3132),
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ..._buildExpenseList(expenses),
-                ],
+                    ),
+                    const SizedBox(height: 8),
+                    ..._buildExpenseList(expenses),
+                  ],
+                ),
               );
             } else if (state is PiechartError) {
               return Center(
@@ -681,8 +696,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                         fontWeight: FontWeight.w500,
                         fontFamily: 'Roboto',
                       ),
-                    )
-
+                    ),
                   ],
                 ),
               )
@@ -742,8 +756,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                             ),
                             actions: [
                               TextButton(
-                                onPressed:
-                                    () => Navigator.of(context).pop(false),
+                                onPressed: () => context.pop(false),
                                 child: const Text('Cancel'),
                               ),
                               TextButton(
@@ -770,7 +783,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                                         duration: const Duration(seconds: 3),
                                       ),
                                     );
-                                    Navigator.of(context).pop(false);
+                                    context.pop(false);
                                   }
                                 },
                                 child: const Text(

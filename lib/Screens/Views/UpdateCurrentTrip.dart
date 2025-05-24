@@ -119,18 +119,7 @@ class _UpdateCurrentTripState extends State<UpdateCurrentTrip> {
     final height = size.height;
     return Scaffold(
       backgroundColor: const Color(0xFF1C3132),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF1C3132),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(),
-        ),
-        title: const Text(
-          'Update Current Trip',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
+      appBar: CustomAppBar(title: 'Update Current Trip', actions: []),
       body: BlocBuilder<GetTripCubit, GetTripState>(
         builder: (context, state) {
           if (state is GetTripLoading) {
@@ -295,7 +284,7 @@ class _UpdateCurrentTripState extends State<UpdateCurrentTrip> {
                 ],
               ),
             );
-          }else if (state is GetTripError) {
+          } else if (state is GetTripError) {
             return Center(
               child: Text(
                 state.message,
@@ -306,7 +295,8 @@ class _UpdateCurrentTripState extends State<UpdateCurrentTrip> {
                 ),
               ),
             );
-          } return Center(
+          }
+          return Center(
             child: Text(
               "No Data",
               style: TextStyle(

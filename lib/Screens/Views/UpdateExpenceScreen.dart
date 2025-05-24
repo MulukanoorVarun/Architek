@@ -10,6 +10,8 @@ import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 import '../../Block/Logic/CategoryList/CategoryCubit.dart';
 import '../../Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
 import '../../Block/Logic/ExpenseDetails/ExpenseDetailsState.dart';
+import '../../Block/Logic/Internet/internet_status_bloc.dart';
+import '../../Block/Logic/Internet/internet_status_state.dart';
 import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import '../Components/CustomAppButton.dart';
 import '../Components/CutomAppBar.dart';
@@ -91,10 +93,15 @@ class _UpdateExpenseState extends State<UpdateExpense> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xff102A2C),
-      appBar: CustomAppBar(title: 'Vacation', actions: []),
-      body: BlocConsumer<GetExpenseDetailCubit, GetExpenseDetailsState>(
+    return BlocListener<InternetStatusBloc, InternetStatusState>(
+      listener: (context, state) {
+        if (state is InternetStatusLostState) {
+          context.push('/no_internet');
+        } else {
+          context.pop();
+        }
+      },
+      child: BlocConsumer<GetExpenseDetailCubit, GetExpenseDetailsState>(
         listener: (context, state) {
           if (state is ExpenceDetailSuccess) {
             Future.microtask(() {
@@ -115,7 +122,11 @@ class _UpdateExpenseState extends State<UpdateExpense> {
           } else if (expenseState is GetExpenseDetailLoaded ||
               expenseState is ExpenceDetailSuccess ||
               widget.expenseId.isEmpty) {
-            return _buildForm(context);
+            return Scaffold(
+              backgroundColor: const Color(0xff102A2C),
+              appBar: CustomAppBar(title: widget.place, actions: []),
+              body: _buildForm(context),
+            );
           } else if (expenseState is GetExpenseDetailError) {
             return Center(
               child: Column(
