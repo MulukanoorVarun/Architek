@@ -169,7 +169,8 @@ class _VacationHistoryState extends State<VacationHistory> {
               return Scaffold(
                 backgroundColor: const Color(0xFF1C3132),
                 appBar: CustomAppBar(
-                  title:   "${capitalize(state.response.data?.destination ?? "")} Trip",
+                  title:
+                      "${capitalize(state.response.data?.destination ?? "")} Trip",
                   actions:
                       widget.tripId.isNotEmpty
                           ? []
@@ -208,47 +209,78 @@ class _VacationHistoryState extends State<VacationHistory> {
                                   }
                                 }
                               },
-                              child: TextButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder:
-                                        (context) => AlertDialog(
-                                          title: const Text("Finish Trip"),
-                                          content: const Text(
-                                            "Are you sure you want to end this trip?",
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                context.pop();
-                                              },
-                                              child: const Text("Cancel"),
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 10.0),
+                                child: OutlinedButton(
+                                  style: ButtonStyle(
+                                    padding: WidgetStateProperty.all(
+                                      EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                    ),
+                                    visualDensity: VisualDensity.compact,
+                                    shape: WidgetStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          32,
+                                        ), // Optional
+                                      ),
+                                    ),
+                                    side: WidgetStateProperty.all(
+                                      BorderSide(
+                                        color: Color(
+                                          0xFFFFA726,
+                                        ), // Border color
+                                        width: 1, // Border width (optional)
+                                      ),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder:
+                                          (context) => AlertDialog(
+                                            title: Text("Finish Trip"),
+                                            content: const Text(
+                                              "Are you sure you want to end this trip?",
                                             ),
-                                            TextButton(
-                                              onPressed: () {
-                                                final Map<String, dynamic>
-                                                data = {"is_completed": "true"};
-                                                context
-                                                    .read<TripFinishCubit>()
-                                                    .finishTrip(data);
-                                              },
-                                              child: const Text(
-                                                "Confirm",
-                                                style: TextStyle(
-                                                  color: Colors.redAccent,
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  context.pop();
+                                                },
+                                                child: const Text("Cancel"),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  final Map<String, dynamic>
+                                                  data = {
+                                                    "is_completed": "true",
+                                                  };
+                                                  context
+                                                      .read<TripFinishCubit>()
+                                                      .finishTrip(data);
+                                                },
+                                                child: const Text(
+                                                  "Confirm",
+                                                  style: TextStyle(
+                                                    color: Colors.redAccent,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                  );
-                                },
-                                child: Text(
-                                  "Finish Trip",
-                                  style: TextStyle(
-                                    color: Color(0xFFFFA726),
-                                    fontSize: 16,
+                                            ],
+                                          ),
+                                    );
+                                  },
+                                  child: Text(
+                                    "Finish Trip",
+                                    style: TextStyle(
+                                      color: Color(0xFFDDA25F),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'Lexend',
+                                    ),
                                   ),
                                 ),
                               ),
@@ -259,9 +291,9 @@ class _VacationHistoryState extends State<VacationHistory> {
                   padding: EdgeInsets.all(16),
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF223436),
+                        color: Color(0xFF304546),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Column(
@@ -272,8 +304,10 @@ class _VacationHistoryState extends State<VacationHistory> {
                               Text(
                                 "Travel Plan",
                                 style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
+                                  color: Color(0xffFBFBFB),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'Mullish',
                                 ),
                               ),
                               Spacer(),
@@ -353,10 +387,23 @@ class _VacationHistoryState extends State<VacationHistory> {
                               const SizedBox(width: 8),
                               const Text(
                                 "Place : ",
-                                style: TextStyle(color: Colors.white70),
+                                style: TextStyle(
+                                  color: Color(0xffDADADA),
+                                  fontFamily: 'Mullish',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
                               ),
-                              Text(capitalize( state.response.data?.destination ?? ""),
-                                style: const TextStyle(color: Colors.white),
+                              Text(
+                                capitalize(
+                                  state.response.data?.destination ?? "",
+                                ),
+                                style: TextStyle(
+                                  color: Color(0xffDADADA),
+                                  fontFamily: 'Mullish',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
                               ),
                             ],
                           ),
@@ -371,12 +418,20 @@ class _VacationHistoryState extends State<VacationHistory> {
                               const SizedBox(width: 8),
                               const Text(
                                 "Budget : ",
-                                style: TextStyle(color: Colors.white70),
+                                style: TextStyle(
+                                  color: Color(0xffDADADA),
+                                  fontFamily: 'Mullish',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
                               ),
                               Text(
                                 widget.budget,
                                 style: const TextStyle(
-                                  color: Colors.greenAccent,
+                                  color: Color(0xff55EE4A),
+                                  fontFamily: 'Mullish',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
                                 ),
                               ),
                             ],
@@ -422,20 +477,22 @@ class _VacationHistoryState extends State<VacationHistory> {
                                 : [
                                   [Colors.grey, Colors.grey],
                                 ],
-                        animationDuration: const Duration(milliseconds: 1200),
-                        chartLegendSpacing: 32,
+                        animationDuration: Duration(milliseconds: 1200),
+                        chartLegendSpacing: 28,
                         chartRadius: MediaQuery.of(context).size.width / 1.8,
                         initialAngleInDegree: 270,
                         chartType: ChartType.ring,
-                        ringStrokeWidth: 30,
+                        ringStrokeWidth: 20,
                         centerWidget: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
                               "Expenses",
                               style: TextStyle(
-                                color: Colors.white70,
+                                color: Color(0xffFFFFFF),
                                 fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Mullish',
                               ),
                             ),
                             SizedBox(
@@ -608,16 +665,19 @@ class _VacationHistoryState extends State<VacationHistory> {
                 ),
               ),
               child: Center(
-                child: Text(
-                  date,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                child:Transform.rotate(
+                  angle: -0.1208, // 6.92 degrees in radians
+                  child: Text(
+                    date,
+                    style: TextStyle(
+                      color: Color(0xff1C3132),
+                      fontSize: 14,
+                      fontFamily: 'Comic',
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
+                )),
               ),
-            ),
           ],
         ),
       );
@@ -633,7 +693,7 @@ class _VacationHistoryState extends State<VacationHistory> {
         expenseWidgets.add(
           widget.tripId.isNotEmpty
               ? Container(
-                margin: const EdgeInsets.symmetric(vertical: 4),
+                margin: const EdgeInsets.only(bottom: 4),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 16,
@@ -645,11 +705,11 @@ class _VacationHistoryState extends State<VacationHistory> {
                       color:
                           colorCode.isNotEmpty
                               ? hexToColor(colorCode)
-                              : const Color(0xFF1C3132),
+                              :  Color(0xFF1C3132),
                       width: 12,
                     ),
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(12),bottomRight: Radius.circular(12)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,

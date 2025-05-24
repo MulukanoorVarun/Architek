@@ -22,7 +22,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: primary,
       leading: IconButton(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(primaryOpacity),
+          backgroundColor: MaterialStateProperty.all(Color(0xffffffff).withOpacity(0.20)),
           visualDensity: VisualDensity.comfortable,
           side: MaterialStateProperty.all(BorderSide(color: primaryOpacity)),
           shape: MaterialStateProperty.all(

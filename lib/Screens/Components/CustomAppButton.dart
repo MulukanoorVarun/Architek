@@ -76,7 +76,7 @@ class CustomAppButton1 extends StatelessWidget implements PreferredSizeWidget {
     var h = MediaQuery.of(context).size.height;
     return SizedBox(
       width: width ?? w,
-      height: height ?? 48,
+      height: height ?? 56,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
@@ -102,7 +102,7 @@ class CustomAppButton1 extends StatelessWidget implements PreferredSizeWidget {
           style: TextStyle(
             color: black1,
             fontSize: 18,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.bold,
             fontFamily: 'Lexend',
           ),
         ),
