@@ -17,6 +17,7 @@ import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
 import '../../Block/Logic/PiechartdataScreen/PiechartState.dart';
 import '../../utils/color_constants.dart';
 import '../Components/CutomAppBar.dart';
+import '../Components/FilteringDate.dart';
 
 class VacationHistory extends StatefulWidget {
   final String tripId;
@@ -168,7 +169,7 @@ class _VacationHistoryState extends State<VacationHistory> {
               return Scaffold(
                 backgroundColor: const Color(0xFF1C3132),
                 appBar: CustomAppBar(
-                  title: state.response.data?.destination ?? "",
+                  title:   "${capitalize(state.response.data?.destination ?? "")} Trip",
                   actions:
                       widget.tripId.isNotEmpty
                           ? []
@@ -354,8 +355,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                                 "Place : ",
                                 style: TextStyle(color: Colors.white70),
                               ),
-                              Text(
-                                state.response.data?.destination ?? "",
+                              Text(capitalize( state.response.data?.destination ?? ""),
                                 style: const TextStyle(color: Colors.white),
                               ),
                             ],

@@ -13,6 +13,7 @@ import 'package:tripfin/Block/Logic/GetTrip/GetTripState.dart';
 import 'package:tripfin/Block/Logic/Home/HomeState.dart';
 import 'package:tripfin/Block/Logic/PostTrip/potTrip_state.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
+import 'package:tripfin/Screens/Components/FilteringDate.dart';
 
 import '../../Block/Logic/Home/HomeCubit.dart';
 import '../../Block/Logic/Internet/internet_status_bloc.dart';
@@ -497,12 +498,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                 if (confirm == true) {
                                   try {
-                                    await context.read<postTripCubit>().deleteTrip(tripId);
-                                    await context.read<HomeCubit>().fetchHomeData();
+                                    await context
+                                        .read<postTripCubit>()
+                                        .deleteTrip(tripId);
+                                    await context
+                                        .read<HomeCubit>()
+                                        .fetchHomeData();
                                     return true;
                                   } catch (e) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Failed to delete trip: $e')),
+                                      SnackBar(
+                                        content: Text(
+                                          'Failed to delete trip: $e',
+                                        ),
+                                      ),
                                     );
                                     return false;
                                   }
@@ -552,11 +561,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            state
-                                                    .getTripModel
-                                                    .data
-                                                    ?.destination ??
-                                                "Unknown",
+                                            capitalize(
+                                              state
+                                                      .getTripModel
+                                                      .data
+                                                      ?.destination ??
+                                                  "Unknown",
+                                            ),
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: width * 0.05,
@@ -749,7 +760,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      trip.destination ?? "",
+                                                      capitalize(
+                                                        trip.destination ?? "",
+                                                      ),
+
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: width * 0.05,
