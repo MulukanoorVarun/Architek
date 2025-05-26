@@ -79,12 +79,13 @@ class _UpdateExpenseState extends State<UpdateExpense> {
       }
     });
   }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate:initStart,
+      lastDate: initStart,
     );
     if (picked != null) {
       final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
