@@ -110,12 +110,13 @@ final GoRouter goRouter = GoRouter(
         final budget = state.uri.queryParameters['budget'];
         final place = state.uri.queryParameters['place'];
         final expenceId = state.uri.queryParameters['expenseId'];
+        final date = state.uri.queryParameters['date'];
         return buildSlideTransitionPage(
           UpdateExpense(
             id: id ?? "",
             budget: budget ?? "",
             place: place ?? "",
-            expenseId: expenceId ?? "",
+            expenseId: expenceId ?? "",date:date??"" ,
           ),
           state,
         );

@@ -21,6 +21,7 @@ class UpdateExpense extends StatefulWidget {
   final String place;
   final String budget;
   final String expenseId;
+  final String date;
 
   const UpdateExpense({
     Key? key,
@@ -28,6 +29,7 @@ class UpdateExpense extends StatefulWidget {
     required this.place,
     required this.budget,
     required this.expenseId,
+    required this.date,
   }) : super(key: key);
 
   @override
@@ -41,11 +43,11 @@ class _UpdateExpenseState extends State<UpdateExpense> {
   final TextEditingController amountController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
   final TextEditingController remarksController = TextEditingController();
-
+  late DateTime initStart;
   @override
   void initState() {
     super.initState();
-
+    initStart = DateFormat('yyyy-MM-dd').parse(widget.date);
     context.read<Categorycubit>().GetCategory();
 
     context.read<Categorycubit>().stream.listen((state) {
@@ -77,13 +79,12 @@ class _UpdateExpenseState extends State<UpdateExpense> {
       }
     });
   }
-
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
+      lastDate:initStart,
     );
     if (picked != null) {
       final formattedDate = DateFormat('yyyy-MM-dd').format(picked);

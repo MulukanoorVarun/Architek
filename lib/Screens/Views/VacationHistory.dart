@@ -665,7 +665,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                 ),
               ),
               child: Center(
-                child:Transform.rotate(
+                child: Transform.rotate(
                   angle: -0.1208, // 6.92 degrees in radians
                   child: Text(
                     date,
@@ -676,8 +676,9 @@ class _VacationHistoryState extends State<VacationHistory> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                )),
+                ),
               ),
+            ),
           ],
         ),
       );
@@ -705,11 +706,14 @@ class _VacationHistoryState extends State<VacationHistory> {
                       color:
                           colorCode.isNotEmpty
                               ? hexToColor(colorCode)
-                              :  Color(0xFF1C3132),
+                              : Color(0xFF1C3132),
                       width: 12,
                     ),
                   ),
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(12),bottomRight: Radius.circular(12)),
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(12),
+                    bottomRight: Radius.circular(12),
+                  ),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
