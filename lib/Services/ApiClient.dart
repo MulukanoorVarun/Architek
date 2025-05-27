@@ -17,9 +17,10 @@ class ApiClient {
   static const List<String> _unauthenticatedEndpoints = [
     '/auth/login',
     '/auth/register',
+    '/auth/send-email-otp',
     '/auth/refreshtoken',
     '/auth/currency',
-
+    '/auth/verify-email-otp'
   ];
 
   static void setupInterceptors() {

@@ -35,6 +35,8 @@ abstract class RemoteDataSource {
   Future<SuccessModel?> updateprofile(Map<String, dynamic> data);
   Future<SuccessModel?> updateCurrentTrip(Map<String, dynamic> data, String Id);
   Future<SuccessModel?> deletCurrentTrip(String id);
+  Future<SuccessModel?> ForgotpasswordApi(Map<String, dynamic> data);
+  Future<SuccessModel?> VerifyOtp(Map<String, dynamic> data);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -388,4 +390,45 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       return null;
     }
   }
+
+
+  @override
+  Future<SuccessModel?> ForgotpasswordApi(Map<String, dynamic> data) async {
+    try {
+      final response = await ApiClient.post(
+        APIEndpointUrls.fotgotpassword,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        debugPrint('Forgot Password: ${response.data}');
+        return SuccessModel.fromJson(response.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error Forgot Password: $e');
+      return null;
+    }
+  }
+
+  @override
+  Future<SuccessModel?> VerifyOtp(Map<String, dynamic> data) async {
+    try {
+      final response = await ApiClient.post(
+        APIEndpointUrls.verifyotp,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        debugPrint('verify otp: ${response.data}');
+        return SuccessModel.fromJson(response.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error Verifyotp: $e');
+      return null;
+    }
+  }
+
+
 }

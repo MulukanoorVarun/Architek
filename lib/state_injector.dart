@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryCubit.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryRepository.dart';
 import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileCubit.dart';
+import 'package:tripfin/Block/Logic/ForgotPassword/ForgotPassWordCubit.dart';
+import 'package:tripfin/Block/Logic/ForgotPassword/ForgotPassWordRepository.dart';
 import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyCubit.dart';
 import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyRepository.dart';
 import 'package:tripfin/Block/Logic/GetPreviousTripHistory/GetPreviousTripHistoryCubit.dart';
@@ -115,6 +117,12 @@ class StateInjector {
             remoteDataSource: context.read<RemoteDataSource>(),
           ),
     ),
+    RepositoryProvider<ForgotPasswordRepository>(
+      create:
+          (context) => ForgotPasswordImpl(
+        remoteDataSource: context.read<RemoteDataSource>(),
+      ),
+    ),
   ];
 
   static final blocProviders = <BlocProvider>[
@@ -184,6 +192,10 @@ class StateInjector {
     BlocProvider<TripFinishCubit>(
       create:
           (context) => TripFinishCubit(context.read<TripFinishRepository>()),
+    ),
+    BlocProvider<ForgotPasswordCubit>(
+      create:
+          (context) => ForgotPasswordCubit(context.read<ForgotPasswordRepository>()),
     ),
   ];
 }

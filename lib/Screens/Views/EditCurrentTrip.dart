@@ -91,11 +91,14 @@ class _EditCurrentTripState extends State<EditCurrentTrip> {
     final width = size.width;
     final height = size.height;
     return Scaffold(
+
       appBar: CustomAppBar(title: "Edit Current Trip ", actions: []),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         decoration: BoxDecoration(),
+
         child: Column(
+
           children: [
             _buildTextField(
               controller: destinationController,

@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:tripfin/Block/Logic/CategoryList/CategoryState.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
@@ -13,6 +16,7 @@ import '../../Block/Logic/ExpenseDetails/ExpenseDetailsState.dart';
 import '../../Block/Logic/Internet/internet_status_bloc.dart';
 import '../../Block/Logic/Internet/internet_status_state.dart';
 import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
+import '../../utils/Color_Constants.dart';
 import '../Components/CustomAppButton.dart';
 import '../Components/CutomAppBar.dart';
 
@@ -44,12 +48,27 @@ class _UpdateExpenseState extends State<UpdateExpense> {
   final TextEditingController dateController = TextEditingController();
   final TextEditingController remarksController = TextEditingController();
   late DateTime initStart;
+  final ImagePicker _picker = ImagePicker();
+  File? _selectedImage;
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    } else {}
+  }
   @override
   void initState() {
     super.initState();
-    initStart = DateFormat('yyyy-MM-dd').parse(widget.date);
+    if (widget.date.isNotEmpty) {
+      initStart = DateFormat('yyyy-MM-dd').parse(widget.date);
+      String year = initStart.year.toString();
+    } else {
+      // Handle invalid or empty date
+      print("Invalid date");
+    }
     context.read<Categorycubit>().GetCategory();
-
     context.read<Categorycubit>().stream.listen((state) {
       if (state is CategoryLoaded && state.categoryresponsemodel.data != null) {
         if (selectedCategoryId == null) {
@@ -95,6 +114,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
 
   @override
   Widget build(BuildContext context) {
+
     return BlocListener<InternetStatusBloc, InternetStatusState>(
       listener: (context, state) {
         if (state is InternetStatusLostState) {
@@ -244,6 +264,11 @@ class _UpdateExpenseState extends State<UpdateExpense> {
   }
 
   Widget _buildExpenseForm() {
+    final size = MediaQuery.of(context).size;
+  final width = size.width;
+  final height = size.height;
+
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -276,6 +301,121 @@ class _UpdateExpenseState extends State<UpdateExpense> {
           ),
           const SizedBox(height: 24),
           _buildPaymentModeSelector(),
+          const SizedBox(height: 16),
+          SizedBox(height: height * 0.015),
+          _selectedImage == null
+              ? InkWell(
+                onTap: () {
+                  showModalBottomSheet(
+                    backgroundColor: primary,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return SafeArea(
+                        child: Wrap(
+                          children: <Widget>[
+                            ListTile(
+                              leading: Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                              ),
+                              title: Text(
+                                'Upload Image for Trip',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Mullish',
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              onTap: () {
+                                _pickImage(ImageSource.camera);
+                                context.pop();
+                              },
+                            ),
+                            ListTile(
+                              leading: Icon(
+                                Icons.photo_library,
+                                color: Colors.white,
+                              ),
+                              title: Text(
+                                'Choose from gallery',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Mullish',
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              onTap: () {
+                                _pickImage(ImageSource.gallery);
+                                context.pop();
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: Container(
+                  width: width,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.0,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey.shade600,
+                      width: 1.0,
+                    ),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Text(
+                    'Upload File',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Mullish',
+                    ),
+                  ),
+                ),
+              )
+              : Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      _selectedImage!,
+                      height: 80,
+                      width: 80,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedImage = null;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.6),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
         ],
       ),
     );

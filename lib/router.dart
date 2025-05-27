@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tripfin/Screens/Authentication/ForgotPasswordScreen.dart';
 import 'package:tripfin/Screens/Views/UpdateCurrentTrip.dart';
 import 'package:tripfin/Screens/Views/VacationHistory.dart';
 import 'package:tripfin/Screens/Views/HomeScreen.dart';
@@ -62,6 +63,11 @@ final GoRouter goRouter = GoRouter(
           (context, state) => buildSlideTransitionPage(Nointernet(), state),
     ),
     GoRoute(
+      path: '/forgot-password',
+      pageBuilder:
+          (context, state) => buildSlideTransitionPage(ForgotPasswordScreen(), state),
+    ),
+    GoRoute(
       path: '/profile_screen',
       pageBuilder:
           (context, state) => buildSlideTransitionPage(ProfileScreen(), state),
@@ -96,12 +102,14 @@ final GoRouter goRouter = GoRouter(
         );
       },
     ),
+
     GoRoute(
       path: '/edit_profile_screen',
       pageBuilder:
           (context, state) =>
               buildSlideTransitionPage(Editprofilescreen(), state),
     ),
+
 
     GoRoute(
       path: '/update_expensive',
@@ -138,9 +146,9 @@ final GoRouter goRouter = GoRouter(
 );
 
 Page<dynamic> buildSlideTransitionPage(Widget child, GoRouterState state) {
-  if (Platform.isIOS) {
-    return CupertinoPage(key: state.pageKey, child: child);
-  }
+  // if (Platform.isIOS) {
+  //   return CupertinoPage(key: state.pageKey, child: child);
+  // }
 
   return CustomTransitionPage(
     key: state.pageKey,
