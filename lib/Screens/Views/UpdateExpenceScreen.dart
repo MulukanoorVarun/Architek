@@ -41,7 +41,7 @@ class UpdateExpense extends StatefulWidget {
 }
 
 class _UpdateExpenseState extends State<UpdateExpense> {
-  String? selectedCategory;
+  String selectedCategory="";
   String paymentMode = "Online";
   String? selectedCategoryId;
   final TextEditingController amountController = TextEditingController();
@@ -58,24 +58,23 @@ class _UpdateExpenseState extends State<UpdateExpense> {
       });
     } else {}
   }
+
   @override
   void initState() {
     super.initState();
     if (widget.date.isNotEmpty) {
       initStart = DateFormat('yyyy-MM-dd').parse(widget.date);
-      String year = initStart.year.toString();
     } else {
-      // Handle invalid or empty date
-      print("Invalid date");
+      initStart = DateTime.now();
     }
     context.read<Categorycubit>().GetCategory();
     context.read<Categorycubit>().stream.listen((state) {
       if (state is CategoryLoaded && state.categoryresponsemodel.data != null) {
         if (selectedCategoryId == null) {
           setState(() {
-            selectedCategoryId = state.categoryresponsemodel.data!.first.id;
-            selectedCategory =
-                state.categoryresponsemodel.data!.first.categoryName;
+            // selectedCategoryId = state.categoryresponsemodel.data!.first.id;
+            // selectedCategory =
+            //     state.categoryresponsemodel.data!.first.categoryName;
           });
         }
       }
@@ -98,6 +97,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
         });
       }
     });
+
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -115,7 +115,6 @@ class _UpdateExpenseState extends State<UpdateExpense> {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocListener<InternetStatusBloc, InternetStatusState>(
       listener: (context, state) {
         if (state is InternetStatusLostState) {
@@ -266,9 +265,8 @@ class _UpdateExpenseState extends State<UpdateExpense> {
 
   Widget _buildExpenseForm() {
     final size = MediaQuery.of(context).size;
-  final width = size.width;
-  final height = size.height;
-
+    final width = size.width;
+    final height = size.height;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -303,120 +301,110 @@ class _UpdateExpenseState extends State<UpdateExpense> {
           const SizedBox(height: 24),
           _buildPaymentModeSelector(),
           const SizedBox(height: 16),
-          SizedBox(height: height * 0.015),
-          _selectedImage == null
-              ? InkWell(
-                onTap: () {
-                  showModalBottomSheet(
-                    backgroundColor: primary,
-                    context: context,
-                    builder: (BuildContext context) {
-                      return SafeArea(
-                        child: Wrap(
-                          children: <Widget>[
-                            ListTile(
-                              leading: Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                              ),
-                              title: Text(
-                                'Upload Image for Trip',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Mullish',
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              onTap: () {
-                                _pickImage(ImageSource.camera);
-                                context.pop();
-                              },
-                            ),
-                            ListTile(
-                              leading: Icon(
-                                Icons.photo_library,
-                                color: Colors.white,
-                              ),
-                              title: Text(
-                                'Choose from gallery',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Mullish',
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              onTap: () {
-                                _pickImage(ImageSource.gallery);
-                                context.pop();
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
-                child: Container(
-                  width: width,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12.0,
-                    vertical: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey.shade600,
-                      width: 1.0,
-                    ),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Text(
-                    'Upload File',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Mullish',
-                    ),
-                  ),
-                ),
-              )
-              : Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.file(
-                      _selectedImage!,
-                      height: 80,
-                      width: 80,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedImage = null;
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.6),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          // SizedBox(height: height * 0.015),
+          // _selectedImage == null
+          //     ? InkWell(
+          //       onTap: () {
+          //         showModalBottomSheet(
+          //           backgroundColor: primary,
+          //           context: context,
+          //           builder: (BuildContext context) {
+          //             return SafeArea(
+          //               child: Wrap(
+          //                 children: <Widget>[
+          //                   ListTile(
+          //                     leading: Icon(
+          //                       Icons.camera_alt,
+          //                       color: Colors.white,
+          //                     ),
+          //                     title: Text(
+          //                       'Upload Image for Trip',
+          //                       style: TextStyle(
+          //                         color: Colors.white,
+          //                         fontFamily: 'Mullish',
+          //                         fontWeight: FontWeight.w400,
+          //                         fontSize: 15,
+          //                       ),
+          //                     ),
+          //                     onTap: () {
+          //                       _pickImage(ImageSource.camera);
+          //                       context.pop();
+          //                     },
+          //                   ),
+          //                   ListTile(
+          //                     leading: Icon(
+          //                       Icons.photo_library,
+          //                       color: Colors.white,
+          //                     ),
+          //                     title: Text(
+          //                       'Choose from gallery',
+          //                       style: TextStyle(
+          //                         color: Colors.white,
+          //                         fontFamily: 'Mullish',
+          //                         fontWeight: FontWeight.w400,
+          //                         fontSize: 15,
+          //                       ),
+          //                     ),
+          //                     onTap: () {
+          //                       _pickImage(ImageSource.gallery);
+          //                       context.pop();
+          //                     },
+          //                   ),
+          //                 ],
+          //               ),
+          //             );
+          //           },
+          //         );
+          //       },
+          //       child: Container(
+          //         width: width,
+          //         padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 14),
+          //         decoration: BoxDecoration(
+          //           border: Border.all(color: Colors.grey.shade600, width: 1.0),
+          //           borderRadius: BorderRadius.circular(30),
+          //         ),
+          //         child: Text(
+          //           'Upload File',
+          //           style: TextStyle(
+          //             color: Colors.white70,
+          //             fontSize: 16.0,
+          //             fontWeight: FontWeight.w500,
+          //             fontFamily: 'Mullish',
+          //           ),
+          //         ),
+          //       ),
+          //     )
+          //     : Stack(
+          //       children: [
+          //         ClipRRect(
+          //           borderRadius: BorderRadius.circular(8),
+          //           child: Image.file(
+          //             _selectedImage!,
+          //             height: 80,
+          //             width: 80,
+          //             fit: BoxFit.cover,
+          //           ),
+          //         ),
+          //         Positioned(
+          //           top: 0,
+          //           right: 0,
+          //           child: GestureDetector(
+          //             onTap: () {
+          //               setState(() {
+          //                 _selectedImage = null;
+          //               });
+          //             },
+          //             child: Container(
+          //               decoration: BoxDecoration(
+          //                 color: Colors.black.withOpacity(0.6),
+          //                 shape: BoxShape.circle,
+          //               ),
+          //               child: Icon(Icons.close, color: Colors.white, size: 18),
+          //             ),
+          //           ),
+          //         ),
+          //       ],
+          //     ),
         ],
       ),
     );
@@ -430,7 +418,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
         } else if (categoryState is CategoryLoaded &&
             categoryState.categoryresponsemodel.data != null) {
           return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding:  EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade600),
               borderRadius: BorderRadius.circular(30),
@@ -440,11 +428,11 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                 dropdownColor: const Color(0xff1D3A3C),
                 value: selectedCategoryId,
                 isExpanded: true,
-                hint: const Text(
+                hint:  Text(
                   'Select Category',
                   style: TextStyle(color: Colors.white70),
                 ),
-                icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                icon:  Icon(Icons.arrow_drop_down, color: Colors.white),
                 items:
                     categoryState.categoryresponsemodel.data!.map((category) {
                       return DropdownMenuItem<String>(
