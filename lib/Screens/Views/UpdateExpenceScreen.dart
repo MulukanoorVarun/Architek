@@ -151,7 +151,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
             );
           } else if (expenseState is GetExpenseDetailError) {
             return Center(
-              child: Column(
+              child: Column (
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
