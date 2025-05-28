@@ -19,7 +19,6 @@ class ForgotPasswordSuccess extends ForgotPasswordState {
   List<Object?> get props => [successModel];
 }
 
-
 class ForgotPasswordError extends ForgotPasswordState {
   final String message;
   ForgotPasswordError({required this.message});

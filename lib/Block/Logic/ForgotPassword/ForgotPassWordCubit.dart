@@ -15,7 +15,7 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
       if (response != null && response.settings?.success == 1) {
         emit(ForgotPasswordSuccess(successModel: response));
       } else {
-        emit(ForgotPasswordError(message: response?.settings?.message ?? ""));
+        emit(ForgotPasswordError(message: response?.settings?.message??""));
       }
     } catch (e) {
       emit(ForgotPasswordError(message: "An error occurred: $e"));
@@ -26,6 +26,20 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
     emit(ForgotPasswordLoading());
     try {
       final response = await forgotPasswordRepository.VerifyOtp(data);
+      if (response != null && response.settings?.success == 1) {
+        emit(ForgotPasswordSuccess(successModel: response));
+      } else {
+        emit(ForgotPasswordError(message: response?.settings?.message ?? ""));
+      }
+    } catch (e) {
+      emit(ForgotPasswordError(message: "An error occurred: $e"));
+    }
+  }
+
+  Future<void> confirmPassword(Map<String, dynamic> data) async {
+    emit(ForgotPasswordLoading());
+    try {
+      final response = await forgotPasswordRepository.PasswordChange(data);
       if (response != null && response.settings?.success == 1) {
         emit(ForgotPasswordSuccess(successModel: response));
       } else {

@@ -4,6 +4,7 @@ import '../../../Services/remote_data_source.dart';
 abstract class ForgotPasswordRepository {
   Future<SuccessModel?> forgotPassword(Map<String, dynamic> data);
   Future<SuccessModel?> VerifyOtp(Map<String, dynamic> data);
+  Future<SuccessModel?> PasswordChange(Map<String, dynamic> data);
 }
 
 class ForgotPasswordImpl implements ForgotPasswordRepository {
@@ -18,5 +19,9 @@ class ForgotPasswordImpl implements ForgotPasswordRepository {
   @override
   Future<SuccessModel?> VerifyOtp(Map<String, dynamic> data) async {
     return await remoteDataSource.VerifyOtp(data);
+  }
+  @override
+  Future<SuccessModel?> PasswordChange(Map<String, dynamic> data) async {
+    return await remoteDataSource.changePassword(data);
   }
 }

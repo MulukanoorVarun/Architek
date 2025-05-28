@@ -25,6 +25,7 @@ class APIEndpointUrls {
   static const String deleteCurrentTrip = '${apiUrl}trip-details';
   static const String fotgotpassword = '${authUrl}send-email-otp';
   static const String verifyotp = '${authUrl}verify-email-otp';
+  static const String changePassword = '${authUrl}change-password';
 
 
 

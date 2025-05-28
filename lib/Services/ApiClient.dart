@@ -21,6 +21,7 @@ class ApiClient {
     '/auth/refreshtoken',
     '/auth/currency',
     '/auth/verify-email-otp'
+    '/auth/change-password'
   ];
 
   static void setupInterceptors() {

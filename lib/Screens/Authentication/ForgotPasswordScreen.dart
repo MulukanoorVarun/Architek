@@ -19,7 +19,6 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for form fields
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -27,107 +26,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       TextEditingController();
 
   bool _isCodeSent = false;
+  bool _isCodeVerified = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  bool sendResetCode = false;
-  bool resetPassword = false;
-
-  // Future<void> _sendResetCode() async {
-  //   final response = await http.post(
-  //     Uri.parse('https://admin.neuromitra.com/api/forgotpassword'),
-  //     headers: {
-  //       'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
-  //     },
-  //     body: {'email': _emailController.text},
-  //   );
-  //   setState(() {
-  //     if (response.statusCode == 200) {
-  //       sendResetCode = false;
-  //       final responseBody = jsonDecode(response.body);
-  //       if (responseBody['status'] == 'code send') {
-  //         setState(() {
-  //           _isCodeSent = true;
-  //         });
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(
-  //               content: Text('Reset code sent to ${_emailController.text}')),
-  //         );
-  //       } else {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text('Unexpected response from server')),
-  //         );
-  //       }
-  //     } else {
-  //       final responseBody = jsonDecode(response.body);
-  //       if (responseBody['status'] == false) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text(responseBody['message'])),
-  //         );
-  //       } else {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text('Failed to send reset code')),
-  //         );
-  //       }
-  //       sendResetCode = false;
-  //     }
-  //   });
-  // }
-
-  // Future<void> _resetPassword() async {
-  //   final response = await http.post(
-  //     Uri.parse('https://admin.neuromitra.com/api/reset-password'),
-  //     body: {
-  //       'code': _codeController.text,
-  //       'password': _passwordController.text,
-  //     },
-  //   );
-  //   setState(() {
-  //     if (response.statusCode == 200) {
-  //       final responseBody = jsonDecode(response.body);
-  //       debugPrint("_resetPassword responseBody: ${responseBody}");
-  //
-  //       // Check for success message in the response body
-  //       if (responseBody['message'] == 'Password updated successfully.') {
-  //         context.pop();
-  //         resetPassword = false;
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text('Password reset successfully')),
-  //         );
-  //         // Optionally, reset the form or navigate to a different screen
-  //       } else {
-  //         // Handle unexpected success response
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(
-  //               content:
-  //                   Text('Unexpected response: ${responseBody['message']}')),
-  //         );
-  //       }
-  //     } else {
-  //       resetPassword = false;
-  //       // Assuming a 405 error indicates an invalid OTP
-  //       final responseBody = jsonDecode(response.body);
-  //       debugPrint("_resetPassword responseBody: ${responseBody}");
-  //
-  //       if (responseBody['message'] == 'Invalid Otp') {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text('Invalid OTP. Please try again.')),
-  //         );
-  //       } else {
-  //         // Handle other 405 errors
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(
-  //               content: Text(
-  //                   'Failed to reset password: ${responseBody['message']}')),
-  //         );
-  //       }
-  //     }
-  //   });
-  // }
-
   @override
   void dispose() {
-    // Dispose of controllers
     _emailController.dispose();
     _codeController.dispose();
     _passwordController.dispose();
@@ -147,63 +51,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           child: Column(
             children: [
               SizedBox(height: 20),
-              // Email Field
               if (!_isCodeSent) ...[
-                TextFormField(
+                _buildTextField(
+                  hint: 'Enter Your Email',
                   controller: _emailController,
-                  cursorColor: Colors.white,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: "Enter Your Email",
-                    hintStyle: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white70,
-                      fontFamily: 'Mullish',
-                    ),
-                    filled: true,
-                    fillColor: const Color(0x1AFFFFFF),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(50),
-                      borderSide: const BorderSide(
-                        color: Colors.white54,
-                        width: 1,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-
-                        color: Colors.white,
-                        width: 2,
-                      ),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(width: 1, color: Colors.red),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18.0),
-                      borderSide: BorderSide(width: 1, color: Colors.red),
-                    ),
-
-                    // Always visible email icon at the start
-                    prefixIcon: Padding(
-                      padding: EdgeInsets.only(
-                        left: 10,
-                        right: 5,
-                      ), // Adjust padding
-                      child: Icon(
-                        Icons.email_outlined,
-                        color: Color(0xffffffff),
-                      ),
-                    ),
-                  ),
+                  inputType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
                     }
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'Please enter a valid email address';
+                    if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    ).hasMatch(value)) {
+                      return 'Please enter a valid email';
                     }
                     return null;
                   },
@@ -212,9 +72,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 BlocConsumer<ForgotPasswordCubit, ForgotPasswordState>(
                   listener: (context, state) {
                     if (state is ForgotPasswordSuccess) {
-                      return setState(() {
-                        sendResetCode = true;
+                      setState(() {
+                        _isCodeSent = true;
                       });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Reset code sent successfully')),
+                      );
+                    } else if (state is ForgotPasswordError) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(state.message)));
                     }
                   },
                   builder: (context, state) {
@@ -223,114 +90,61 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       isLoading: state is ForgotPasswordLoading,
                       onPlusTap: () {
                         if (_formKey.currentState!.validate()) {
-                          final Map<String, dynamic> data = {
+                          context.read<ForgotPasswordCubit>().Forgotpassword({
                             'email': _emailController.text,
-                          };
-                          context.read<ForgotPasswordCubit>().Forgotpassword(
-                            data,
-                          );
-
+                          });
+                        }
+                      },
+                    );
+                  },
+                ),
+              ]
+              // Code Verification Field
+              else if (!_isCodeVerified) ...[
+                _buildTextField(
+                  hint: 'Enter Verification Code',
+                  controller: _codeController,
+                  inputType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter the verification code';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20.0),
+                BlocConsumer<ForgotPasswordCubit, ForgotPasswordState>(
+                  listener: (context, state) {
+                    if (state is ForgotPasswordSuccess) {
+                      setState(() {
+                        _isCodeVerified = true;
+                      });
+                    } else if (state is ForgotPasswordError) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(state.message)));
+                    }
+                  },
+                  builder: (context, state) {
+                    return CustomAppButton1(
+                      text: 'Verify Code',
+                      isLoading: state is ForgotPasswordLoading,
+                      onPlusTap: () {
+                        if (_formKey.currentState!.validate()) {
+                          context.read<ForgotPasswordCubit>().verifyOtp({
+                            'email': _emailController.text,
+                            'code': _codeController.text,
+                          });
                         }
                       },
                     );
                   },
                 ),
               ] else ...[
-                TextFormField(
-                  controller: _codeController,
-                  decoration: InputDecoration(
-                    labelText: 'Code',
-                    hintStyle: TextStyle(
-                      fontSize: 15,
-                      letterSpacing: 0,
-                      height: 1.2,
-                      color: Color(0xffAFAFAF),
-                      fontFamily: 'Mullish',
-                      fontWeight: FontWeight.w400,
-                    ),
-                    filled: true,
-                    fillColor: Color(0xffF3F4F6),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: Colors.transparent,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: Color(0xff14B8A6),
-                      ),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(width: 1, color: Colors.red),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18.0),
-                      borderSide: BorderSide(width: 1, color: Colors.red),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the code';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
-                TextFormField(
+                _buildTextField(
+                  hint: 'New Password',
                   controller: _passwordController,
                   obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'New Password',
-                    hintStyle: TextStyle(
-                      fontSize: 15,
-                      letterSpacing: 0,
-                      height: 1.2,
-                      color: Color(0xffAFAFAF),
-                      fontFamily: 'Mullish',
-                      fontWeight: FontWeight.w400,
-                    ),
-                    filled: true,
-                    fillColor: Color(0xffF3F4F6),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: Colors.transparent,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: Color(0xff14B8A6),
-                      ),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(width: 1, color: Colors.red),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18.0),
-                      borderSide: BorderSide(width: 1, color: Colors.red),
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your new password';
@@ -340,58 +154,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     }
                     return null;
                   },
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                 ),
                 SizedBox(height: 16.0),
-                TextFormField(
+                _buildTextField(
+                  hint: 'Confirm Password',
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    hintStyle: TextStyle(
-                      fontSize: 15,
-                      letterSpacing: 0,
-                      height: 1.2,
-                      color: Color(0xffAFAFAF),
-                      fontFamily: 'Mullish',
-                      fontWeight: FontWeight.w400,
-                    ),
-                    filled: true,
-                    fillColor: Color(0xffF3F4F6),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: Colors.transparent,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: Color(0xff14B8A6),
-                      ),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(width: 1, color: Colors.red),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18.0),
-                      borderSide: BorderSide(width: 1, color: Colors.red),
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
-                    ),
-                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please confirm your password';
@@ -401,46 +181,91 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     }
                     return null;
                   },
-                ),
-                SizedBox(height: 20.0),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary,
-                      foregroundColor: primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmPassword
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                     ),
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        if (resetPassword) {
-                        } else {
-                          setState(() {
-                            resetPassword = true;
-                          });
-                          // _resetPassword();
-                        }
-                      }
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
                     },
-                    child:
-                        resetPassword
-                            ? CircularProgressIndicator(color: Colors.white)
-                            : Text(
-                              'Reset Password',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: "Mullish",
-                                fontSize: 15,
-                              ),
-                            ),
                   ),
+                ),
+                SizedBox(height: 20.0),
+                BlocConsumer<ForgotPasswordCubit, ForgotPasswordState>(
+                  listener: (context, state) {
+                    if (state is ForgotPasswordSuccess) {
+                      context.go('/login_mobile');
+                    } else if (state is ForgotPasswordError) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(state.message)));
+                    }
+                  },
+                  builder: (context, state) {
+                    return CustomAppButton1(
+                      text: 'Reset Password',
+                      isLoading: state is ForgotPasswordLoading,
+                      onPlusTap: () {
+                        if (_formKey.currentState!.validate()) {
+                          context.read<ForgotPasswordCubit>().confirmPassword({
+                            'email': _emailController.text,
+                            'code': _codeController.text,
+                            'password': _passwordController.text,
+                          });
+                        }
+                      },
+                    );
+                  },
                 ),
               ],
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String hint,
+    required TextEditingController controller,
+    TextInputType inputType = TextInputType.text,
+    bool obscureText = false,
+    String? Function(String?)? validator,
+    Widget? suffixIcon,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: inputType,
+      obscureText: obscureText,
+      style: const TextStyle(color: Colors.white, fontFamily: 'Mullish'),
+      validator: validator,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Color(0xFFB0B0B0)),
+        filled: true,
+        fillColor: const Color(0x1AFFFFFF),
+        contentPadding: const EdgeInsets.all(16),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(50),
+          borderSide: const BorderSide(color: Colors.white54, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(50),
+          borderSide: const BorderSide(color: Colors.white, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(50),
+          borderSide: const BorderSide(color: Colors.red, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(50),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        suffixIcon: suffixIcon,
       ),
     );
   }

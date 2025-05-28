@@ -89,20 +89,6 @@ class _VacationHistoryState extends State<VacationHistory> {
             color: Colors.white,
           ),
         ),
-        dialogTheme: const DialogTheme(
-          titleTextStyle: TextStyle(
-            fontFamily: 'Mullish',
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
-          contentTextStyle: TextStyle(
-            fontFamily: 'Mullish',
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
-        ),
         snackBarTheme: const SnackBarThemeData(
           contentTextStyle: TextStyle(
             fontFamily: 'Mullish',
