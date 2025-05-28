@@ -37,7 +37,7 @@ abstract class RemoteDataSource {
   Future<SuccessModel?> deletCurrentTrip(String id);
   Future<SuccessModel?> ForgotpasswordApi(Map<String, dynamic> data);
   Future<SuccessModel?> VerifyOtp(Map<String, dynamic> data);
-  Future<SuccessModel?> changePassword(Map<String, dynamic> data);
+  Future<SuccessModel?> ChangePassword(Map<String, dynamic> data);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -430,22 +430,21 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       return null;
     }
   }
-
   @override
-  Future<SuccessModel?> changePassword(Map<String, dynamic> data) async {
+  Future<SuccessModel?> ChangePassword(Map<String, dynamic> data) async {
     try {
       final response = await ApiClient.post(
         APIEndpointUrls.changePassword,
         data: data,
       );
       if (response.statusCode == 200) {
-        debugPrint('changePassword : ${response.data}');
+        debugPrint('ChangePassword : ${response.data}');
         return SuccessModel.fromJson(response.data);
       } else {
         return null;
       }
     } catch (e) {
-      debugPrint('Error changePassword: $e');
+      debugPrint('Error ChangePassword: $e');
       return null;
     }
   }

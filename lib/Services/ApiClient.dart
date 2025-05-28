@@ -18,10 +18,10 @@ class ApiClient {
     '/auth/login',
     '/auth/register',
     '/auth/send-email-otp',
+    '/auth/change-password',
     '/auth/refreshtoken',
     '/auth/currency',
-    '/auth/verify-email-otp'
-    '/auth/change-password'
+   '/auth/verify-email-otp',
   ];
 
   static void setupInterceptors() {

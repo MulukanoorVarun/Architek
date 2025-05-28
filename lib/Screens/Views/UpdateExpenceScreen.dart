@@ -80,6 +80,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
         }
       }
     });
+
     if (widget.expenseId.isNotEmpty) {
       context.read<GetExpenseDetailCubit>().GetExpenseDetails(widget.expenseId);
     }

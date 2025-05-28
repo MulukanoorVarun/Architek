@@ -133,7 +133,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         if (_formKey.currentState!.validate()) {
                           context.read<ForgotPasswordCubit>().verifyOtp({
                             'email': _emailController.text,
-                            'code': _codeController.text,
+                            'otp': _codeController.text,
                           });
                         }
                       },
@@ -211,11 +211,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       isLoading: state is ForgotPasswordLoading,
                       onPlusTap: () {
                         if (_formKey.currentState!.validate()) {
-                          context.read<ForgotPasswordCubit>().confirmPassword({
+                          final Map<String,dynamic> data ={
                             'email': _emailController.text,
-                            'code': _codeController.text,
-                            'password': _passwordController.text,
-                          });
+                            'new_password': _passwordController.text,
+                            'confirm_password':_confirmPasswordController.text,
+                          };
+                          print("data:${data}");
+                          context.read<ForgotPasswordCubit>().confirmPassword(data);
                         }
                       },
                     );

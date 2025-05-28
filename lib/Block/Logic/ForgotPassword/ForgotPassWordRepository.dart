@@ -22,6 +22,6 @@ class ForgotPasswordImpl implements ForgotPasswordRepository {
   }
   @override
   Future<SuccessModel?> PasswordChange(Map<String, dynamic> data) async {
-    return await remoteDataSource.changePassword(data);
+    return await remoteDataSource.ChangePassword(data);
   }
 }
