@@ -16,6 +16,8 @@ class UpdateProfileCubit extends Cubit<UpdateProfileState> {
       if (res != null) {
         if (res.settings?.success == 1) {
           emit(UpdateProfileSuccessState(successModel: res));
+        }else{
+          emit(UpdateProfileError(message: res.settings?.message??""));
         }
       } else {
         emit(UpdateProfileError(message: 'Unexpected null response'));

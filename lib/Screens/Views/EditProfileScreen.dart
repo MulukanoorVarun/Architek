@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tripfin/Block/Logic/UpdateProfile/UpdateProfileState.dart';
+import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 
 import '../../Block/Logic/CombinedProfile/CombinedProfileCubit.dart';
 import '../../Block/Logic/Home/HomeCubit.dart';
@@ -20,16 +21,17 @@ import '../Components/CutomAppBar.dart';
 class Editprofilescreen extends StatefulWidget {
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
+}
 
-   }
 class _EditProfileScreenState extends State<Editprofilescreen> {
-
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   File? _image;
 
   final ImagePicker _picker = ImagePicker();
+
+  bool _isInitialized = false; // flag to avoid resetting values after first load
 
   @override
   void initState() {
@@ -38,76 +40,53 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
   }
 
   Future<void> _pickImageFromGallery() async {
-    try {
-      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        setState(() {
-          _image = File(pickedFile.path);
-          print('Image selected: ${_image!.path}');
-        });
-      } else {
-        print('No image selected from gallery');
-      }
-    } catch (e) {
-      print('Error picking image from gallery: $e');
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
     }
   }
 
   Future<void> _takePhoto() async {
-    try {
-      final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-      if (pickedFile != null) {
-        setState(() {
-          _image = File(pickedFile.path);
-          print('Image captured: ${_image!.path}');
-        });
-      } else {
-        print('No image captured from camera');
-      }
-    } catch (e) {
-      print('Error taking photo: $e');
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
     }
   }
 
   Future<void> _updateProfile() async {
-    try {
-      final Map<String, dynamic> data = {
-        "full_name": _nameController.text,
-        "email": _emailController.text,
-        "status": "Active",
-        "mobile": _phoneController.text,
-        "image": _image,
-      };
+    final Map<String, dynamic> data = {
+      "full_name": _nameController.text,
+      "email": _emailController.text,
+      "status": "Active",
+      "mobile": _phoneController.text,
+      "image": _image,
+    };
 
-      data.removeWhere((key, value) => value == null);
-      context.read<UpdateProfileCubit>().updateProfile(data);
-    } catch (e) {
-      print('Error preparing FormData: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating profile: $e')),
-      );
-    }
+    data.removeWhere((key, value) => value == null);
+    context.read<UpdateProfileCubit>().updateProfile(data);
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final width = size.width;
-    final height = size.height;
+
     return BlocBuilder<ProfileCubit, GetProfileState>(
       builder: (context, profileState) {
         if (profileState is GetProfileLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (profileState is GetProfileLoaded) {
-          _nameController.text =
-              profileState.getprofileModel.data?.fullName ?? "";
-          _emailController.text =
-              profileState.getprofileModel.data?.email ?? "";
-          _phoneController.text =
-              profileState.getprofileModel.data?.mobile ?? "";
+          if (!_isInitialized) {
+            _nameController.text = profileState.getprofileModel.data?.fullName ?? "";
+            _emailController.text = profileState.getprofileModel.data?.email ?? "";
+            _phoneController.text = profileState.getprofileModel.data?.mobile ?? "";
+            _isInitialized = true;
+          }
 
-          final String? profileImageUrl =
-              profileState.getprofileModel.data?.image;
           return Scaffold(
             backgroundColor: primary,
             appBar: CustomAppBar(title: 'Edit Profile', actions: []),
@@ -123,26 +102,24 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                             child: _image != null
                                 ? Image.file(
                               _image!,
-                              width:150,
+                              width: 150,
                               height: 150,
                               fit: BoxFit.cover,
                             )
                                 : CachedNetworkImage(
-                              imageUrl: profileState.getprofileModel.data?.image??"",
-                              width:120,
+                              imageUrl: profileState.getprofileModel.data?.image ?? "",
+                              width: 120,
                               height: 120,
                               fit: BoxFit.cover,
                               imageBuilder: (context, imageProvider) => CircleAvatar(
-                                radius: width * 15, // Matches width/height for circular shape
+                                radius: width * 0.15,
                                 backgroundImage: imageProvider,
                                 backgroundColor: Colors.white,
                               ),
                               placeholder: (context, url) => CircleAvatar(
                                 radius: width * 0.15,
                                 backgroundColor: Colors.white,
-                                child: const Center(
-                                  child: CircularProgressIndicator(), // From old code
-                                ),
+                                child: const CircularProgressIndicator(),
                               ),
                             ),
                           ),
@@ -153,40 +130,30 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                               onTap: () {
                                 showModalBottomSheet(
                                   context: context,
-
-                                  builder: (_) {
-                                    return Container(
-                                      color: Colors.white,
-                                      height: 120,
-
-                                      child: Column(
-                                        children: [
-                                          ListTile(
-                                            leading: const Icon(
-                                              Icons.photo_library,
-                                            ),
-                                            title: const Text('Gallery'),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              _pickImageFromGallery();
-                                            },
-                                          ),
-
-
-                                          ListTile(
-                                            leading: const Icon(
-                                              Icons.camera_alt,
-                                            ),
-                                            title: const Text('Camera'),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              _takePhoto();
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
+                                  builder: (_) => Container(
+                                    color: Colors.white,
+                                    height: 120,
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          leading: const Icon(Icons.photo_library),
+                                          title: const Text('Gallery'),
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            _pickImageFromGallery();
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: const Icon(Icons.camera_alt),
+                                          title: const Text('Camera'),
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            _takePhoto();
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 );
                               },
                               child: const CircleAvatar(
@@ -210,30 +177,29 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                 ),
               ),
             ),
-            bottomNavigationBar:
-                BlocConsumer<UpdateProfileCubit, UpdateProfileState>(
-                  listener: (context, state) {
-                    if (state is UpdateProfileSuccessState) {
-                       context.read<HomeCubit>().fetchHomeData();
-                       context.read<CombinedProfileCubit>().fetchCombinedProfile();
-                      context.pop();
-                    }
-                  },
-                  builder: (context, state) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 80,
-                      ),
-                      child: CustomAppButton1(
-                        isLoading: state is UpdateProfileLoading,
-                        height: 56,
-                        text: 'Save Changes',
-                        onPlusTap: _updateProfile,
-                      ),
-                    );
-                  },
-                ),
+            bottomNavigationBar: BlocConsumer<UpdateProfileCubit, UpdateProfileState>(
+              listener: (context, state) {
+                if (state is UpdateProfileSuccessState) {
+                  context.read<HomeCubit>().fetchHomeData();
+                  context.read<CombinedProfileCubit>().fetchCombinedProfile();
+                  context.pop();
+                }else if(state is UpdateProfileError){
+                  CustomSnackBar.show(context,state.message);
+
+                }
+              },
+              builder: (context, state) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 80),
+                  child: CustomAppButton1(
+                    isLoading: state is UpdateProfileLoading,
+                    height: 56,
+                    text: 'Save Changes',
+                    onPlusTap: _updateProfile,
+                  ),
+                );
+              },
+            ),
           );
         } else if (profileState is GetProfileError) {
           return Center(child: Text(profileState.message));
@@ -265,5 +231,5 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
       ),
     );
   }
-
 }
+

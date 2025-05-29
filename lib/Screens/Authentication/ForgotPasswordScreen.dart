@@ -155,6 +155,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     return null;
                   },
                   suffixIcon: IconButton(
+                    color: Color(0xffffffff),
                     icon: Icon(
                       _obscurePassword
                           ? Icons.visibility
@@ -182,6 +183,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     return null;
                   },
                   suffixIcon: IconButton(
+                    color: Color(0xffffffff),
                     icon: Icon(
                       _obscureConfirmPassword
                           ? Icons.visibility

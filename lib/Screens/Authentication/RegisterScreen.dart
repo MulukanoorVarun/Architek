@@ -45,7 +45,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _nameController.dispose();
     _mobileController.dispose();
     _passwordController.dispose();
+    _conformPasswordController.dispose();
     _emailController.dispose();
+    _selectCurrency.dispose();
+    _currencyFocusNode.dispose();
     super.dispose();
   }
 
@@ -76,6 +79,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please confirm your password';
+    }
+    if (value != _passwordController.text) {
+      return 'Passwords do not match';
+    }
+    return null;
+  }
+
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your name';
@@ -98,27 +111,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _handleRegistration(BuildContext context) {
-    // if (_formKey.currentState!.validate()) {
-    // if (_selectedCurrency == null) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('Please select a currency'),
-    //       backgroundColor: Colors.red,
-    //     ),
-    //   );
-    //   return;
-    // }
+    if (_formKey.currentState!.validate()) {
+      // if (_selectedCurrency == null) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(
+      //       content: Text('Please select a currency'),
+      //       backgroundColor: Colors.red,
+      //     ),
+      //   );
+      //   return;
+      // }
 
-    final registerData = {
-      'full_name': _nameController.text.trim(),
-      'mobile': _mobileController.text.trim(),
-      'password': _passwordController.text,
-      'confirm_password': _conformPasswordController.text,
-      'email': _emailController.text.trim(),
-      // 'currency': _selectCurrency.text,
-    };
-    context.read<RegisterCubit>().postRegister(registerData);
-    // }
+      final registerData = {
+        'full_name': _nameController.text.trim(),
+        'mobile': _mobileController.text.trim(),
+        'password': _passwordController.text,
+        'confirm_password': _conformPasswordController.text,
+        'email': _emailController.text.trim(),
+        // 'currency': _selectCurrency.text,
+      };
+      context.read<RegisterCubit>().postRegister(registerData);
+    }
   }
 
   @override
@@ -128,14 +141,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: SafeArea(
         child: BlocConsumer<RegisterCubit, RegisterState>(
           listener: (context, state) {
-
-
             if (state is RegisterSuccessState) {
               CustomSnackBar.show(context, state.message);
               Future.delayed(const Duration(milliseconds: 500), () {
                 context.pushReplacement('/login_mobile');
               });
-            }else if (state is RegisterError) {
+            } else if (state is RegisterError) {
               CustomSnackBar.show(context, state.message);
             }
           },
@@ -220,7 +231,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 8),
                           _buildTextField(
                             hint: 'Enter your password',
-                            controller: _conformPasswordController,
+                            controller: _passwordController,
                             validator: _validatePassword,
                             obscureText: _obscurePassword,
                             icon: Icons.lock_outline,
@@ -238,13 +249,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               },
                             ),
                           ),
+
                           const SizedBox(height: 16),
+
+                          // Confirm Password Field
                           _buildLabel('Confirm Password'),
                           const SizedBox(height: 8),
                           _buildTextField(
                             hint: 'Enter your confirm password',
-                            controller: _passwordController,
-                            validator: _validatePassword,
+                            controller: _conformPasswordController,
+                            validator: _validateConfirmPassword,
                             obscureText: _obscurePassword,
                             icon: Icons.lock_outline,
                             suffixIcon: IconButton(
@@ -267,15 +281,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           CustomAppButton1(
                             isLoading: isLoading,
                             text: 'Register',
-                            onPlusTap:
-                            isLoading
-                                ? null
-                                : () {
+                            onPlusTap: isLoading ? null : () {
                               _handleRegistration(context);
                             },
                           ),
 
-                          SizedBox(height: 24),
+                          const SizedBox(height: 24),
 
                           // Login Link
                           Center(

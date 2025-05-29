@@ -658,7 +658,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(height: 12),
-                    SingleChildScrollView(
+                    SingleChildScrollView(physics: NeverScrollableScrollPhysics(),
                       child: Column(
                         children: [
                           if (state
@@ -687,7 +687,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Container(
                               height:
                                   MediaQuery.of(context).size.height * 0.5,
-                              child: ListView.builder(
+                              child: ListView.builder(shrinkWrap: true,physics: AlwaysScrollableScrollPhysics(),
                                 itemCount:
                                     state
                                         .getPrevousTripModel

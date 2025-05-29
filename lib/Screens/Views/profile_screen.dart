@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_touch_ripple/flutter_touch_ripple.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileCubit.dart';
 import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileState.dart';
@@ -121,8 +122,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       size: 20,
                                     ),
                                   ),
-                                  GestureDetector(
-                                    onTap: () {},
+                                  TouchRipple(
+                                    onTap: () {
+                                      context.push('/edit_profile_screen');
+                                    },
                                     child: Text(
                                       'Edit',
                                       style: TextStyle(
