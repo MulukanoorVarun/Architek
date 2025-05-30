@@ -10,6 +10,7 @@ import 'package:tripfin/Block/Logic/CategoryList/CategoryState.dart';
 import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
 import 'package:tripfin/Block/Logic/Home/HomeCubit.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
+import 'package:tripfin/Screens/Components/FilteringDate.dart';
 import '../../Block/Logic/CategoryList/CategoryCubit.dart';
 import '../../Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
 import '../../Block/Logic/ExpenseDetails/ExpenseDetailsState.dart';
@@ -41,7 +42,7 @@ class UpdateExpense extends StatefulWidget {
 }
 
 class _UpdateExpenseState extends State<UpdateExpense> {
-  String selectedCategory="";
+  String selectedCategory = "";
   String paymentMode = "Online";
   String? selectedCategoryId;
   final TextEditingController amountController = TextEditingController();
@@ -62,23 +63,23 @@ class _UpdateExpenseState extends State<UpdateExpense> {
   @override
   void initState() {
     super.initState();
-    if (widget.date.isNotEmpty) {
-      initStart = DateFormat('yyyy-MM-dd').parse(widget.date);
-    } else {
+    try {
+      if (widget.date.isNotEmpty) {
+        initStart = DateFormat('yyyy-MM-dd').parse(widget.date);
+      } else {
+        initStart = DateTime.now();
+      }
+    } catch (e) {
       initStart = DateTime.now();
     }
     context.read<Categorycubit>().GetCategory();
-    context.read<Categorycubit>().stream.listen((state) {
-      if (state is CategoryLoaded && state.categoryresponsemodel.data != null) {
-        if (selectedCategoryId == null) {
-          setState(() {
-            // selectedCategoryId = state.categoryresponsemodel.data!.first.id;
-            // selectedCategory =
-            //     state.categoryresponsemodel.data!.first.categoryName;
-          });
-        }
-      }
-    });
+
+    // if (widget.date.isNotEmpty) {
+    //   initStart = DateFormat('yyyy-MM-dd').parse(widget.date);
+    // } else {
+    //   initStart = DateTime.now();
+    // }
+    context.read<Categorycubit>().GetCategory();
 
     if (widget.expenseId.isNotEmpty) {
       context.read<GetExpenseDetailCubit>().GetExpenseDetails(widget.expenseId);
@@ -97,19 +98,26 @@ class _UpdateExpenseState extends State<UpdateExpense> {
         });
       }
     });
-
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    final DateTime today = DateTime.now();
+
+    // Allow selection up to initStart if it's a future date
+    final DateTime lastDate = initStart.isAfter(today) ? initStart : today;
+
+    // Initial date should be within the range
+    final DateTime initialDate = today.isAfter(lastDate) ? lastDate : today;
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: initialDate,
       firstDate: DateTime(2000),
-      lastDate: initStart,
+      lastDate: lastDate,
     );
+
     if (picked != null) {
-      final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
-      dateController.text = formattedDate;
+      dateController.text = DateFormat('yyyy-MM-dd').format(picked);
     }
   }
 
@@ -146,12 +154,15 @@ class _UpdateExpenseState extends State<UpdateExpense> {
               widget.expenseId.isEmpty) {
             return Scaffold(
               backgroundColor: const Color(0xff102A2C),
-              appBar: CustomAppBar(title: widget.place, actions: []),
+              appBar: CustomAppBar(
+                title: capitalize(widget.place),
+                actions: [],
+              ),
               body: _buildForm(context),
             );
           } else if (expenseState is GetExpenseDetailError) {
             return Center(
-              child: Column (
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
@@ -201,7 +212,11 @@ class _UpdateExpenseState extends State<UpdateExpense> {
               ),
               child: Column(
                 children: [
-                  _buildInfoRow(Icons.place, 'Place: ', widget.place),
+                  _buildInfoRow(
+                    Icons.place,
+                    'Place: ',
+                    capitalize(widget.place),
+                  ),
                   const Divider(color: Colors.grey, height: 24),
                   _buildInfoRow(
                     Icons.currency_rupee,
@@ -418,7 +433,7 @@ class _UpdateExpenseState extends State<UpdateExpense> {
         } else if (categoryState is CategoryLoaded &&
             categoryState.categoryresponsemodel.data != null) {
           return Container(
-            padding:  EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade600),
               borderRadius: BorderRadius.circular(30),
@@ -428,11 +443,11 @@ class _UpdateExpenseState extends State<UpdateExpense> {
                 dropdownColor: const Color(0xff1D3A3C),
                 value: selectedCategoryId,
                 isExpanded: true,
-                hint:  Text(
+                hint: Text(
                   'Select Category',
                   style: TextStyle(color: Colors.white70),
                 ),
-                icon:  Icon(Icons.arrow_drop_down, color: Colors.white),
+                icon: Icon(Icons.arrow_drop_down, color: Colors.white),
                 items:
                     categoryState.categoryresponsemodel.data!.map((category) {
                       return DropdownMenuItem<String>(

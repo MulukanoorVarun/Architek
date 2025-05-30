@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         providers: StateInjector.blocProviders,
         child: MaterialApp.router(
           debugShowCheckedModeBanner: false,
-          title: 'Flutter Demo',
+          title: 'TripFin',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           ),

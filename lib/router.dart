@@ -135,9 +135,10 @@ final GoRouter goRouter = GoRouter(
       pageBuilder: (context, state) {
         final tripID = state.uri.queryParameters['tripId'];
         final budget = state.uri.queryParameters['budget'];
+        final tripDate = state.uri.queryParameters['tripDate'];
 
         return buildSlideTransitionPage(
-          VacationHistory(tripId: tripID ?? "", budget: budget ?? "",),
+          VacationHistory(tripDate:tripDate??"",tripId: tripID ?? "", budget: budget ?? "",),
           state,
         );
       },

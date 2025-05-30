@@ -31,7 +31,7 @@ class Data {
   String? destination;
   String? startDate;
   String? budget;
-  Null? image;
+  String? image;
 
   Data({this.id, this.destination, this.startDate, this.budget, this.image});
 

@@ -514,7 +514,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 trip?.budget?.toString() ?? "0.00";
 
                             if (state.getTripModel?.totalExpense > 0) {
-                              context.push('/vacation?budget=$budget');
+                              context.push('/vacation?budget=$budget&tripDate=${trip?.startDate??""}');
                             } else {
                               context.push(
                                 '/update_expensive?id=${trip?.id ?? ''}&place=${trip?.destination ?? ''}&budget=$budget&date=${trip?.startDate??""}',
@@ -608,7 +608,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onPressed: () {
                                     final trip = state.getTripModel?.data;
                                     context.push(
-                                      '/update_expensive?id=${trip?.id ?? ''}&place=${trip?.destination ?? ''}&budget=${trip?.budget ?? ''}',
+                                      '/update_expensive?id=${trip?.id ?? ''}&place=${trip?.destination ?? ''}&budget=${trip?.budget ?? ''}&date=${trip?.startDate??""}',
                                     );
                                   },
                                   icon: Icon(

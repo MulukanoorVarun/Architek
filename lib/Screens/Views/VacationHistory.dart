@@ -22,11 +22,13 @@ import '../Components/FilteringDate.dart';
 class VacationHistory extends StatefulWidget {
   final String tripId;
   final String budget;
+  final String tripDate;
 
   const VacationHistory({
     super.key,
     required this.tripId,
     required this.budget,
+    required this.tripDate,
   });
 
   @override
@@ -523,14 +525,14 @@ class _VacationHistoryState extends State<VacationHistory> {
                               ),
                             ),
                             onPressed: () {
-                              context.push(
-                                '/update_expensive?id=${state.response.data?.tripId ?? ''}&budget=${widget.budget}&place=${state.response.data?.destination ?? ""}',
+                              context.pushReplacement(
+                                '/update_expensive?id=${state.response.data?.tripId ?? ''}&budget=${widget.budget}&place=${state.response.data?.destination ?? ""}&date=${widget.tripDate??""}',
                               );
                             },
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text(
+                                 Text(
                                   'Add',
                                   style: TextStyle(
                                     color: Color(0xff1C3132),
@@ -676,6 +678,7 @@ class _VacationHistoryState extends State<VacationHistory> {
         final expenseId = expense.expenseId ?? '';
         final amount = expense.totalExpense?.toDouble() ?? 0.0;
         final remarks = expense.remarks;
+        final paymentMode = expense.paymentMode ?? "";
         print('Remarks for $category: $remarks'); // Debug print
         expenseWidgets.add(
           widget.tripId.isNotEmpty
@@ -847,7 +850,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                   } else if (direction == DismissDirection.startToEnd) {
                     HapticFeedback.lightImpact();
                     context.push(
-                      '/update_expensive?id=${tripId}&expenseId=$expenseId',
+                      '/update_expensive?id=${tripId}&expenseId=$expenseId&date=${widget.tripDate??""}',
                     );
                     return false;
                   }
@@ -905,193 +908,38 @@ class _VacationHistoryState extends State<VacationHistory> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
+
                           ],
                         ),
                       ),
                       const Spacer(),
-                      Text(
-                        "-${amount.toStringAsFixed(0)}",
-                        style: const TextStyle(
-                          color: Colors.redAccent,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      Column(
+                        children: [
+                          Text(
+                            "-${amount.toStringAsFixed(0)}",
+                            style: const TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(textAlign: TextAlign.end,
+                            "${paymentMode}",
+                            style:  TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
+
                     ],
                   ),
                 ),
               ),
         );
-        // expenseWidgets.add(
-        //   Dismissible(
-        //     key: ValueKey(
-        //       expenseId.isNotEmpty ? expenseId : 'fallback_${UniqueKey()}',
-        //     ),
-        //     background: Container(
-        //       color: Colors.blue,
-        //       alignment: Alignment.centerLeft,
-        //       padding: const EdgeInsets.only(left: 20),
-        //       child: const Row(
-        //         children: [
-        //           Icon(Icons.edit, color: Colors.white, size: 30),
-        //           SizedBox(width: 10),
-        //           Text(
-        //             'Edit',
-        //             style: TextStyle(
-        //               color: Colors.white,
-        //               fontSize: 16,
-        //               fontWeight: FontWeight.w500,
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //     secondaryBackground: Container(
-        //       color: Colors.red,
-        //       alignment: Alignment.centerRight,
-        //       padding: const EdgeInsets.only(right: 20),
-        //       child: const Row(
-        //         mainAxisAlignment: MainAxisAlignment.end,
-        //         children: [
-        //           Text(
-        //             'Delete',
-        //             style: TextStyle(
-        //               color: Colors.white,
-        //               fontSize: 16,
-        //               fontWeight: FontWeight.w500,
-        //             ),
-        //           ),
-        //           SizedBox(width: 10),
-        //           Icon(Icons.delete, color: Colors.white, size: 30),
-        //         ],
-        //       ),
-        //     ),
-        //     confirmDismiss: (direction) async {
-        //       if (direction == DismissDirection.endToStart) {
-        //         HapticFeedback.mediumImpact();
-        //         return await showDialog<bool>(
-        //           context: context,
-        //           builder:
-        //               (context) => AlertDialog(
-        //                 title: const Text('Confirm Delete'),
-        //                 content: const Text(
-        //                   'Are you sure you want to delete this expense?',
-        //                 ),
-        //                 actions: [
-        //                   TextButton(
-        //                     onPressed: () => Navigator.of(context).pop(false),
-        //                     child: const Text('Cancel'),
-        //                   ),
-        //                   TextButton(
-        //                     onPressed: () async {
-        //                       try {
-        //                         await context
-        //                             .read<GetExpenseDetailCubit>()
-        //                             .deleteExpenseDetails(expenseId);
-        //                         CustomSnackBar.show(
-        //                           context,
-        //                           'Expense deleted successfully',
-        //                         );
-        //                         context.read<PiechartCubit>().fetchPieChartData(
-        //                           widget.tripId,
-        //                         );
-        //                         context.pop();
-        //                       } catch (e) {
-        //                         ScaffoldMessenger.of(context).showSnackBar(
-        //                           SnackBar(
-        //                             content: Text(
-        //                               'Failed to delete expense: $e',
-        //                             ),
-        //                             backgroundColor: Colors.red,
-        //                             duration: const Duration(seconds: 3),
-        //                           ),
-        //                         );
-        //                         Navigator.of(context).pop(false);
-        //                       }
-        //                     },
-        //                     child: const Text(
-        //                       'Delete',
-        //                       style: TextStyle(color: Colors.red),
-        //                     ),
-        //                   ),
-        //                 ],
-        //               ),
-        //         );
-        //       } else if (direction == DismissDirection.startToEnd) {
-        //         HapticFeedback.lightImpact();
-        //         context.push(
-        //           '/update_expensive?id=${tripId}&expenseId=$expenseId',
-        //         );
-        //         return false;
-        //       }
-        //       return false;
-        //     },
-        //     child: Container(
-        //       margin: const EdgeInsets.symmetric(vertical: 4),
-        //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        //       decoration: BoxDecoration(
-        //         color: Color(0xff304546),
-        //         border: Border(
-        //           left: BorderSide(
-        //             color:
-        //                 colorCode.isNotEmpty
-        //                     ? hexToColor(colorCode)
-        //                     : const Color(0xFF1C3132),
-        //             width: 12,
-        //           ),
-        //         ),
-        //         borderRadius: BorderRadius.circular(12),
-        //       ),
-        //       child: Row(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           SizedBox(
-        //             width: w * 0.65,
-        //             child: Column(
-        //               crossAxisAlignment: CrossAxisAlignment.start,
-        //               children: [
-        //                 Text(
-        //                   category,
-        //                   style: const TextStyle(
-        //                     color: Colors.white,
-        //                     fontSize: 16,
-        //                     fontWeight: FontWeight.w500,
-        //                     fontFamily: 'Mullish',
-        //                   ),
-        //                 ),
-        //                 const SizedBox(height: 5),
-        //                 Text(
-        //                   remarks != null &&
-        //                           remarks.isNotEmpty &&
-        //                           remarks != 'ntg'
-        //                       ? remarks
-        //                       : 'No description',
-        //                   style: const TextStyle(
-        //                     color: Color(0xffDBDBDB),
-        //                     fontSize: 12,
-        //                     fontWeight: FontWeight.w300,
-        //                     fontFamily: 'Mullish',
-        //                   ),
-        //                   maxLines: 2,
-        //                   overflow: TextOverflow.ellipsis,
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //           const Spacer(),
-        //           Text(
-        //             "-${amount.toStringAsFixed(0)}",
-        //             style: const TextStyle(
-        //               color: Colors.redAccent,
-        //               fontSize: 16,
-        //               fontWeight: FontWeight.w500,
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // );
       }
     }
     return expenseWidgets;
