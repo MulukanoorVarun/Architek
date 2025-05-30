@@ -826,6 +826,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       TextOverflow.ellipsis,
                                                   maxLines: 1,
                                                 ),
+
                                                 Text(
                                                   "Spends",
                                                   style: TextStyle(
