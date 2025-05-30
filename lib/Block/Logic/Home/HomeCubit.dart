@@ -5,6 +5,7 @@ import 'package:tripfin/Model/GetTripModel.dart';
 
 import '../../../Model/GetPrevousTripModel.dart';
 import '../../../Model/GetProfileModel.dart';
+import '../../../Services/AuthService.dart';
 import '../GetPreviousTripHistory/GetPreviousTripHistoryRepository.dart';
 import '../GetTrip/GetTripRepository.dart';
 import '../Profiledetails/Profile_repository.dart';
@@ -21,28 +22,34 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> fetchHomeData() async {
     emit(HomeLoading());
     try {
-      final futures = [
-        getTripRep.getTrip(),
-        getPreviousTripRepo.getPreviousTripHistory(),
-        getProfileRepo.getProfile(),
-      ];
+      final futures = <Future<dynamic>>[];
+      final isGuest = await AuthService.isGuest;
 
-      final results = await Future.wait(futures);
+      GetTripModel? tripData;
+      GetPrevousTripModel? previousTrips;
+      GetprofileModel? profile;
 
-      final getTripData = results[0] as GetTripModel;
-      final getpreiousTripHistoryData = results[1] as GetPrevousTripModel;
-      final profileData = results[2] as GetprofileModel;
+      if (!isGuest) {
+        futures.add(getTripRep.getTrip());
+        futures.add(getPreviousTripRepo.getPreviousTripHistory());
+        futures.add(getProfileRepo.getProfile());
+        final results = await Future.wait(futures);
 
-      emit(
-        HomeLoaded(
-          getTripModel: getTripData,
-          getPrevousTripModel: getpreiousTripHistoryData,
-          profileModel: profileData,
-        ),
-      );
+        tripData = results[0] as GetTripModel;
+        previousTrips = results[1] as GetPrevousTripModel;
+        profile = results[2] as GetprofileModel;
+      }
+
+      emit(HomeLoaded(
+        getTripModel: tripData,               // may be null
+        getPrevousTripModel: previousTrips,   // may be null
+        profileModel: profile,                // may be null
+      ));
+
     } catch (e, stackTrace) {
       debugPrint("HomeCubit Error: $e\n$stackTrace");
       emit(HomeError("Failed to fetch home data. Please try again later."));
     }
   }
+
 }

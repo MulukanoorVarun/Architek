@@ -16,12 +16,17 @@ class HomeInitial extends HomeState {}
 class HomeLoading extends HomeState {}
 
 class HomeLoaded extends HomeState {
-  final GetPrevousTripModel getPrevousTripModel;
-  final GetTripModel getTripModel;
-  final GetprofileModel profileModel;
+  final GetPrevousTripModel? getPrevousTripModel;
+  final GetTripModel? getTripModel;
+  final GetprofileModel? profileModel;
 
-  HomeLoaded({required this.getPrevousTripModel, required this.getTripModel,required this.profileModel});
+  HomeLoaded({
+    required this.getPrevousTripModel,
+    required this.getTripModel,
+    required this.profileModel,
+  });
 }
+
 
 class HomeError extends HomeState {
   final String message;

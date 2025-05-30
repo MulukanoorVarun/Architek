@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(width * 0.05),
                       child: ClipOval(
                         child: CachedNetworkImage(
-                          imageUrl: state.profileModel.data?.image ?? '',
+                          imageUrl: state.profileModel?.data?.image ?? '',
                           width: width * 0.1,
                           height: width * 0.1,
                           fit: BoxFit.cover,
@@ -166,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 15),
                     Expanded(
                       child: Text(
-                        "Hey ${state.profileModel.data?.fullName ?? 'Unknown'}",
+                        "Hey ${state.profileModel?.data?.fullName ?? 'Unknown'}",
                         style: const TextStyle(
                           color: Color(0xFFFEFEFE),
                           fontSize: 20,
@@ -199,8 +199,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(height: height * 0.03),
-                    if (state.getTripModel.data == null ||
-                        state.getTripModel.settings?.message ==
+                    if (state.getTripModel?.data == null ||
+                        state.getTripModel?.settings?.message ==
                             "No active and ongoing trips found.") ...[
                       Text(
                         "Travel Details",
@@ -404,8 +404,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(height: height * 0.02),
-                    if (state.getTripModel.data == null ||
-                        state.getTripModel.settings?.message ==
+                    if (state.getTripModel?.data == null ||
+                        state.getTripModel?.settings?.message ==
                             "No active and ongoing trips found.")
                       Container(
                         width: double.infinity,
@@ -427,7 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     else
                       Dismissible(
                         key: Key(
-                          state.getTripModel.data?.id ?? '',
+                          state.getTripModel?.data?.id ?? '',
                         ), // Use a consistent key
                         background: Container(
                           color: Colors.blue,
@@ -450,7 +450,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         confirmDismiss: (direction) async {
-                          final tripId = state.getTripModel.data?.id ?? '';
+                          final tripId = state.getTripModel?.data?.id ?? '';
                           if (direction == DismissDirection.startToEnd) {
                             context.push(
                               '/UpdateCurrentTrip?tripId=$tripId',
@@ -509,11 +509,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         child: TouchRipple(
                           onTap: () {
-                            final trip = state.getTripModel.data;
+                            final trip = state.getTripModel?.data;
                             final budget =
                                 trip?.budget?.toString() ?? "0.00";
 
-                            if (state.getTripModel.totalExpense > 0) {
+                            if (state.getTripModel?.totalExpense > 0) {
                               context.push('/vacation?budget=$budget');
                             } else {
                               context.push(
@@ -547,9 +547,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     children: [
                                       Text(
                                         capitalize(
-                                          state
-                                                  .getTripModel
-                                                  .data
+                                          state.getTripModel?.data
                                                   ?.destination ??
                                               "Unknown",
                                         ),
@@ -564,9 +562,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       SizedBox(height: 6),
                                       Text(
-                                        state
-                                                .getTripModel
-                                                .data
+                                        state.getTripModel?.data
                                                 ?.startDate ??
                                             "N/A",
                                         style: TextStyle(
@@ -592,7 +588,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                             TextSpan(
                                               text:
-                                                  '₹ ${state.getTripModel.data?.budget?.toString() ?? "0.00"}',
+                                                  '₹ ${state.getTripModel?.data?.budget?.toString() ?? "0.00"}',
                                               style: TextStyle(
                                                 color: Color(0xff00AB03),
                                                 fontSize: 14,
@@ -610,7 +606,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 ElevatedButton.icon(
                                   onPressed: () {
-                                    final trip = state.getTripModel.data;
+                                    final trip = state.getTripModel?.data;
                                     context.push(
                                       '/update_expensive?id=${trip?.id ?? ''}&place=${trip?.destination ?? ''}&budget=${trip?.budget ?? ''}',
                                     );
@@ -661,9 +657,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SingleChildScrollView(physics: NeverScrollableScrollPhysics(),
                       child: Column(
                         children: [
-                          if (state
-                                  .getPrevousTripModel
-                                  .previousTrips
+                          if (state.getPrevousTripModel?.previousTrips
                                   ?.length ==
                               0)
                             Container(
@@ -689,18 +683,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   MediaQuery.of(context).size.height * 0.5,
                               child: ListView.builder(shrinkWrap: true,physics: AlwaysScrollableScrollPhysics(),
                                 itemCount:
-                                    state
-                                        .getPrevousTripModel
-                                        .previousTrips
+                                    state.getPrevousTripModel?.previousTrips
                                         ?.length ??
                                     0,
-                                itemBuilder: (context, index) {final trip = state.getPrevousTripModel.previousTrips![index];
+                                itemBuilder: (context, index) {final trip = state.getPrevousTripModel?.previousTrips![index];
                                   return TouchRipple(
                                     onTap: () {
                                       final trip =
-                                          state
-                                              .getPrevousTripModel
-                                              .previousTrips?[index];
+                                          state.getPrevousTripModel?.previousTrips?[index];
                                       if (trip != null) {
                                         context.push(
                                           '/vacation?budget=${trip.budget.toString() ?? "0.00"}&tripId=${trip.tripId ?? ""}',
@@ -740,7 +730,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               children: [
                                                 Text(
                                                   capitalize(
-                                                    trip.destination ?? "",
+                                                    trip?.destination ?? "",
                                                   ),
 
                                                   style: TextStyle(
@@ -756,7 +746,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                                 SizedBox(height: 6),
                                                 Text(
-                                                  trip.startDate ?? "",
+                                                  trip?.startDate ?? "",
                                                   style: TextStyle(
                                                     color: Color(
                                                       0xffDADADA,
@@ -788,7 +778,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       TextSpan(
                                                         text:
                                                             '₹ ' +
-                                                                trip.budget
+                                                                trip!.budget
                                                                     .toString() ??
                                                             "",
                                                         style: TextStyle(
@@ -822,10 +812,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 Text(
                                                   textAlign:
                                                       TextAlign.center,
-                                                  '₹ ' +
-                                                          trip.totalExpense
-                                                              .toString() ??
-                                                      "",
+                                                  '₹ ' + trip!.totalExpense.toString() ?? "",
                                                   style: TextStyle(
                                                     color: Color(
                                                       0xffb0b0b0,
