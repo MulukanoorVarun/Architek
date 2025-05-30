@@ -106,6 +106,7 @@ class _LoginScreenState extends State<LoginScreen>
                         ),
                       ),
                     ),
+                    SizedBox(height: 30),
                     Image.asset(
                       "assets/MapPinWithCircle.png",
                       width: 100,

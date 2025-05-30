@@ -10,7 +10,7 @@ class CustomSnackBar {
         content: Text(
           message,
           style: TextStyle(
-              color: Colors.white, fontFamily: "Poppins", fontSize: 14),
+              color: Colors.white,fontFamily: 'Mullish', fontSize: 14),
         ),
         duration: Duration(seconds: 2),
         backgroundColor: primary,
@@ -28,8 +28,6 @@ class CustomSnackBar1 {
         top: MediaQuery.of(context).viewPadding.top + 16,
         left: 16,
         right: 16,
-
-
         child: Material(
           color: Colors.transparent,
           child: Container(

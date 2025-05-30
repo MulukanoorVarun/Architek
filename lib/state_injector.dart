@@ -19,6 +19,7 @@ import 'package:tripfin/Block/Logic/TripFinish/TripFinishCubit.dart';
 import 'package:tripfin/Block/Logic/TripFinish/TripFinishRepository.dart';
 import 'package:tripfin/Block/Logic/UpdateProfile/UpdateProfileCubit.dart';
 import 'package:tripfin/Block/Logic/UpdateProfile/UpdateProfileRepository.dart';
+import 'package:tripfin/Block/Logic/delete_account/DeleteAccountRepository.dart';
 import 'package:tripfin/Services/remote_data_source.dart';
 import 'Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
 import 'Block/Logic/ExpenseDetails/ExpenseDetailsRepository.dart';
@@ -31,6 +32,7 @@ import 'Block/Logic/RegisterBloc/Register_cubit.dart';
 import 'Block/Logic/RegisterBloc/Register_repository.dart';
 import 'Block/Logic/TripCount/TripcountCubit.dart';
 import 'Block/Logic/TripCount/TripcountRepository.dart';
+import 'Block/Logic/delete_account/DeleteAccountCubit.dart';
 
 class StateInjector {
   static final repositoryProviders = <RepositoryProvider>[
@@ -123,6 +125,12 @@ class StateInjector {
         remoteDataSource: context.read<RemoteDataSource>(),
       ),
     ),
+    RepositoryProvider<Deleteaccountrepository>(
+      create:
+          (context) => DeleteaccountrepositoryImpl(
+        remoteDataSource: context.read<RemoteDataSource>(),
+      ),
+    ),
   ];
 
   static final blocProviders = <BlocProvider>[
@@ -196,6 +204,10 @@ class StateInjector {
     BlocProvider<ForgotPasswordCubit>(
       create:
           (context) => ForgotPasswordCubit(context.read<ForgotPasswordRepository>()),
+    ),
+    BlocProvider<DeleteAccountCubit>(
+      create:
+          (context) => DeleteAccountCubit(context.read<Deleteaccountrepository>()),
     ),
   ];
 }

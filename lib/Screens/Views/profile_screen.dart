@@ -9,8 +9,11 @@ import 'package:tripfin/Screens/Components/CustomAppButton.dart';
 import 'package:tripfin/Screens/Components/CutomAppBar.dart';
 import 'package:tripfin/utils/color_constants.dart';
 
+import '../../Block/Logic/delete_account/DeleteAccountCubit.dart';
+import '../../Block/Logic/delete_account/DeleteAccountStates.dart';
 import '../../utils/Preferances.dart';
 import '../../utils/spinkittsLoader.dart';
+import '../Components/CustomSnackBar.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -241,14 +244,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
         },
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 80),
-        child: CustomAppButton1(
-          height: 56,
-          text: 'Log Out',
-          onPlusTap: () {
-            _showLogoutConfirmationDialog(context);
-          },
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomAppButton1(
+                height: 50,
+                text: 'Log Out',
+                onPlusTap: () {
+                  _showLogoutConfirmationDialog(context);
+                },
+              ),
+              SizedBox(height: 15,),
+              CustomAppButton1(
+                height: 50,
+                text: 'Delete Account',
+                onPlusTap: () {
+                  DeleteAccountConfirmation
+                      .showDeleteConfirmationSheet(context);
+                },
+              ),
+
+            ],
+          ),
         ),
       ),
     );
@@ -282,7 +302,7 @@ void _showLogoutConfirmationDialog(BuildContext context) {
                   decoration: BoxDecoration(
                     border: Border.all(width: 6.0, color: Colors.white),
                     shape: BoxShape.circle,
-                    color: Colors.red.shade100,
+                    color:  Color(0xff304546),
                   ),
                   child: Icon(
                     Icons.power_settings_new,
@@ -304,8 +324,8 @@ void _showLogoutConfirmationDialog(BuildContext context) {
                         style: TextStyle(
                           fontSize: 24.0,
                           fontWeight: FontWeight.w600,
-                          color: primary,
-                          fontFamily: "Poppins",
+                          color: Colors.white,
+                          fontFamily: 'Mullish',
                         ),
                       ),
                       SizedBox(height: 10.0),
@@ -314,8 +334,8 @@ void _showLogoutConfirmationDialog(BuildContext context) {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16.0,
-                          color: Colors.black54,
-                          fontFamily: "Poppins",
+                          color: Colors.white,
+                          fontFamily: 'Mullish',
                         ),
                       ),
                       SizedBox(height: 20.0),
@@ -340,7 +360,8 @@ void _showLogoutConfirmationDialog(BuildContext context) {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,
-                                  fontFamily: "Poppins",
+                                  color: Colors.white,
+                                  fontFamily: 'Mullish',
                                 ),
                               ),
                             ),
@@ -355,8 +376,8 @@ void _showLogoutConfirmationDialog(BuildContext context) {
                                 context.go("/login_mobile");
                               },
                               style: OutlinedButton.styleFrom(
-                                foregroundColor: primary,
-                                side: BorderSide(color: primary),
+                                foregroundColor: Colors.white,
+                                side: BorderSide(color:  Colors.white),
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 20,
                                   vertical: 10,
@@ -367,7 +388,8 @@ void _showLogoutConfirmationDialog(BuildContext context) {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,
-                                  fontFamily: "Poppins",
+                                  color: Colors.white,
+                                  fontFamily: 'Mullish',
                                 ),
                               ),
                             ),
@@ -384,4 +406,143 @@ void _showLogoutConfirmationDialog(BuildContext context) {
       );
     },
   );
+}
+
+class DeleteAccountConfirmation {
+  static void showDeleteConfirmationSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      elevation: 8,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return BlocConsumer<DeleteAccountCubit, DeleteAccountState>(
+                listener: (context, state) {
+                  if (state is DeleteAccountSuccessState) {
+                    PreferenceService().clearPreferences();
+                    context.pushReplacement('/login_mobile');
+                  } else if (state is DeleteAccountError) {
+                    CustomSnackBar.show(context, state.message ?? '');
+                  }
+                }, builder: (context, state) {
+              final bool isLoading = state is DeleteAccountLoading;
+              return Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    // Description
+                    Text(
+                      'Are you sure you want to delete your account?',
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        fontFamily: 'Mullish',),
+                      textAlign: TextAlign.center,
+                    ),
+                    // Description
+                    Text(
+                      'All your data, including Travel history and preferences, will be permanently removed.',
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                          height: 1.5,
+                          fontWeight: FontWeight.w500,
+                        fontFamily: 'Mullish',),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    // Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                              context.pop();
+                            },
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.grey[400]!),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'Mullish',
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: isLoading ? null : () async {
+                              context.read<DeleteAccountCubit>().deleteAccount();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                              backgroundColor: primary,
+                              foregroundColor: primary,
+                            ),
+                            child: isLoading
+                                ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                                : const Text(
+                              'Delete',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Mullish',
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              );
+            });
+          },
+        );
+      },
+    );
+  }
 }

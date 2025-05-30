@@ -14,6 +14,7 @@ import 'package:tripfin/Block/Logic/Home/HomeState.dart';
 import 'package:tripfin/Block/Logic/PostTrip/potTrip_state.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
 import 'package:tripfin/Screens/Components/FilteringDate.dart';
+import 'package:tripfin/Services/AuthService.dart';
 
 import '../../Block/Logic/Home/HomeCubit.dart';
 import '../../Block/Logic/Internet/internet_status_bloc.dart';
@@ -32,10 +33,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool? isGuestUser;
   @override
   void initState() {
     super.initState();
+    _checkGuestStatus();
     context.read<HomeCubit>().fetchHomeData();
+  }
+
+  Future<void> _checkGuestStatus() async {
+    final isGuest = await AuthService.isGuest;
+    if (mounted) {
+      setState(() {
+        isGuestUser = isGuest;
+      });
+    }
   }
 
   TextEditingController dateController = TextEditingController();
@@ -117,769 +129,745 @@ class _HomeScreenState extends State<HomeScreen> {
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
+    if (isGuestUser == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return BlocListener<InternetStatusBloc, InternetStatusState>(
-      listener: (context, state) {
-        if (state is InternetStatusLostState) {
-          context.push('/no_internet');
-        } else {
-          context.pop();
-        }
-      },
-      child: BlocBuilder<HomeCubit, HomeState>(
-        builder: (context, state) {
-          if (state is HomeLoading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is HomeLoaded) {
-            return Scaffold(
-              backgroundColor: const Color(0xFF0F292F),
-              appBar: AppBar(  backgroundColor:Color(0xFF0F292F),
-                title: Row(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        context.push('/profile_screen');
-                      },
-                      borderRadius: BorderRadius.circular(width * 0.05),
-                      child: ClipOval(
-                        child: CachedNetworkImage(
-                          imageUrl: state.profileModel?.data?.image ?? '',
-                          width: width * 0.1,
-                          height: width * 0.1,
-                          fit: BoxFit.cover,
-                          imageBuilder: (context, imageProvider) => CircleAvatar(
-                            radius: width * 0.05,
-                            backgroundImage: imageProvider,
+          listener: (context, state) {
+            if (state is InternetStatusLostState) {
+              context.push('/no_internet');
+            } else {
+              context.pop();
+            }
+          },
+          child: BlocBuilder<HomeCubit, HomeState>(
+            builder: (context, state) {
+              if (state is HomeLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is HomeLoaded) {
+                return Scaffold(
+                  backgroundColor: const Color(0xFF0F292F),
+                  appBar: AppBar(
+                    backgroundColor: const Color(0xFF0F292F),
+                    automaticallyImplyLeading: false,
+                    title: Row(
+                      children: [
+                        InkWell(
+                          onTap:
+                              isGuestUser??false
+                                  ? () {
+                                    // Redirect to login for guest users
+                                    context.push('/login_mobile');
+                                  }
+                                  : () {
+                                    context.push('/profile_screen');
+                                  },
+                          borderRadius: BorderRadius.circular(width * 0.05),
+                          child: ClipOval(
+                            child:
+                            isGuestUser??false
+                                    ? CircleAvatar(
+                                      radius: width * 0.05,
+                                      backgroundImage: const AssetImage(
+                                        'assets/profile.png',
+                                      ),
+                                    )
+                                    : CachedNetworkImage(
+                                      imageUrl:
+                                          state.profileModel?.data?.image ?? '',
+                                      width: width * 0.1,
+                                      height: width * 0.1,
+                                      fit: BoxFit.cover,
+                                      imageBuilder:
+                                          (context, imageProvider) =>
+                                              CircleAvatar(
+                                                radius: width * 0.05,
+                                                backgroundImage: imageProvider,
+                                              ),
+                                      placeholder:
+                                          (context, url) => CircleAvatar(
+                                            radius: width * 0.05,
+                                            child: Center(
+                                              child:
+                                                  spinkits
+                                                      .getSpinningLinespinkit(),
+                                            ),
+                                          ),
+                                      errorWidget:
+                                          (context, url, error) => CircleAvatar(
+                                            radius: width * 0.05,
+                                            backgroundImage: const AssetImage(
+                                              'assets/placeholder.png',
+                                            ),
+                                          ),
+                                    ),
                           ),
-                          placeholder: (context, url) => CircleAvatar(
-                            radius: width * 0.05,
-                            child: Center(
-                              child: spinkits.getSpinningLinespinkit(), // Ensure this is defined
+                        ),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: Text(
+                            isGuestUser??false
+                                ? "Hey Guest"
+                                : "Hey ${state.profileModel?.data?.fullName ?? 'Unknown'}",
+                            style: const TextStyle(
+                              color: Color(0xFFFEFEFE),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Mullish',
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  body: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: width * 0.05,
+                      vertical: height * 0.02,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            "assets/figmaimages.png",
+                            width: double.infinity,
+                            height: height * 0.25,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(height: height * 0.03),
+                        if (!(isGuestUser??false)&&
+                            (state.getTripModel?.data == null ||
+                                state.getTripModel?.settings?.message ==
+                                    "No active and ongoing trips found.")) ...[
+                          Text(
+                            "Travel Details",
+                            style: const TextStyle(
+                              color: Color(0xffFFFFFF),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Mullish',
                             ),
                           ),
-                          errorWidget: (context, url, error) => CircleAvatar(
-                            radius: width * 0.05,
-                            backgroundImage: const AssetImage('assets/placeholder.png'),
+                          SizedBox(height: height * 0.02),
+                          _buildTextField(
+                            image: 'assets/NavigationArrow.png',
+                            controller: destinationController,
+                            hint: 'Enter destination',
+                            errorText: destinationError,
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: Text(
-                        "Hey ${state.profileModel?.data?.fullName ?? 'Unknown'}",
-                        style: const TextStyle(
-                          color: Color(0xFFFEFEFE),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish', // Corrected potential typo
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1, // Ensure single line
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              body: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: width * 0.05,
-                  vertical: height * 0.02,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius:BorderRadius.circular(16),
-                      child: Image.asset(
-                        "assets/figmaimages.png",
-                        width: double.infinity,
-                        height: height * 0.25,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    SizedBox(height: height * 0.03),
-                    if (state.getTripModel?.data == null ||
-                        state.getTripModel?.settings?.message ==
-                            "No active and ongoing trips found.") ...[
-                      Text(
-                        "Travel Details",
-                        style: TextStyle(
-                          color: Color(0xffFFFFFF),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Mullish',
-                        ),
-                      ),
-                      SizedBox(height: height * 0.02),
-                      _buildTextField(
-                        image: 'assets/NavigationArrow.png',
-                        controller: destinationController,
-                        hint: 'Enter destination',
-                        errorText: destinationError,
-                      ),
-                      SizedBox(height: height * 0.015),
-                      _buildTextField(
-                        controller: dateController,
-                        hint: 'Start date',
-                        image: 'assets/CalendarDots.png',
-                        readOnly: true,
-                        onTap: () => _selectDate(context),
-                        errorText: dateError,
-                      ),
-                      SizedBox(height: height * 0.015),
-                      _buildTextField(
-                        image: 'assets/CurrencyInr.png',
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        keyboardType: TextInputType.numberWithOptions(
-                          decimal: false,
-                          signed: false,
-                        ),
-                        controller: budgetController,
-                        hint: 'Enter spend amount',
-                        errorText: budgetError,
-                      ),
-                      // SizedBox(height: height * 0.015),
-                      // _selectedImage == null
-                      //     ? InkWell(
-                      //       onTap: () {
-                      //         showModalBottomSheet(
-                      //           backgroundColor: primary,
-                      //           context: context,
-                      //           builder: (BuildContext context) {
-                      //             return SafeArea(
-                      //               child: Wrap(
-                      //                 children: <Widget>[
-                      //                   ListTile(
-                      //                     leading: Icon(
-                      //                       Icons.camera_alt,
-                      //                       color: Colors.white,
-                      //                     ),
-                      //                     title: Text(
-                      //                       'Upload Image for Trip',
-                      //                       style: TextStyle(
-                      //                         color: Colors.white,
-                      //                         fontFamily: 'Mullish',
-                      //                         fontWeight: FontWeight.w400,
-                      //                         fontSize: 15,
-                      //                       ),
-                      //                     ),
-                      //                     onTap: () {
-                      //                       _pickImage(ImageSource.camera);
-                      //                       context.pop();
-                      //                     },
-                      //                   ),
-                      //                   ListTile(
-                      //                     leading: Icon(
-                      //                       Icons.photo_library,
-                      //                       color: Colors.white,
-                      //                     ),
-                      //                     title: Text(
-                      //                       'Choose from gallery',
-                      //                       style: TextStyle(
-                      //                         color: Colors.white,
-                      //                         fontFamily: 'Mullish',
-                      //                         fontWeight: FontWeight.w400,
-                      //                         fontSize: 15,
-                      //                       ),
-                      //                     ),
-                      //                     onTap: () {
-                      //                       _pickImage(ImageSource.gallery);
-                      //                       context.pop();
-                      //                     },
-                      //                   ),
-                      //                 ],
-                      //               ),
-                      //             );
-                      //           },
-                      //         );
-                      //       },
-                      //       child: Container(
-                      //         width: width,
-                      //         padding: EdgeInsets.symmetric(
-                      //           horizontal: 12.0,
-                      //           vertical: 14,
-                      //         ),
-                      //         decoration: BoxDecoration(
-                      //           border: Border.all(
-                      //             color: Colors.grey.shade600,
-                      //             width: 1.0,
-                      //           ),
-                      //           borderRadius: BorderRadius.circular(30),
-                      //         ),
-                      //         child: Text(
-                      //           'Upload File',
-                      //           style: TextStyle(
-                      //             color: Colors.white70,
-                      //             fontSize: 16.0,
-                      //             fontWeight: FontWeight.w500,
-                      //             fontFamily: 'Mullish',
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     )
-                      //     : Stack(
-                      //       children: [
-                      //         ClipRRect(
-                      //           borderRadius: BorderRadius.circular(8),
-                      //           child: Image.file(
-                      //             _selectedImage!,
-                      //             height: 80,
-                      //             width: 80,
-                      //             fit: BoxFit.cover,
-                      //           ),
-                      //         ),
-                      //         Positioned(
-                      //           top: 0,
-                      //           right: 0,
-                      //           child: GestureDetector(
-                      //             onTap: () {
-                      //               setState(() {
-                      //                 _selectedImage = null;
-                      //               });
-                      //             },
-                      //             child: Container(
-                      //               decoration: BoxDecoration(
-                      //                 color: Colors.black.withOpacity(0.6),
-                      //                 shape: BoxShape.circle,
-                      //               ),
-                      //               child: Icon(
-                      //                 Icons.close,
-                      //                 color: Colors.white,
-                      //                 size: 18,
-                      //               ),
-                      //             ),
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     ),
-                      SizedBox(height: height * 0.025),
-                      BlocConsumer<postTripCubit, postTripState>(
-                        listener: (context, state) {
-                          if (state is PostTripSuccessState) {
-                            destinationController.clear();
-                            dateController.clear();
-                            budgetController.clear();
-                            context.read<HomeCubit>().fetchHomeData();
-                          }
-                        },
-                        builder: (context, state) {
-                          return CustomAppButton1(
-                            isLoading: state is PostTripLoading,
-                            text: "Start Your Trip",
-                            onPlusTap: () {
-                              if (_validateInputs()) {
-                                final Map<String, dynamic> data = {
-                                  'destination': destinationController.text,
-                                  'start_date': dateController.text,
-                                  'budget': budgetController.text,
-                                };
-                                if (_selectedImage != null) {
-                                  data['image'] = _selectedImage;
-                                }
-                                context.read<postTripCubit>().postTrip(
-                                  data,
-                                );
-                              } else {
-                                CustomSnackBar.show(
-                                  context,
-                                  'Please fix the errors in the form',
-                                );
+                          SizedBox(height: height * 0.015),
+                          _buildTextField(
+                            controller: dateController,
+                            hint: 'Start date',
+                            image: 'assets/CalendarDots.png',
+                            readOnly: true,
+                            onTap: () => _selectDate(context),
+                            errorText: dateError,
+                          ),
+                          SizedBox(height: height * 0.015),
+                          _buildTextField(
+                            image: 'assets/CurrencyInr.png',
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: false,
+                              signed: false,
+                            ),
+                            controller: budgetController,
+                            hint: 'Enter spend amount',
+                            errorText: budgetError,
+                          ),
+                          SizedBox(height: height * 0.025),
+                          BlocConsumer<postTripCubit, postTripState>(
+                            listener: (context, state) {
+                              if (state is PostTripSuccessState) {
+                                destinationController.clear();
+                                dateController.clear();
+                                budgetController.clear();
+                                context.read<HomeCubit>().fetchHomeData();
                               }
                             },
-                          );
-                        },
-                      ),
-                      SizedBox(height: height * 0.035),
-                    ],
-                    Text(
-                      "Current Tour",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Mullish',
-                      ),
-                    ),
-                    SizedBox(height: height * 0.02),
-                    if (state.getTripModel?.data == null ||
-                        state.getTripModel?.settings?.message ==
-                            "No active and ongoing trips found.")
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.all(width * 0.04),
-                        decoration: BoxDecoration(
-                          color: Color(0xFF2C4748),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          "No current tour found",
-                          style: TextStyle(
-                            fontFamily: 'Mullish',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                      )
-                    else
-                      Dismissible(
-                        key: Key(
-                          state.getTripModel?.data?.id ?? '',
-                        ), // Use a consistent key
-                        background: Container(
-                          color: Colors.blue,
-                          alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 20),
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                        ),
-                        secondaryBackground: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: EdgeInsets.only(right: 20),
-                          child: Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                        ),
-                        confirmDismiss: (direction) async {
-                          final tripId = state.getTripModel?.data?.id ?? '';
-                          if (direction == DismissDirection.startToEnd) {
-                            context.push(
-                              '/UpdateCurrentTrip?tripId=$tripId',
-                            );
-                            return false;
-                          } else if (direction ==
-                              DismissDirection.endToStart) {
-                            final confirm = await showDialog<bool>(
-                              context: context,
-                              builder:
-                                  (context) => AlertDialog(
-                                    title: Text('Delete Trip'),
-                                    content: Text(
-                                      'Are you sure you want to delete this trip?',
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => context.pop(false),
-                                        child: Text('Cancel'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          context.pop(true);
-                                        },
-                                        child: Text('Delete'),
-                                      ),
-                                    ],
-                                  ),
-                            );
-
-                            if (confirm == true) {
-                              try {
-                                await context
-                                    .read<postTripCubit>()
-                                    .deleteTrip(tripId);
-                                await context
-                                    .read<HomeCubit>()
-                                    .fetchHomeData();
-                                return true;
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Failed to delete trip: $e',
-                                    ),
-                                  ),
-                                );
-                                return false;
-                              }
-                            }
-
-                            return false;
-                          }
-
-                          return false;
-                        },
-                        child: TouchRipple(
-                          onTap: () {
-                            final trip = state.getTripModel?.data;
-                            final budget =
-                                trip?.budget?.toString() ?? "0.00";
-
-                            if (state.getTripModel?.totalExpense > 0) {
-                              context.push('/vacation?budget=$budget&tripDate=${trip?.startDate??""}');
-                            } else {
-                              context.push(
-                                '/update_expensive?id=${trip?.id ?? ''}&place=${trip?.destination ?? ''}&budget=$budget&date=${trip?.startDate??""}',
-                              );
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Color(0xFF304546),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(14),
-                                  child: Image.asset(
-                                    "assets/figmaimages.png",
-                                    width: width * 0.18,
-                                    height: width * 0.18,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                SizedBox(width: width * 0.035),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        capitalize(
-                                          state.getTripModel?.data
-                                                  ?.destination ??
-                                              "Unknown",
-                                        ),
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Mullish',
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ),
-                                      SizedBox(height: 6),
-                                      Text(
-                                        state.getTripModel?.data
-                                                ?.startDate ??
-                                            "N/A",
-                                        style: TextStyle(
-                                          color: Color(0xffDADADA),
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Mullish',
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      SizedBox(height: 6),
-                                      RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text: "Budget: ",
-                                              style: TextStyle(
-                                                color: Color(0xffB8B8B8),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                fontFamily: 'Mullish',
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text:
-                                                  '₹ ${state.getTripModel?.data?.budget?.toString() ?? "0.00"}',
-                                              style: TextStyle(
-                                                color: Color(0xff00AB03),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                fontFamily: 'Mullish',
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                ElevatedButton.icon(
-                                  onPressed: () {
-                                    final trip = state.getTripModel?.data;
-                                    context.push(
-                                      '/update_expensive?id=${trip?.id ?? ''}&place=${trip?.destination ?? ''}&budget=${trip?.budget ?? ''}&date=${trip?.startDate??""}',
+                            builder: (context, state) {
+                              return CustomAppButton1(
+                                isLoading: state is PostTripLoading,
+                                text: "Start Your Trip",
+                                onPlusTap: () {
+                                  if (_validateInputs()) {
+                                    final Map<String, dynamic> data = {
+                                      'destination': destinationController.text,
+                                      'start_date': dateController.text,
+                                      'budget': budgetController.text,
+                                    };
+                                    if (_selectedImage != null) {
+                                      data['image'] = _selectedImage;
+                                    }
+                                    context.read<postTripCubit>().postTrip(
+                                      data,
                                     );
-                                  },
-                                  icon: Icon(
-                                    Icons.add,
-                                    color: Colors.black87,
-                                    size: 16,
+                                  } else {
+                                    CustomSnackBar.show(
+                                      context,
+                                      'Please fix the errors in the form',
+                                    );
+                                  }
+                                },
+                              );
+                            },
+                          ),
+                          SizedBox(height: height * 0.035),
+                        ] else if (isGuestUser??false) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(width * 0.04),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2C4748),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  "Please log in to create a trip",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontFamily: 'Mullish',
                                   ),
-                                  label: Text(
-                                    "Spend",
+                                ),
+                                const SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    context.push('/login_mobile');
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFDDA25F),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Log In",
                                     style: TextStyle(
                                       color: Colors.black87,
-                                      fontSize: width * 0.04,
                                       fontFamily: 'Mullish',
-                                    ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    visualDensity: VisualDensity.compact,
-                                    backgroundColor: Color(0xFFDDA25F),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        4,
-                                      ),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                          SizedBox(height: height * 0.035),
+                        ],
+                        Text(
+                          "Current Tour",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Mullish',
+                          ),
                         ),
-                      ),
-                    SizedBox(height: height * 0.03),
-                    Text(
-                      "Previous Tours",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Mullish',
-                      ),
-                    ),
-                    SizedBox(height: 12),
-                    SingleChildScrollView(physics: NeverScrollableScrollPhysics(),
-                      child: Column(
-                        children: [
-                          if (state.getPrevousTripModel?.previousTrips
-                                  ?.length ==
-                              0)
-                            Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.all(width * 0.04),
-                              decoration: BoxDecoration(
-                                color: Color(0xFF2C4748),
-                                borderRadius: BorderRadius.circular(16),
+                        SizedBox(height: height * 0.02),
+                        if (state.getTripModel?.data == null ||
+                            state.getTripModel?.settings?.message ==
+                                "No active and ongoing trips found.")
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(width * 0.04),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2C4748),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Text(
+                              "No current tour found",
+                              style: TextStyle(
+                                fontFamily: 'Mullish',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                color: Colors.white,
                               ),
-
-                              child: Text(
-                                "No Previous tour found.",
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: width * 0.04,
-                                  fontFamily: 'Mullish',
-                                ),
+                            ),
+                          )
+                        else
+                          Dismissible(
+                            key: Key(state.getTripModel?.data?.id ?? ''),
+                            background: Container(
+                              color: Colors.blue,
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.only(left: 20),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                                size: 30,
                               ),
-                            )
-                          else
-                            Container(
-                              height:
-                                  MediaQuery.of(context).size.height * 0.5,
-                              child: ListView.builder(shrinkWrap: true,physics: AlwaysScrollableScrollPhysics(),
-                                itemCount:
-                                    state.getPrevousTripModel?.previousTrips
-                                        ?.length ??
-                                    0,
-                                itemBuilder: (context, index) {final trip = state.getPrevousTripModel?.previousTrips![index];
-                                  return TouchRipple(
-                                    onTap: () {
-                                      final trip =
-                                          state.getPrevousTripModel?.previousTrips?[index];
-                                      if (trip != null) {
-                                        context.push(
-                                          '/vacation?budget=${trip.budget.toString() ?? "0.00"}&tripId=${trip.tripId ?? ""}',
-                                        );
-                                      }
-                                    },
-                                    child: Container(
-                                      margin: EdgeInsets.only(
-                                        bottom: 16,
+                            ),
+                            secondaryBackground: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                            ),
+                            confirmDismiss: (direction) async {
+                              if ( isGuestUser??false) {
+                                CustomSnackBar.show(
+                                  context,
+                                  'Please log in to edit or delete trips',
+                                );
+                                return false;
+                              }
+                              final tripId = state.getTripModel?.data?.id ?? '';
+                              if (direction == DismissDirection.startToEnd) {
+                                context.push(
+                                  '/UpdateCurrentTrip?tripId=$tripId',
+                                );
+                                return false;
+                              } else if (direction ==
+                                  DismissDirection.endToStart) {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder:
+                                      (context) => AlertDialog(
+                                        title: const Text('Delete Trip'),
+                                        content: const Text(
+                                          'Are you sure you want to delete this trip?',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => context.pop(false),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () => context.pop(true),
+                                            child: const Text('Delete'),
+                                          ),
+                                        ],
                                       ),
-                                      padding: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFF304546),
-                                        borderRadius: BorderRadius.circular(
-                                          12,
+                                );
+
+                                if (confirm == true) {
+                                  try {
+                                    await context
+                                        .read<postTripCubit>()
+                                        .deleteTrip(tripId);
+                                    await context
+                                        .read<HomeCubit>()
+                                        .fetchHomeData();
+                                    return true;
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Failed to delete trip: $e',
                                         ),
                                       ),
-                                      child: Row(
+                                    );
+                                    return false;
+                                  }
+                                }
+                                return false;
+                              }
+                              return false;
+                            },
+                            child: TouchRipple(
+                              onTap: () {
+                                final trip = state.getTripModel?.data;
+                                final budget =
+                                    trip?.budget?.toString() ?? "0.00";
+                                if (state.getTripModel?.totalExpense > 0) {
+                                  context.push('/vacation?budget=$budget');
+                                } else {
+                                  context.push(
+                                    '/update_expensive?id=${trip?.id ?? ''}&place=${trip?.destination ?? ''}&budget=$budget&date=${trip?.startDate ?? ""}',
+                                  );
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF304546),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(14),
+                                      child: Image.asset(
+                                        "assets/figmaimages.png",
+                                        width: width * 0.18,
+                                        height: width * 0.18,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    SizedBox(width: width * 0.035),
+                                    Expanded(
+                                      child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(14),
-                                            child: Image.asset(
-                                              "assets/figmaimages.png",
-                                              width: width * 0.18,
-                                              height: width * 0.18,
-                                              fit: BoxFit.cover,
+                                          Text(
+                                            capitalize(
+                                              state
+                                                      .getTripModel
+                                                      ?.data
+                                                      ?.destination ??
+                                                  "Unknown",
                                             ),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: 'Mullish',
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
                                           ),
-                                          SizedBox(width: width * 0.035),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            state
+                                                    .getTripModel
+                                                    ?.data
+                                                    ?.startDate ??
+                                                "N/A",
+                                            style: const TextStyle(
+                                              color: Color(0xffDADADA),
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: 'Mullish',
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 6),
+                                          RichText(
+                                            text: TextSpan(
                                               children: [
-                                                Text(
-                                                  capitalize(
-                                                    trip?.destination ?? "",
-                                                  ),
-
+                                                const TextSpan(
+                                                  text: "Budget: ",
                                                   style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w600,
-                                                    fontFamily: 'Mullish',
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                ),
-                                                SizedBox(height: 6),
-                                                Text(
-                                                  trip?.startDate ?? "",
-                                                  style: TextStyle(
-                                                    color: Color(
-                                                      0xffDADADA,
-                                                    ),
-                                                    fontSize: 10,
-                                                    fontWeight:
-                                                        FontWeight.w600,
+                                                    color: Color(0xffB8B8B8),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
                                                     fontFamily: 'Mullish',
                                                   ),
                                                 ),
-                                                SizedBox(height: 6),
-                                                RichText(
-                                                  text: TextSpan(
-                                                    children: [
-                                                      TextSpan(
-                                                        text: "Budget: ",
-                                                        style: TextStyle(
-                                                          color: Color(
-                                                            0xffB8B8B8,
-                                                          ),
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight
-                                                                  .w600,
-                                                          fontFamily:
-                                                              'Mullish',
-                                                        ),
-                                                      ),
-                                                      TextSpan(
-                                                        text:
-                                                            '₹ ' +
-                                                                trip!.budget
-                                                                    .toString() ??
-                                                            "",
-                                                        style: TextStyle(
-                                                          color: Color(
-                                                            0xff00AB03,
-                                                          ),
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight
-                                                                  .w600,
-                                                          fontFamily:
-                                                              'Mullish',
-                                                        ),
-                                                      ),
-                                                    ],
+                                                TextSpan(
+                                                  text:
+                                                      '₹ ${state.getTripModel?.data?.budget?.toString() ?? "0.00"}',
+                                                  style: const TextStyle(
+                                                    color: Color(0xff00AB03),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontFamily: 'Mullish',
                                                   ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
                                                 ),
                                               ],
                                             ),
-                                          ),
-                                          SizedBox(width: width * 0.02),
-                                          SizedBox(
-                                            width: width * 0.25,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                Text(
-                                                  textAlign:
-                                                      TextAlign.center,
-                                                  '₹ ' + trip!.totalExpense.toString() ?? "",
-                                                  style: TextStyle(
-                                                    color: Color(
-                                                      0xffb0b0b0,
-                                                    ),
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w600,
-                                                    fontFamily: 'Mullish',
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                ),
-
-                                                Text(
-                                                  "Spends",
-                                                  style: TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: width * 0.035,
-                                                    fontFamily: 'Mullish',
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                ),
-                                              ],
-                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
                                           ),
                                         ],
                                       ),
                                     ),
-                                  );
-                                },
+                                    ElevatedButton.icon(
+                                      onPressed:
+                                      isGuestUser??false
+                                              ? () {
+                                                CustomSnackBar.show(
+                                                  context,
+                                                  'Please log in to add expenses',
+                                                );
+                                              }
+                                              : () {
+                                                final trip =
+                                                    state.getTripModel?.data;
+                                                context.push(
+                                                  '/update_expensive?id=${trip?.id ?? ''}&place=${trip?.destination ?? ''}&budget=${trip?.budget ?? ''}&date=${trip?.startDate ?? ""}',
+                                                );
+                                              },
+                                      icon: const Icon(
+                                        Icons.add,
+                                        color: Colors.black87,
+                                        size: 16,
+                                      ),
+                                      label: Text(
+                                        "Spend",
+                                        style: TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: width * 0.04,
+                                          fontFamily: 'Mullish',
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        visualDensity: VisualDensity.compact,
+                                        backgroundColor: const Color(
+                                          0xFFDDA25F,
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                        ],
-                      ),
+                          ),
+                        SizedBox(height: height * 0.03),
+                        const Text(
+                          "Previous Tours",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Mullish',
+                          ),
+                        ),
+                        SizedBox(height: 12),
+                        Column(
+                          children: [
+                            if (state
+                                    .getPrevousTripModel
+                                    ?.previousTrips
+                                    ?.isEmpty ??
+                                true)
+                              Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.all(width * 0.04),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF2C4748),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: const Text(
+                                  "No Previous tour found.",
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 16,
+                                    fontFamily: 'Mullish',
+                                  ),
+                                ),
+                              )
+                            else
+                              Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.5,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  itemCount:
+                                      state
+                                          .getPrevousTripModel
+                                          ?.previousTrips
+                                          ?.length ??
+                                      0,
+                                  itemBuilder: (context, index) {
+                                    final trip =
+                                        state
+                                            .getPrevousTripModel
+                                            ?.previousTrips![index];
+                                    return TouchRipple(
+                                      onTap: () {
+                                        if (trip != null) {
+                                          context.push(
+                                            '/vacation?budget=${trip.budget.toString() ?? "0.00"}&tripId=${trip.tripId ?? ""}',
+                                          );
+                                        }
+                                      },
+                                      child: Container(
+                                        margin: const EdgeInsets.only(
+                                          bottom: 16,
+                                        ),
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF304546),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(14),
+                                              child: Image.asset(
+                                                "assets/figmaimages.png",
+                                                width: width * 0.18,
+                                                height: width * 0.18,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            SizedBox(width: width * 0.035),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    capitalize(
+                                                      trip?.destination ?? "",
+                                                    ),
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontFamily: 'Mullish',
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                  const SizedBox(height: 6),
+                                                  Text(
+                                                    trip?.startDate ?? "",
+                                                    style: const TextStyle(
+                                                      color: Color(
+                                                        0xffDADADA,
+                                                      ),
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontFamily: 'Mullish',
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 6),
+                                                  RichText(
+                                                    text: TextSpan(
+                                                      children: [
+                                                        const TextSpan(
+                                                          text: "Budget: ",
+                                                          style: TextStyle(
+                                                            color: Color(
+                                                              0xffB8B8B8,
+                                                            ),
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600,
+                                                            fontFamily:
+                                                                'Mullish',
+                                                          ),
+                                                        ),
+                                                        TextSpan(
+                                                          text:
+                                                              '₹ ${trip?.budget.toString() ?? ""}',
+                                                          style:
+                                                              const TextStyle(
+                                                                color: Color(
+                                                                  0xff00AB03,
+                                                                ),
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                fontFamily:
+                                                                    'Mullish',
+                                                              ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: width * 0.02),
+                                            SizedBox(
+                                              width: width * 0.25,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    textAlign:
+                                                        TextAlign.center,
+                                                    '₹ ${trip?.totalExpense.toString() ?? ""}',
+                                                    style: const TextStyle(
+                                                      color: Color(
+                                                        0xffb0b0b0,
+                                                      ),
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontFamily: 'Mullish',
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                  const Text(
+                                                    "Spends",
+                                                    style: TextStyle(
+                                                      color: Colors.white70,
+                                                      fontSize: 14,
+                                                      fontFamily: 'Mullish',
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
+                );
+              } else if (state is HomeError) {
+                return Center(
+                  child: Text(
+                    state.message,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: width * 0.05,
+                      fontFamily: 'Mullish',
+                    ),
+                  ),
+                );
+              }
+              return Center(
+                child: Text(
+                  "No Data",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: width * 0.05,
+                    fontFamily: 'Mullish',
+                  ),
                 ),
-              ),
-            );
-          } else if (state is HomeError) {
-            return Center(
-              child: Text(
-                state.message,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: width * 0.05,
-                  fontFamily: 'Mullish',
-                ),
-              ),
-            );
-          }
-          return Center(
-            child: Text(
-              "No Data",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: width * 0.05,
-                fontFamily: 'Mullish',
-              ),
-            ),
-          );
-        },
-      ),
-    );
+              );
+            },
+          ),
+        );
+
   }
 
   Widget _buildTextField({

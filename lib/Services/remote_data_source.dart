@@ -38,6 +38,7 @@ abstract class RemoteDataSource {
   Future<SuccessModel?> ForgotpasswordApi(Map<String, dynamic> data);
   Future<SuccessModel?> VerifyOtp(Map<String, dynamic> data);
   Future<SuccessModel?> ChangePassword(Map<String, dynamic> data);
+  Future<SuccessModel?> deleteAccount();
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -64,6 +65,21 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     }
 
     return FormData.fromMap(formMap);
+  }
+
+  @override
+  Future<SuccessModel?> deleteAccount() async {
+    Response response = await ApiClient.delete("${APIEndpointUrls.delete_account}");
+    try {
+      if (response.statusCode == 200) {
+        debugPrint('deleteAccount:${response.data}');
+        return SuccessModel.fromJson(response.data);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error deleteAccount::$e');
+      return null;
+    }
   }
 
   @override
