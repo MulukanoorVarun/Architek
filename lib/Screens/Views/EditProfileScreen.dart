@@ -14,6 +14,7 @@ import '../../Block/Logic/Home/HomeCubit.dart';
 import '../../Block/Logic/Profiledetails/Profile_cubit.dart';
 import '../../Block/Logic/Profiledetails/Profile_state.dart';
 import '../../Block/Logic/UpdateProfile/UpdateProfileCubit.dart';
+import '../../utils/ImageUtils.dart';
 import '../../utils/color_constants.dart';
 import '../Components/CustomAppButton.dart';
 import '../Components/CutomAppBar.dart';
@@ -40,22 +41,29 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
   }
 
   Future<void> _pickImageFromGallery() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
+      File? compressedFile = await ImageUtils.compressImage(File(pickedFile.path));
+      if (compressedFile != null) {
+        setState(() {
+          _image = compressedFile;
+        });
+      }
     }
   }
 
   Future<void> _takePhoto() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
+      File? compressedFile = await ImageUtils.compressImage(File(pickedFile.path));
+      if (compressedFile != null) {
+        setState(() {
+          _image = compressedFile;
+        });
+      }
     }
   }
+
 
   Future<void> _updateProfile() async {
     final Map<String, dynamic> data = {
@@ -130,22 +138,31 @@ class _EditProfileScreenState extends State<Editprofilescreen> {
                               onTap: () {
                                 showModalBottomSheet(
                                   context: context,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                  ),
+                                  elevation: 8,
                                   builder: (_) => Container(
-                                    color: Colors.white,
                                     height: 120,
                                     child: Column(
                                       children: [
                                         ListTile(
-                                          leading: const Icon(Icons.photo_library),
-                                          title: const Text('Gallery'),
+                                          leading: const Icon(Icons.photo_library,color: Colors.white,),
+                                          title: const Text('Gallery',style: TextStyle(
+                                            fontFamily: 'Mullish',
+                                            color: Colors.white
+                                          ),),
                                           onTap: () {
                                             Navigator.pop(context);
                                             _pickImageFromGallery();
                                           },
                                         ),
                                         ListTile(
-                                          leading: const Icon(Icons.camera_alt),
-                                          title: const Text('Camera'),
+                                          leading: const Icon(Icons.camera_alt,color: Colors.white,),
+                                          title: const Text('Camera',style: TextStyle(
+                                              fontFamily: 'Mullish',
+                                              color: Colors.white
+                                          ),),
                                           onTap: () {
                                             Navigator.pop(context);
                                             _takePhoto();
