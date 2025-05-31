@@ -6,15 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:tripfin/Block/Logic/GetTrip/GetTripCubit.dart';
-import 'package:tripfin/Block/Logic/GetTrip/GetTripState.dart';
+import 'package:tripfin/Bloc/Logic/GetTrip/GetTripCubit.dart';
+import 'package:tripfin/Bloc/Logic/GetTrip/GetTripState.dart';
 import 'package:tripfin/Screens/Components/CutomAppBar.dart';
-import 'package:tripfin/utils/color_constants.dart';
-
-import '../../Block/Logic/Home/HomeCubit.dart';
-import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
-import '../../Block/Logic/PostTrip/postTrip_cubit.dart';
-import '../../Block/Logic/PostTrip/potTrip_state.dart';
+import '../../Bloc/Logic/Home/HomeCubit.dart';
+import '../../Bloc/Logic/PiechartdataScreen/PiechartCubit.dart';
+import '../../Bloc/Logic/PostTrip/postTrip_cubit.dart';
+import '../../Bloc/Logic/PostTrip/potTrip_state.dart';
 import '../Components/CustomAppButton.dart';
 import '../Components/CustomSnackBar.dart';
 

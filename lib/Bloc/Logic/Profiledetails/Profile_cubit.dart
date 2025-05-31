@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tripfin/Block/Logic/Profiledetails/Profile_repository.dart';
-import 'package:tripfin/Block/Logic/Profiledetails/Profile_state.dart';
+import 'package:tripfin/Bloc/Logic/Profiledetails/Profile_repository.dart';
+import 'package:tripfin/Bloc/Logic/Profiledetails/Profile_state.dart';
 
 class ProfileCubit extends Cubit<GetProfileState> {
 

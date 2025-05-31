@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileState.dart';
+import 'package:tripfin/Bloc/Logic/CombinedProfile/CombinedProfileState.dart';
 
 import '../Profiledetails/Profile_repository.dart';
 import '../TripCount/TripcountRepository.dart';

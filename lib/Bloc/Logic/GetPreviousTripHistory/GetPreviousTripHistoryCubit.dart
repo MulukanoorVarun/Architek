@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tripfin/Block/Logic/GetPreviousTripHistory/GetPreviousTripHistoryRepository.dart';
-import 'package:tripfin/Block/Logic/GetPreviousTripHistory/GetPreviousTripHistoryState.dart';
+import 'package:tripfin/Bloc/Logic/GetPreviousTripHistory/GetPreviousTripHistoryRepository.dart';
+import 'package:tripfin/Bloc/Logic/GetPreviousTripHistory/GetPreviousTripHistoryState.dart';
 
 class GetPreviousTripHistoryCubit extends Cubit<GetPrevousTripHistoryState> {
   final GetPreviousTripRepo getPreviousTripRepo;

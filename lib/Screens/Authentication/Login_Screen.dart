@@ -4,9 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tripfin/Screens/Components/CustomAppButton.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
-import 'package:tripfin/utils/Color_Constants.dart';
-import '../../Block/Logic/LogInBloc/login_cubit.dart';
-import '../../Block/Logic/LogInBloc/login_state.dart';
+import '../../Bloc/Logic/LogInBloc/login_cubit.dart';
+import '../../Bloc/Logic/LogInBloc/login_state.dart';
 import '../../Services/AuthService.dart';
 
 class LoginScreen extends StatefulWidget {

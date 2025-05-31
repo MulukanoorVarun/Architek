@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyCubit.dart';
-import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyState.dart';
-import 'package:tripfin/Block/Logic/RegisterBloc/Register_cubit.dart';
-import 'package:tripfin/Block/Logic/RegisterBloc/Register_state.dart';
+import 'package:tripfin/Bloc/Logic/GetCurrency/GetCurrencyCubit.dart';
+
+import 'package:tripfin/Bloc/Logic/RegisterBloc/Register_cubit.dart';
+import 'package:tripfin/Bloc/Logic/RegisterBloc/Register_state.dart';
 import 'package:tripfin/Model/GetCurrencyModel.dart';
 import 'package:tripfin/Screens/Components/CustomAppButton.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';

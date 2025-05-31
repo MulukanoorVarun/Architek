@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 
-import '../../Block/Logic/ForgotPassword/ForgotPassWordCubit.dart';
-import '../../Block/Logic/ForgotPassword/ForgotPasswordState.dart';
+
+import '../../Bloc/Logic/ForgotPassword/ForgotPassWordCubit.dart';
+
+import '../../Bloc/Logic/ForgotPassword/ForgotPasswordState.dart';
 import '../../utils/Color_Constants.dart';
 import '../Components/CustomAppButton.dart';
 import '../Components/CutomAppBar.dart';

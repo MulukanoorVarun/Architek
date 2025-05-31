@@ -4,17 +4,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tripfin/Block/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
-import 'package:tripfin/Block/Logic/PostTrip/postTrip_cubit.dart';
-import 'package:tripfin/Block/Logic/PostTrip/potTrip_state.dart';
-import 'package:tripfin/Block/Logic/TripFinish/TripFinishCubit.dart';
-import 'package:tripfin/Block/Logic/TripFinish/TripFinishState.dart';
+import 'package:tripfin/Bloc/Logic/ExpenseDetails/ExpenseDetailsCubit.dart';
+import 'package:tripfin/Bloc/Logic/PostTrip/postTrip_cubit.dart';
+import 'package:tripfin/Bloc/Logic/PostTrip/potTrip_state.dart';
+import 'package:tripfin/Bloc/Logic/TripFinish/TripFinishCubit.dart';
+import 'package:tripfin/Bloc/Logic/TripFinish/TripFinishState.dart';
 import 'package:tripfin/Screens/Components/CustomSnackBar.dart';
-import '../../Block/Logic/Home/HomeCubit.dart';
-import '../../Block/Logic/Internet/internet_status_bloc.dart';
-import '../../Block/Logic/Internet/internet_status_state.dart';
-import '../../Block/Logic/PiechartdataScreen/PiechartCubit.dart';
-import '../../Block/Logic/PiechartdataScreen/PiechartState.dart';
+import '../../Bloc/Logic/Home/HomeCubit.dart';
+import '../../Bloc/Logic/Internet/internet_status_bloc.dart';
+import '../../Bloc/Logic/Internet/internet_status_state.dart';
+import '../../Bloc/Logic/PiechartdataScreen/PiechartCubit.dart';
+import '../../Bloc/Logic/PiechartdataScreen/PiechartState.dart';
 import '../../utils/color_constants.dart';
 import '../Components/CutomAppBar.dart';
 import '../Components/FilteringDate.dart';
@@ -699,9 +699,9 @@ class _VacationHistoryState extends State<VacationHistory> {
                       width: 12,
                     ),
                   ),
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(12),
-                    bottomRight: Radius.circular(12),
+                  borderRadius: BorderRadius.circular(16
+                    // topRight: Radius.circular(12),
+                    // bottomRight: Radius.circular(12),
                   ),
                 ),
                 child: Row(
@@ -908,7 +908,6 @@ class _VacationHistoryState extends State<VacationHistory> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
-
                           ],
                         ),
                       ),

@@ -1,7 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tripfin/Block/Logic/TripFinish/TripFinishRepository.dart';
-import 'package:tripfin/Block/Logic/TripFinish/TripFinishState.dart';
+import 'package:tripfin/Bloc/Logic/TripFinish/TripFinishRepository.dart';
+import 'package:tripfin/Bloc/Logic/TripFinish/TripFinishState.dart';
 
 class TripFinishCubit extends Cubit<TripFinishState> {
   final TripFinishRepository updateProfileRepository;

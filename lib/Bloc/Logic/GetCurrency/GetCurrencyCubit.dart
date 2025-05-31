@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tripfin/Block/Logic/GetCurrency/GetCurrencyRepository.dart';
+import 'package:tripfin/Bloc/Logic/GetCurrency/GetCurrencyRepository.dart';
 
 import 'GetCurrencyState.dart';
 

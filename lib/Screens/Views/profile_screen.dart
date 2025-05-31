@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_touch_ripple/flutter_touch_ripple.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileCubit.dart';
-import 'package:tripfin/Block/Logic/CombinedProfile/CombinedProfileState.dart';
+import 'package:tripfin/Bloc/Logic/CombinedProfile/CombinedProfileCubit.dart';
+import 'package:tripfin/Bloc/Logic/CombinedProfile/CombinedProfileState.dart';
 import 'package:tripfin/Screens/Components/CustomAppButton.dart';
 import 'package:tripfin/Screens/Components/CutomAppBar.dart';
 import 'package:tripfin/utils/color_constants.dart';
-
-import '../../Block/Logic/delete_account/DeleteAccountCubit.dart';
-import '../../Block/Logic/delete_account/DeleteAccountStates.dart';
+import '../../Bloc/Logic/delete_account/DeleteAccountCubit.dart';
+import '../../Bloc/Logic/delete_account/DeleteAccountStates.dart';
 import '../../utils/Preferances.dart';
 import '../../utils/spinkittsLoader.dart';
 import '../Components/CustomSnackBar.dart';

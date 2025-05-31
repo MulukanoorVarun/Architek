@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tripfin/Block/Logic/PiechartdataScreen/PiechartRepository.dart';
+import 'package:tripfin/Bloc/Logic/PiechartdataScreen/PiechartRepository.dart';
 import 'package:tripfin/Model/PiechartExpenceModel.dart';
 
 import 'PiechartState.dart';

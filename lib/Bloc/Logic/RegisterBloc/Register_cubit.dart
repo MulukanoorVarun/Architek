@@ -1,8 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tripfin/Block/Logic/LogInBloc/login_cubit.dart';
-import 'package:tripfin/Block/Logic/LogInBloc/login_repository.dart';
-
-import '../LogInBloc/login_state.dart';
 import 'Register_repository.dart';
 import 'Register_state.dart';
 

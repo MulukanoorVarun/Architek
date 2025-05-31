@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tripfin/Block/Logic/ForgotPassword/ForgotPassWordRepository.dart';
+import 'package:tripfin/Bloc/Logic/ForgotPassword/ForgotPassWordRepository.dart';
 import 'ForgotPasswordState.dart';
 
 class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {

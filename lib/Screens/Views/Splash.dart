@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../Block/Logic/Internet/internet_status_bloc.dart';
-import '../../Block/Logic/Internet/internet_status_state.dart';
+import '../../Bloc/Logic/Internet/internet_status_bloc.dart';
+import '../../Bloc/Logic/Internet/internet_status_state.dart';
 import '../../Services/AuthService.dart';
 import '../../utils/Preferances.dart';
 
