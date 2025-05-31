@@ -303,7 +303,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                                 IconButton(
                                   visualDensity: VisualDensity.compact,
                                   onPressed: () {
-                                    context.push(
+                                    context.pushReplacement(
                                       '/UpdateCurrentTrip?tripId=${state.response.data?.tripId ?? ""}',
                                     );
                                   },
@@ -849,7 +849,7 @@ class _VacationHistoryState extends State<VacationHistory> {
                     );
                   } else if (direction == DismissDirection.startToEnd) {
                     HapticFeedback.lightImpact();
-                    context.push(
+                    context.pushReplacement(
                       '/update_expensive?id=${tripId}&expenseId=$expenseId&date=${widget.tripDate??""}',
                     );
                     return false;
