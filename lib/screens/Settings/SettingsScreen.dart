@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:arkitek_app/blocs/auth/auth_bloc.dart';
-import 'package:arkitek_app/theme/app_theme.dart';
 import 'package:arkitek_app/theme/spacing.dart';
 import 'package:arkitek_app/theme/colors.dart';
 import 'package:arkitek_app/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
+
+import '../../bloc/auth/auth_bloc.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

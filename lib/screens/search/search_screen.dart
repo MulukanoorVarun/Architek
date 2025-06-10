@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:arkitek_app/blocs/architect/architect_bloc.dart';
 import 'package:arkitek_app/widgets/architect_card.dart';
 import 'package:arkitek_app/theme/spacing.dart';
 import 'package:arkitek_app/theme/colors.dart';
+
+import '../../bloc/architect/architect_bloc.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});

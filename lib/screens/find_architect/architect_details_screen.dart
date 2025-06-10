@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:arkitek_app/blocs/architect/architect_bloc.dart';
 import 'package:arkitek_app/theme/colors.dart';
 import 'package:arkitek_app/theme/spacing.dart';
+
+import '../../bloc/architect/architect_bloc.dart';
 
 class ArchitectDetailsScreen extends StatelessWidget {
   final String architectId;

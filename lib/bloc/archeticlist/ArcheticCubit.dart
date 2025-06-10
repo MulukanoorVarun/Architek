@@ -1,6 +1,8 @@
-import 'package:arkitek_app/blocs/archeticlist/ArcheticRepository.dart';
-import 'package:arkitek_app/blocs/archeticlist/ArcheticState.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'ArcheticRepository.dart';
+import 'ArcheticState.dart';
 
 class ArcheticCubit extends Cubit<Archeticstate> {
   final Archeticrepository archeticrepository;
