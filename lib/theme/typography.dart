@@ -65,7 +65,7 @@ class AppTypography {
   );
 
   static final TextStyle bodyMediumTextStyle = _body.copyWith(
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: _regular,
     height: _bodyLineHeight,
   );

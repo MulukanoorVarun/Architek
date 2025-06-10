@@ -32,7 +32,7 @@ class AppTheme {
       elevation: 0,
       centerTitle: true,
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.md),
@@ -75,22 +75,28 @@ class AppTheme {
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
+      labelStyle: GoogleFonts.playfairDisplay(
+          fontWeight: FontWeight.w500, fontSize: 14, color: Colors.black),
+      hintStyle: GoogleFonts.playfairDisplay(
+          fontWeight: FontWeight.w500, fontSize: 14, color: Colors.black),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.sm),
-        borderSide: BorderSide(color: AppColors.secondary[400]!),
+        borderSide: BorderSide(color:  AppColors.primary[700]!, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.sm),
-        borderSide: BorderSide(color: AppColors.secondary[400]!),
+        borderSide: BorderSide(color:  AppColors.primary[700]!, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.sm),
-        borderSide: BorderSide(color: AppColors.primary[700]!, width: 2),
+        borderSide: BorderSide(color: AppColors.primary[700]!, width: 1),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.sm),
-        borderSide: BorderSide(color: AppColors.error[700]!, width: 1),
+        borderSide: BorderSide(color: AppColors.primary[700]!, width: 1),
       ),
+      errorStyle: GoogleFonts.playfairDisplay(
+          fontWeight: FontWeight.w400, fontSize: 13, color: Colors.red),
       contentPadding: EdgeInsets.all(AppSpacing.md),
       filled: true,
       fillColor: Colors.white,
@@ -150,7 +156,7 @@ class AppTheme {
       elevation: 0,
       centerTitle: true,
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.md),
@@ -194,25 +200,31 @@ class AppTheme {
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
+      labelStyle: GoogleFonts.playfairDisplay(
+          fontWeight: FontWeight.w500, fontSize: 14, color: Colors.black),
+      hintStyle: GoogleFonts.playfairDisplay(
+          fontWeight: FontWeight.w500, fontSize: 14, color: Colors.black),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.sm),
-        borderSide: BorderSide(color: AppColors.secondary[700]!),
+        borderSide: BorderSide(color:  AppColors.primary[700]!, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.sm),
-        borderSide: BorderSide(color: AppColors.secondary[700]!),
+        borderSide: BorderSide(color:  AppColors.primary[700]!, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.sm),
-        borderSide: BorderSide(color: AppColors.primary[400]!, width: 2),
+        borderSide: BorderSide(color: AppColors.primary[700]!, width: 1),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.sm),
-        borderSide: BorderSide(color: AppColors.error[600]!, width: 1),
+        borderSide: BorderSide(color: AppColors.primary[700]!, width: 1),
       ),
+      errorStyle: GoogleFonts.playfairDisplay(
+          fontWeight: FontWeight.w400, fontSize: 13, color: Colors.red),
       contentPadding: EdgeInsets.all(AppSpacing.md),
       filled: true,
-      fillColor: Color(0xFF2C2C2C),
+      fillColor: Colors.white,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Color(0xFF1E1E1E),

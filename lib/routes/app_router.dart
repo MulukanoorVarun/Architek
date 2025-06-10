@@ -1,3 +1,4 @@
+import 'package:arkitek_app/screens/auth/RegistrationScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:arkitek_app/screens/home/home_screen.dart';
@@ -31,53 +32,48 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: AppRoutes.home,
     routes: [
-      ShellRoute(
-        builder: (context, state, child) => MainScreen(child: child),
-        routes: [
-          GoRoute(
-            path: AppRoutes.home,
-            builder: (context, state) => const HomeScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.findArchitect,
-            builder: (context, state) => const FindArchitectScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.architectsList,
-            builder: (context, state) {
-              final location = (state.extra as Map<String, dynamic>)['location'] as String;
-              return ArchitectListScreen(location: location);
-            },
-          ),
-          GoRoute(
-            path: AppRoutes.architectDetails,
-            builder: (context, state) {
-              final id = state.pathParameters['id']!;
-              return ArchitectDetailsScreen(architectId: id);
-            },
-          ),
-          GoRoute(
-            path: AppRoutes.postProject,
-            builder: (context, state) => const PostProjectScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.registerArchitect,
-            builder: (context, state) => const RegisterArchitectScreen(),
-          ),
-
-          GoRoute(
-            path: AppRoutes.messages,
-            builder: (context, state) => const MessagesScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.profile,
-            builder: (context, state) => const ProfileScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.settings,
-            builder: (context, state) => const SettingsScreen(),
-          ),
-        ],
+      GoRoute(
+        path: AppRoutes.home,
+        builder: (context, state) => const RegistrationScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.findArchitect,
+        builder: (context, state) => const FindArchitectScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.architectsList,
+        builder: (context, state) {
+          final location =
+              (state.extra as Map<String, dynamic>)['location'] as String;
+          return ArchitectListScreen(location: location);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.architectDetails,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ArchitectDetailsScreen(architectId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.postProject,
+        builder: (context, state) => const PostProjectScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.registerArchitect,
+        builder: (context, state) => const RegistrationScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.messages,
+        builder: (context, state) => const MessagesScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.profile,
+        builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.settings,
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
