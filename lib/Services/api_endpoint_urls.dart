@@ -32,9 +32,4 @@ class APIEndpointUrls {
   static const String updatecurrenttrip = '${apiUrl}trip-details';
   static const String finishtrip = '${apiUrl}finshed-trip';
   static const String deleteCurrentTrip = '${apiUrl}trip-details';
-
-
-
-
-
 }
