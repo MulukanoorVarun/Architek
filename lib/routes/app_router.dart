@@ -32,7 +32,7 @@ class AppRouter {
     routes: [
       GoRoute(
         path: AppRoutes.home,
-        builder: (context, state) => const RegistrationScreen(),
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: AppRoutes.login,

@@ -26,7 +26,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-
+      Map<String, dynamic> data = {
+        'email': _emailController.text.trim(),
+        'password': _passwordController.text.trim(),
+      };
+      // context.read<RegisterCubit>().registerAPi(data);
     }
   }
 
