@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:arkitek_app/blocs/architect/architect_bloc.dart';
 import 'package:arkitek_app/routes/app_router.dart';
-import 'package:arkitek_app/theme/app_theme.dart';
 import 'package:arkitek_app/theme/spacing.dart';
 import 'package:arkitek_app/theme/colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:lottie/lottie.dart';
+
+import '../../bloc/architect/architect_bloc.dart';
 
 class ArchitectListScreen extends StatefulWidget {
   final String location;
