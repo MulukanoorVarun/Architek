@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:arkitek_app/screens/home/home_screen.dart';
+import 'package:arkitek_app/screens/home_screen.dart';
 import 'package:arkitek_app/screens/find_architect/find_architect_screen.dart';
 import 'package:arkitek_app/screens/find_architect/architect_list_screen.dart';
 import 'package:arkitek_app/screens/find_architect/architect_details_screen.dart';
-import 'package:arkitek_app/screens/post_project/post_project_screen.dart';
-import 'package:arkitek_app/screens/messages/messages_screen.dart';
-import 'package:arkitek_app/screens/profile/profile_screen.dart';
+import 'package:arkitek_app/screens/post_project_screen.dart';
+import 'package:arkitek_app/screens/messages_screen.dart';
+import 'package:arkitek_app/screens/profile_screen.dart';
 import 'package:arkitek_app/screens/auth/register_architect_screen.dart';
 import 'package:arkitek_app/screens/main_screen.dart';
 
-import '../screens/Settings/SettingsScreen.dart';
+import '../screens/SettingsScreen.dart';
 
 class AppRoutes {
   static const String home = '/';

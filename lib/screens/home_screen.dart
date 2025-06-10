@@ -7,8 +7,8 @@ import 'package:arkitek_app/routes/app_router.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
-import '../../bloc/archeticlist/ArcheticCubit.dart';
-import '../../bloc/archeticlist/ArcheticState.dart';
+import '../bloc/archeticlist/ArcheticCubit.dart';
+import '../bloc/archeticlist/ArcheticState.dart';
 
 
 class HomeScreen extends StatefulWidget {
