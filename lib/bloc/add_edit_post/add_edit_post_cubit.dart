@@ -34,4 +34,18 @@ class AddEditPostCubit extends Cubit<AddEditPostState> {
       emit(AddEditPostError(message: "An error occurred: $e"));
     }
   }
+
+  Future<void> deletePost(String id) async {
+    emit(AddEditPostLoading());
+    try {
+      final res = await addEditPostRepository.deletePost(id);
+      if (res != null) {
+        emit(AddEditPostLoaded(successModel: res));
+      } else {
+        emit(AddEditPostError(message: "No data available"));
+      }
+    } catch (e) {
+      emit(AddEditPostError(message: "An error occurred: $e"));
+    }
+  }
 }
