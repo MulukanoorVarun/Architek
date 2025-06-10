@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:arkitek_app/models/project.dart';
 import 'package:arkitek_app/theme/spacing.dart';
 
-import '../../bloc/project/project_bloc.dart';
+import '../bloc/project/project_bloc.dart';
 
 class PostProjectScreen extends StatefulWidget {
   const PostProjectScreen({super.key});

@@ -6,7 +6,7 @@ import 'package:arkitek_app/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
 
-import '../../bloc/auth/auth_bloc.dart';
+import '../bloc/auth/auth_bloc.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

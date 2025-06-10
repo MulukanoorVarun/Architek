@@ -8,7 +8,7 @@ class MessagesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chats = [
-      {}, // This will not crash now
+      {},
       {
         'name': 'Michael Chen',
         'lastMessage': 'The project timeline looks good.',

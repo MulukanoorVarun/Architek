@@ -5,7 +5,7 @@ import 'package:arkitek_app/widgets/architect_card.dart';
 import 'package:arkitek_app/theme/spacing.dart';
 import 'package:arkitek_app/theme/colors.dart';
 
-import '../../bloc/architect/architect_bloc.dart';
+import '../bloc/architect/architect_bloc.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
