@@ -1,4 +1,8 @@
+import 'package:arkitek_app/bloc/login/login_cubit.dart';
+import 'package:arkitek_app/bloc/login/login_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../utils/Validator.dart';
 
@@ -14,7 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _validator = Validator();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
   bool _obscurePassword = true;
 
   @override
@@ -30,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
         'email': _emailController.text.trim(),
         'password': _passwordController.text.trim(),
       };
-      // context.read<RegisterCubit>().registerAPi(data);
+      context.read<LoginCubit>().loginApi(data);
     }
   }
 
@@ -53,16 +56,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text(
                   'Welcome Back',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Sign in to continue',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                        color: Colors.grey[600],
+                      ),
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
@@ -70,11 +73,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: 'Email',
                     prefixIcon: const Icon(Icons.email),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: _validator.validateEmail,
@@ -87,7 +85,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                        _obscurePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
@@ -95,36 +95,38 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
                   ),
                   obscureText: _obscurePassword,
                   validator: _validator.validatePassword,
                 ),
                 const SizedBox(height: 24),
-                Center(
-                  child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                    onPressed: _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: BlocConsumer<LoginCubit, LoginState>(
+                    listener: (context, state) {
+                      context.pushReplacement("/");
+                    },
+                    builder: (context, state) {
+                      return ElevatedButton(
+                        onPressed: _submitForm,
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.all(0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: state is LoginLoading
+                            ? CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 1,
+                              )
+                            : const Text(
+                                'Login',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(height: 16),

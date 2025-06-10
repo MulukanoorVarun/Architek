@@ -1,29 +1,37 @@
+import 'package:arkitek_app/screens/home_screen.dart';
+import 'package:arkitek_app/screens/profile_screen.dart';
+import 'package:arkitek_app/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:arkitek_app/routes/app_router.dart';
 import 'package:arkitek_app/theme/colors.dart';
 
 class MainScreen extends StatefulWidget {
-  final Widget child;
-
   const MainScreen({
     super.key,
-    required this.child,
   });
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
+
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+
+  // List of screens for each navigation tab
+  static final List<Widget> _screens = [
+    const HomeScreen(),
+    const SearchScreen(),
+    const ProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: widget.child,
+      body: _screens[_selectedIndex], // Display screen based on selected index
       bottomNavigationBar: NavigationBar(
-        selectedIndex: _calculateSelectedIndex(context),
+        selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
           _onItemTapped(index, context);
         },
@@ -38,7 +46,6 @@ class _MainScreenState extends State<MainScreen> {
             selectedIcon: Icon(Icons.search),
             label: 'Search',
           ),
-
           NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
@@ -46,32 +53,25 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     context.go(AppRoutes.postProject);
-      //   },
-      //   backgroundColor: AppColors.primary[700],
-      //   child: const Icon(
-      //     Icons.add,
-      //     color: Colors.white,
-      //   ),
-      // ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.go(AppRoutes.postProject);
+        },
+        backgroundColor: Colors.blue, // Replace with AppColors.primary[700] if defined
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 
-  int _calculateSelectedIndex(BuildContext context) {
-    final String location = GoRouterState.of(context).uri.path;
-    if (location.startsWith('/find-architect') || location.startsWith('/architect')) {
-      return 1;
-    }
-    if (location.startsWith(AppRoutes.profile)) {
-      return 2;
-    }
-
-    return 0;
-  }
-
   void _onItemTapped(int index, BuildContext context) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    // Update the route to keep URL in sync for deep-linking
     switch (index) {
       case 0:
         context.go(AppRoutes.home);
@@ -81,8 +81,33 @@ class _MainScreenState extends State<MainScreen> {
         break;
       case 2:
         context.go(AppRoutes.profile);
-
         break;
+    }
+  }
+
+  // Update selected index when route changes (e.g., deep-linking or back navigation)
+  int _calculateSelectedIndex(BuildContext context) {
+    final String location = GoRouterState.of(context).uri.path;
+    if (location.startsWith(AppRoutes.findArchitect) ||
+        location.startsWith(AppRoutes.architectsList) ||
+        location.startsWith(AppRoutes.architectDetails)) {
+      return 1;
+    }
+    if (location.startsWith(AppRoutes.profile) || location.startsWith(AppRoutes.settings)) {
+      return 2;
+    }
+    return 0;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Update _selectedIndex when route changes (e.g., via deep-linking)
+    final newIndex = _calculateSelectedIndex(context);
+    if (_selectedIndex != newIndex) {
+      setState(() {
+        _selectedIndex = newIndex;
+      });
     }
   }
 }

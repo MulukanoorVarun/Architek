@@ -12,6 +12,10 @@ import 'api_endpoint_urls.dart';
 abstract class RemoteDataSource {
   Future<ArchitectModel?> getArchetic();
   Future<SuccessModel?> registerApi(Map<String,dynamic> data);
+  Future<SuccessModel?> loginApi(Map<String,dynamic> data);
+  Future<SuccessModel?> addPost(Map<String,dynamic> data);
+  Future<SuccessModel?> editPost(Map<String,dynamic> data,id);
+  Future<SuccessModel?> deletePost(id);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -38,6 +42,70 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     }
 
     return FormData.fromMap(formMap);
+  }
+
+  @override
+  Future<SuccessModel?> deletePost(id) async {
+    try {
+      Response res = await ApiClient.post("${APIEndpointUrls.deletePost}/$id");
+      if (res.statusCode == 200) {
+        debugPrint('deletePost:${res.data}');
+        return SuccessModel.fromJson(res.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error deletePost::$e');
+      return null;
+    }
+  }
+
+  @override
+  Future<SuccessModel?> editPost(Map<String,dynamic> data,id) async {
+    try {
+      Response res = await ApiClient.post("${APIEndpointUrls.editPost}/$id",data: data);
+      if (res.statusCode == 200) {
+        debugPrint('editPost:${res.data}');
+        return SuccessModel.fromJson(res.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error editPost::$e');
+      return null;
+    }
+  }
+
+  @override
+  Future<SuccessModel?> addPost(Map<String,dynamic> data) async {
+    try {
+      Response res = await ApiClient.post("${APIEndpointUrls.addPost}",data: data);
+      if (res.statusCode == 200) {
+        debugPrint('addPost:${res.data}');
+        return SuccessModel.fromJson(res.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error addPost::$e');
+      return null;
+    }
+  }
+
+  @override
+  Future<SuccessModel?> loginApi(Map<String,dynamic> data) async {
+    try {
+      Response res = await ApiClient.post("${APIEndpointUrls.login}",data: data);
+      if (res.statusCode == 200) {
+        debugPrint('loginApi:${res.data}');
+        return SuccessModel.fromJson(res.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error loginApi::$e');
+      return null;
+    }
   }
 
   @override

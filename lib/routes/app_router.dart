@@ -1,4 +1,5 @@
 import 'package:arkitek_app/screens/auth/RegistrationScreen.dart';
+import 'package:arkitek_app/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:arkitek_app/screens/find_architect/find_architect_screen.dart';
@@ -7,6 +8,7 @@ import 'package:arkitek_app/screens/find_architect/architect_details_screen.dart
 import 'package:arkitek_app/screens/post_project_screen.dart';
 import 'package:arkitek_app/screens/messages_screen.dart';
 import 'package:arkitek_app/screens/profile_screen.dart';
+import '../screens/PostProjectScreen.dart';
 import '../screens/SettingsScreen.dart';
 import '../screens/auth/LoginScreen.dart';
 
@@ -18,6 +20,7 @@ class AppRoutes {
   static const String postProject = '/post-project';
   static const String registerArchitect = '/register-architect';
   static const String login = '/login';
+  static const String mainscreen = '/mainscreen';
   static const String projects = '/projects';
   static const String messages = '/messages';
   static const String settings = '/settings';
@@ -32,7 +35,7 @@ class AppRouter {
     routes: [
       GoRoute(
         path: AppRoutes.home,
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) => const AddEditProjectScreen(),
       ),
       GoRoute(
         path: AppRoutes.login,
