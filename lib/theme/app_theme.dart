@@ -95,6 +95,10 @@ class AppTheme {
         borderRadius: BorderRadius.circular(AppSpacing.sm),
         borderSide: BorderSide(color: AppColors.primary[700]!, width: 1),
       ),
+      focusedErrorBorder:OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.sm),
+        borderSide: BorderSide(color: AppColors.primary[700]!, width: 1),
+      ),
       errorStyle: GoogleFonts.playfairDisplay(
           fontWeight: FontWeight.w400, fontSize: 13, color: Colors.red),
       contentPadding: EdgeInsets.all(AppSpacing.md),
@@ -217,6 +221,10 @@ class AppTheme {
         borderSide: BorderSide(color: AppColors.primary[700]!, width: 1),
       ),
       errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.sm),
+        borderSide: BorderSide(color: AppColors.primary[700]!, width: 1),
+      ),
+      focusedErrorBorder:OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.sm),
         borderSide: BorderSide(color: AppColors.primary[700]!, width: 1),
       ),

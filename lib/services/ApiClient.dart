@@ -1,5 +1,3 @@
-
-
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -31,16 +29,14 @@ class ApiClient {
         debugPrint('Interceptor triggered for: ${options.uri}');
         // Check if the request is for an unauthenticated endpoint
         final isUnauthenticated = _unauthenticatedEndpoints.any(
-              (endpoint) => options.uri.path.startsWith(endpoint),
+          (endpoint) => options.uri.path.startsWith(endpoint),
         );
-
         if (isUnauthenticated) {
-          debugPrint('Unauthenticated endpoint, skipping token check: ${options.uri}');
+          debugPrint(
+              'Unauthenticated endpoint, skipping token check: ${options.uri}');
           return handler.next(options); // Skip token check and proceed
         }
         // Check if token is expired for authenticated endpoints
-
-
         return handler.next(options);
       },
       onResponse: (response, handler) {
@@ -49,15 +45,13 @@ class ApiClient {
       onError: (DioException e, handler) async {
         // Check if the request is for an unauthenticated endpoint
         final isUnauthenticated = _unauthenticatedEndpoints.any(
-              (endpoint) => e.requestOptions.uri.path.endsWith(endpoint),
+          (endpoint) => e.requestOptions.uri.path.endsWith(endpoint),
         );
-
         if (isUnauthenticated) {
-          debugPrint('Unauthenticated endpoint error, skipping logout: ${e.requestOptions.uri}');
+          debugPrint(
+              'Unauthenticated endpoint error, skipping logout: ${e.requestOptions.uri}');
           return handler.next(e); // Skip logout for unauthenticated endpoints
         }
-
-
         return handler.next(e); // Pass other errors to the next interceptor
       },
     ));

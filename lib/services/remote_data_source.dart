@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:arkitek_app/models/SuccessModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -10,6 +11,7 @@ import 'api_endpoint_urls.dart';
 
 abstract class RemoteDataSource {
   Future<ArchitectModel?> getArchetic();
+  Future<SuccessModel?> registerApi(Map<String,dynamic> data);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -36,6 +38,22 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     }
 
     return FormData.fromMap(formMap);
+  }
+
+  @override
+  Future<SuccessModel?> registerApi(Map<String,dynamic> data) async {
+    try {
+      Response res = await ApiClient.post("${APIEndpointUrls.register}",data: data);
+      if (res.statusCode == 200) {
+        debugPrint('registerApi:${res.data}');
+        return SuccessModel.fromJson(res.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error registerApi::$e');
+      return null;
+    }
   }
 
   @override

@@ -1,17 +1,14 @@
 import 'package:arkitek_app/screens/auth/RegistrationScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:arkitek_app/screens/home_screen.dart';
 import 'package:arkitek_app/screens/find_architect/find_architect_screen.dart';
 import 'package:arkitek_app/screens/find_architect/architect_list_screen.dart';
 import 'package:arkitek_app/screens/find_architect/architect_details_screen.dart';
 import 'package:arkitek_app/screens/post_project_screen.dart';
 import 'package:arkitek_app/screens/messages_screen.dart';
 import 'package:arkitek_app/screens/profile_screen.dart';
-import 'package:arkitek_app/screens/auth/register_architect_screen.dart';
-import 'package:arkitek_app/screens/dashboard.dart';
-
 import '../screens/SettingsScreen.dart';
+import '../screens/auth/LoginScreen.dart';
 
 class AppRoutes {
   static const String home = '/';
@@ -20,6 +17,7 @@ class AppRoutes {
   static const String architectDetails = '/architect/:id';
   static const String postProject = '/post-project';
   static const String registerArchitect = '/register-architect';
+  static const String login = '/login';
   static const String projects = '/projects';
   static const String messages = '/messages';
   static const String settings = '/settings';
@@ -35,6 +33,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.home,
         builder: (context, state) => const RegistrationScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.login,
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: AppRoutes.findArchitect,

@@ -5,7 +5,7 @@ class APIEndpointUrls {
   static const String authUrl = 'auth/';
 
   /// Auth URls
-  // static const String register = '${authUrl}register';
+  static const String register = '${apiUrl}register';
 
 
   ///Api Urls

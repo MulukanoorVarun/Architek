@@ -1,4 +1,8 @@
+import 'package:arkitek_app/bloc/register/register_cubit.dart';
+import 'package:arkitek_app/bloc/register/register_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../utils/Validator.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -41,52 +45,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate() && mounted) {
-      setState(() {
-        _isLoading = true;
-      });
-      //
-      // try {
-      //   final response = await http.post(
-      //     Uri.parse('https://fma.ozrit.in/api/register'),
-      //     body: {
-      //       'name': _nameController.text.trim(),
-      //       'phone': _phoneController.text.trim(),
-      //       'email': _emailController.text.trim(),
-      //       'password': _passwordController.text,
-      //       'password_confirmation': _passwordConfirmationController.text,
-      //       'license_number': _licenseNumberController.text.trim(),
-      //       'specialization': _specializationController.text.trim(),
-      //       'years_of_experience': _yearsOfExperienceController.text.trim(),
-      //       'portfolio_url': _portfolioUrlController.text.trim(),
-      //       'country': _countryController.text.trim(),
-      //       'office_location': _officeLocationController.text.trim(),
-      //     },
-      //   );
-      //
-      //   if (mounted) {
-      //     if (response.statusCode == 200 || response.statusCode == 201) {
-      //       ScaffoldMessenger.of(context).showSnackBar(
-      //         SnackBar(content: Text('Registration successful!')),
-      //       );
-      //     } else {
-      //       ScaffoldMessenger.of(context).showSnackBar(
-      //         SnackBar(content: Text('Registration failed: ${response.body}')),
-      //       );
-      //     }
-      //   }
-      // } catch (e) {
-      //   if (mounted) {
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       SnackBar(content: Text('Error: $e')),
-      //     );
-      //   }
-      // } finally {
-      //   if (mounted) {
-      //     setState(() {
-      //       _isLoading = false;
-      //     });
-      //   }
-      // }
+      Map<String, dynamic> data = {
+        'name': _nameController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'email': _emailController.text.trim(),
+        'password': _passwordController.text,
+        'password_confirmation': _passwordConfirmationController.text,
+        'license_number': _licenseNumberController.text.trim(),
+        'specialization': _specializationController.text.trim(),
+        'years_of_experience': _yearsOfExperienceController.text.trim(),
+        'portfolio_url': _portfolioUrlController.text.trim(),
+        'country': _countryController.text.trim(),
+        'office_location': _officeLocationController.text.trim(),
+      };
+      context.read<RegisterCubit>().registerAPi(data);
     }
   }
 
@@ -249,24 +221,37 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? CircularProgressIndicator()
-                        : Text(
-                            'Register',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge
-                                ?.copyWith(
-                                  color: Colors.white,
-                                ),
+                  child: BlocConsumer<RegisterCubit, RegisterState>(
+                    listener: (context, state) {
+                      if (state is RegisterLoaded &&
+                          (state.successModel.status ?? false)) {
+                        context.push("/login");
+                      }
+                    },
+                    builder: (context, state) {
+                      return ElevatedButton(
+                        onPressed: _submitForm,
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
+                        ),
+                        child: state is RegisterLoading
+                            ? CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 1,
+                              )
+                            : Text(
+                                'Register',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                    ),
+                              ),
+                      );
+                    },
                   ),
                 ),
                 SizedBox(height: 24),
