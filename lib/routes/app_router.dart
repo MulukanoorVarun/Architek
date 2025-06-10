@@ -8,7 +8,7 @@ import 'package:arkitek_app/screens/post_project_screen.dart';
 import 'package:arkitek_app/screens/messages_screen.dart';
 import 'package:arkitek_app/screens/profile_screen.dart';
 import 'package:arkitek_app/screens/auth/register_architect_screen.dart';
-import 'package:arkitek_app/screens/main_screen.dart';
+import 'package:arkitek_app/screens/dashboard.dart';
 
 import '../screens/SettingsScreen.dart';
 
